@@ -15,6 +15,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compiler_flags(-Wall)
     add_compiler_flags(-Wextra)
     add_compiler_flags(-Wno-sign-compare)
+
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
