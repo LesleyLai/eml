@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -12,14 +13,15 @@ namespace eml {
 
 using value = std::variant<double>;
 
-template <class... Ts> struct overloaded : Ts... {
-  using Ts::operator()...;
+struct value_printer {
+  std::ostream& s;
+
+  void operator()(double d) { s << d; }
 };
-template <class... Ts> overloaded(Ts...)->overloaded<Ts...>;
 
 auto operator<<(std::ostream& s, const value& v) -> std::ostream&
 {
-  std::visit(overloaded{[&](double d) { s << d; }}, v);
+  std::visit(value_printer{s}, v);
   return s;
 }
 
@@ -39,16 +41,18 @@ public:
     assert(constants_.size() <
            std::numeric_limits<std::underlying_type_t<opcode>>::max());
     codes_.push_back(static_cast<opcode>(constants_.size()));
-    constants_.push_back(std::move(v));
+    constants_.push_back(v);
   }
 
   auto disassemble() const -> std::string;
 
   auto interpret() -> interpret_result
   {
-    auto ip = codes_.begin(); // Instruction pointer
-    while (ip != codes_.end()) {
-      const auto instruction = *ip;
+    const auto size = codes_.size();
+
+    // Instruction pointer
+    for (auto ip = std::size_t{0}; ip < size; ++ip) {
+      const auto instruction = codes_[ip];
       switch (instruction) {
       case op_return:
         return interpret_result::ok;
@@ -62,8 +66,6 @@ public:
                   << "!\n";
         return interpret_result::runtime_error;
       }
-
-      ++ip;
     }
 
     return interpret_result::ok;
@@ -73,9 +75,9 @@ private:
   std::vector<opcode> codes_{}; // Codes
   std::vector<value> constants_{};
 
-  auto read_constant(decltype(codes_)::const_iterator ip_) const -> value
+  auto read_constant(std::size_t ip) const -> value
   {
-    const auto index = static_cast<std::uint32_t>(*ip_);
+    const auto index = static_cast<std::underlying_type_t<opcode>>(codes_[ip]);
     return constants_.at(index);
   }
 };
@@ -84,12 +86,11 @@ auto vm::disassemble() const -> std::string
 {
   std::stringstream ss;
 
-  auto print_hex_dump = [&ss](decltype(codes_)::const_iterator ip,
-                              std::size_t count) {
+  auto print_hex_dump = [&ss, this](std::size_t ip, std::size_t count) {
     constexpr std::size_t max_byte =
         5; // Over max byte of hex will cause misalignment in output
     for (auto i = std::size_t{0}; i < count; ++i) {
-      ss << std::hex << std::setfill('0') << std::setw(2) << *ip << ' ';
+      ss << std::hex << std::setfill('0') << std::setw(2) << codes_[ip] << ' ';
       ++ip;
     }
     for (auto i = count; i < max_byte; ++i) {
@@ -97,23 +98,23 @@ auto vm::disassemble() const -> std::string
     }
   };
 
-  auto disassemble_simple_instruction =
-      [&](decltype(codes_)::const_iterator& ip, std::string_view name) {
-        print_hex_dump(ip, 1);
-        ss << name << '\n';
-        ++ip;
-      };
+  auto disassemble_simple_instruction = [&](std::size_t& ip,
+                                            std::string_view name) {
+    print_hex_dump(ip, 1);
+    ss << name << '\n';
+    ++ip;
+  };
 
   // Print instruction with one constant argument
   auto disassemble_instruction_with_one_const_parem =
-      [&](decltype(codes_)::const_iterator& ip, std::string_view name) {
+      [&](std::size_t& ip, std::string_view name) {
         print_hex_dump(ip, 2);
         const auto v = read_constant(++ip);
         ss << name << ' ' << v << '\n';
       };
 
-  for (auto ip = codes_.begin(); ip < codes_.end(); ++ip) {
-    switch (*ip) {
+  for (auto ip = std::size_t{0}, size = codes_.size(); ip < size; ++ip) {
+    switch (codes_[ip]) {
     case op_return:
       disassemble_simple_instruction(ip, "return");
       break;
@@ -133,8 +134,6 @@ int main()
 {
   using namespace eml;
   vm chunk;
-
-  chunk.write(opcode(5));
 
   chunk.write(op_constant);
   chunk.add_constant(0.5);
