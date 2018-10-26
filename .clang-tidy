@@ -30,4 +30,6 @@ CheckOptions:
     value:           '16'
   - key:             readability-function-size.StatementThreshold
     value:           '400'
+  - key:             misc-non-private-member-variables-in-classes.IgnorePublicMemberVariables
+    value:           '1'
 ...

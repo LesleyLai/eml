@@ -9,21 +9,9 @@
 #include <variant>
 #include <vector>
 
+#include "value.hpp"
+
 namespace eml {
-
-using value = std::variant<double>;
-
-struct value_printer {
-  std::ostream& s;
-
-  void operator()(double d) { s << d; }
-};
-
-auto operator<<(std::ostream& s, const value& v) -> std::ostream&
-{
-  std::visit(value_printer{s}, v);
-  return s;
-}
 
 enum opcode : std::uint32_t {
   op_return = 0,
@@ -41,7 +29,7 @@ public:
     assert(constants_.size() <
            std::numeric_limits<std::underlying_type_t<opcode>>::max());
     codes_.push_back(static_cast<opcode>(constants_.size()));
-    constants_.push_back(v);
+    constants_.push_back(std::move(v));
   }
 
   auto disassemble() const -> std::string;
@@ -135,10 +123,12 @@ int main()
   using namespace eml;
   vm chunk;
 
+  constexpr double first_const = 0.5, second_const = 1.5;
+
   chunk.write(op_constant);
-  chunk.add_constant(0.5);
+  chunk.add_constant(first_const);
   chunk.write(op_constant);
-  chunk.add_constant(1.5);
+  chunk.add_constant(second_const);
   chunk.write(op_return);
 
   std::cout << chunk.disassemble() << '\n';

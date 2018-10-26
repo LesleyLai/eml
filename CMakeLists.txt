@@ -9,7 +9,10 @@ include("cmake/compiler.cmake")
 include("cmake/clang-tidy.cmake")
 include("cmake/cppcheck.cmake")
 
+add_library(lib${PROJECT_NAME} "value.hpp" "value.cpp")
+
 add_executable(${PROJECT_NAME} "main.cpp")
+target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})
 
 # Conan package manager
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")

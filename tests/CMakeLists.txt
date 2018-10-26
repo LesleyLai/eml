@@ -1,2 +1,2 @@
-add_executable(${PROJECT_NAME}Test "main.cpp")
-target_link_libraries(${PROJECT_NAME}Test CONAN_PKG::catch2)
+add_executable(${PROJECT_NAME}Test "main.cpp" "value_test.cpp")
+target_link_libraries(${PROJECT_NAME}Test lib${PROJECT_NAME} CONAN_PKG::catch2)
