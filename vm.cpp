@@ -80,20 +80,17 @@ auto vm::interpret() -> value
       binary_operation(stack_, std::divides<value>{});
       break;
     default:
-      throw eml::exception::runtime_error{
-          ("EML Virtual Machine: Unknown instruction " +
-           std::to_string(
-               static_cast<std::underlying_type_t<opcode>>(instruction)) +
-           "!\n")
-              .c_str()};
+      std::cerr << "EML Virtual Machine: Unknown instruction " << instruction
+                << "!\n";
+      std::exit(1);
     }
 
     ++offset;
   }
 
   if (stack_.empty()) {
-    throw eml::exception::runtime_error{
-        "Invalid instruction sequences! No value to evaluate to!"};
+    std::cerr << "Invalid instruction sequences! No value to evaluate to!\n";
+    std::exit(1);
   }
   else {
     return pop(stack_);

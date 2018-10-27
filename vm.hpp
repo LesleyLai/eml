@@ -35,6 +35,7 @@ public:
     constexpr size_t initial_stack_size = 256;
     stack_.reserve(initial_stack_size);
   }
+
   /**
    * @brief Write an instruction to the vm
    * @param code The instruction

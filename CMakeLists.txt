@@ -17,7 +17,7 @@ if(EML_VM_DEBUG_TRACE_EXECUTION)
 add_definitions(-DEML_VM_DEBUG_TRACE_EXECUTION)
 endif()
 
-add_library(lib${PROJECT_NAME} "value.hpp" "value.cpp" "vm.hpp" "vm.cpp")
+add_library(lib${PROJECT_NAME} "value.hpp" "vm.hpp" "vm.cpp")
 
 add_executable(${PROJECT_NAME} "main.cpp")
 target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})

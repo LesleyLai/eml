@@ -6,66 +6,70 @@
  * @brief This module contains the representation of a value in the EML VM
  */
 
-#include <stdexcept>
+#include <iostream>
 
 namespace eml {
-
-namespace exception {
-struct runtime_error : std::runtime_error {
-  explicit runtime_error(const char* msg) : std::runtime_error{msg} {}
-};
-
-struct bad_value_type : runtime_error {
-  explicit bad_value_type(const char* msg) : runtime_error{msg} {}
-};
-} // namespace exception
 
 struct value {
 
   union val {
-    explicit val(double d) : num{d} {}
+    constexpr explicit val(double d) : num{d} {}
 
     double num;
   } val;
 
-  explicit value(double v) : val{v} {}
+  constexpr explicit value(double v) noexcept : val{v} {}
 };
 
 /**
  * @brief Prints value v to the output stream s
  */
-auto operator<<(std::ostream& s, const value& v) -> std::ostream&;
+inline auto operator<<(std::ostream& s, const value& v) -> std::ostream&
+{
+  s << v.val.num;
+  return s;
+}
 
 /**
  * @brief Negates the value v if it is a type support negate operation
- * @throw bad_value_type if v does not support negation operation
  */
-auto operator-(const value& v) -> value;
+constexpr auto operator-(const value& v) noexcept -> value
+{
+  return eml::value{-v.val.num};
+}
 
 /**
  * @brief Adds the value v1 and v2 if they are the type support + operation
- * @throw bad_value_type if v does not support negation operation
  */
-auto operator+(const value& v1, const value& v2) -> value;
+constexpr auto operator+(const value& v1, const value& v2) noexcept -> value
+{
+  return eml::value{v1.val.num + v2.val.num};
+}
 
 /**
  * @brief Subtracts the value v1 and v2 if they are the type support - operation
- * @throw bad_value_type if v does not support negation operation
  */
-auto operator-(const value& v1, const value& v2) -> value;
+constexpr auto operator-(const value& v1, const value& v2) noexcept -> value
+{
+  return eml::value{v1.val.num - v2.val.num};
+}
 
 /**
  * @brief Multiplies the value v1 and v2 if they are the type support *
  * operation
- * @throw bad_value_type if v does not support negation operation
  */
-auto operator*(const value& v1, const value& v2) -> value;
+constexpr auto operator*(const value& v1, const value& v2) noexcept -> value
+{
+  return eml::value{v1.val.num * v2.val.num};
+}
 
 /**
  * @brief Divides the value v1 and v2 if they are the type support / operation
- * @throw bad_value_type if v does not support negation operation
  */
-auto operator/(const value& v1, const value& v2) -> value;
+constexpr auto operator/(const value& v1, const value& v2) noexcept -> value
+{
+  return eml::value{v1.val.num / v2.val.num};
+}
 
 } // namespace eml
 

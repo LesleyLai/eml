@@ -39,31 +39,31 @@ TEST_CASE("Arithmatics")
 
     THEN("-v1 = -1.1")
     {
-      double result = -1.1;
+      const double result = -1.1;
       REQUIRE(eml::operator-(v1).val.num == Approx(result));
     }
 
     THEN("v1 + v2 = 3.3")
     {
-      double result = 3.3;
+      const double result = 3.3;
       REQUIRE(eml::operator+(v1, v2).val.num == Approx(result));
     }
 
     THEN("v1 - v2 = -1.1")
     {
-      double result = -1.1;
+      const double result = -1.1;
       REQUIRE(eml::operator-(v1, v2).val.num == Approx(result));
     }
 
     THEN("v1 * v2 = 2.42")
     {
-      double result = 2.42;
+      const double result = 2.42;
       REQUIRE(eml::operator*(v1, v2).val.num == Approx(result));
     }
 
     THEN("v1 / v2 = 0.5")
     {
-      double result = 0.5;
+      const double result = 0.5;
       REQUIRE(eml::operator/(v1, v2).val.num == Approx(result));
     }
   }
