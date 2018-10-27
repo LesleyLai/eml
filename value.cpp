@@ -1,13 +1,33 @@
 #include "value.hpp"
 
-struct value_printer {
-  std::ostream& s;
+namespace eml {
 
-  void operator()(double d) { s << d; }
-};
-
-auto eml::operator<<(std::ostream& s, const eml::value& v) -> std::ostream&
+auto operator<<(std::ostream& s, const eml::value& v) -> std::ostream&
 {
-  std::visit(value_printer{s}, v);
+  s << v.val.num;
   return s;
 }
+
+value operator-(const eml::value& v) { return eml::value{-v.val.num}; }
+
+auto operator+(const value& v1, const value& v2) -> value
+{
+  return eml::value{v1.val.num + v2.val.num};
+}
+
+auto operator-(const value& v1, const value& v2) -> value
+{
+  return eml::value{v1.val.num - v2.val.num};
+}
+
+auto operator*(const value& v1, const value& v2) -> value
+{
+  return eml::value{v1.val.num * v2.val.num};
+}
+
+auto operator/(const value& v1, const value& v2) -> value
+{
+  return eml::value{v1.val.num / v2.val.num};
+}
+
+} // namespace eml
