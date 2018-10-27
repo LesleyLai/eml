@@ -9,6 +9,14 @@ include("cmake/compiler.cmake")
 include("cmake/clang-tidy.cmake")
 include("cmake/cppcheck.cmake")
 
+option(EML_VM_DEBUG_TRACE_EXECUTION
+    "The CM will disassemble all the instruction when running with this option"
+    OFF)
+
+if(EML_VM_DEBUG_TRACE_EXECUTION)
+add_definitions(-DEML_VM_DEBUG_TRACE_EXECUTION)
+endif()
+
 add_library(lib${PROJECT_NAME} "value.hpp" "value.cpp")
 
 add_executable(${PROJECT_NAME} "main.cpp")
