@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "value.hpp"
 
 namespace eml {

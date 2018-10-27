@@ -6,7 +6,6 @@
  * @brief This module contains the representation of a value in the EML VM
  */
 
-#include <iostream>
 #include <stdexcept>
 
 namespace eml {

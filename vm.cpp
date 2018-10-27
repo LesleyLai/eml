@@ -1,0 +1,173 @@
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+
+#include "vm.hpp"
+
+namespace eml {
+
+namespace {
+#ifdef EML_VM_DEBUG_TRACE_EXECUTION
+void printStack(const std::vector<value>& stack)
+{
+  std::cout << "\nStack: [ ";
+  for (const auto& v : stack) {
+    std::cout << v << ' ';
+  }
+  std::cout << "]\n";
+}
+#endif
+
+// Push value to the stack
+void push(std::vector<value>& stack, value value) { stack.push_back(value); }
+
+// Returns the value to the last
+// Warning: Calling pop on a vm with empty stack is undefined.
+auto pop(std::vector<value>& stack) -> value
+{
+  value v = stack.back();
+  stack.pop_back();
+  return v;
+}
+
+// Helper for binary operations
+template <typename F> void binary_operation(std::vector<value>& stack, F op)
+{
+  value right = pop(stack);
+  value left = pop(stack);
+  push(stack, op(left, right));
+}
+} // anonymous namespace
+
+void vm::add_constant(value v)
+{
+  assert(constants_.size() <
+         std::numeric_limits<std::underlying_type_t<opcode>>::max());
+  codes_.push_back(static_cast<opcode>(constants_.size()));
+  constants_.push_back(v);
+}
+
+auto vm::interpret() -> value
+{
+  size_t offset = 0;
+  for (auto ip = codes_.begin(); ip != codes_.end(); ++ip) {
+#ifdef EML_VM_DEBUG_TRACE_EXECUTION
+    printStack(stack_);
+    std::cout << disassemble_instruction(ip, offset);
+#endif
+    const auto instruction = *ip;
+    switch (instruction) {
+    case op_return:
+      return pop(stack_);
+    case op_push: {
+      ++ip;
+      value constant = read_constant(ip);
+      push(stack_, constant);
+    } break;
+    case op_negate:
+      push(stack_, -pop(stack_));
+      break;
+    case op_add:
+      binary_operation(stack_, std::plus<value>{});
+      break;
+    case op_subtract:
+      binary_operation(stack_, std::minus<value>{});
+      break;
+    case op_multiply:
+      binary_operation(stack_, std::multiplies<value>{});
+      break;
+    case op_divide:
+      binary_operation(stack_, std::divides<value>{});
+      break;
+    default:
+      throw eml::exception::runtime_error{
+          ("EML Virtual Machine: Unknown instruction " +
+           std::to_string(
+               static_cast<std::underlying_type_t<opcode>>(instruction)) +
+           "!\n")
+              .c_str()};
+    }
+
+    ++offset;
+  }
+
+  if (stack_.empty()) {
+    throw eml::exception::runtime_error{
+        "Invalid instruction sequences! No value to evaluate to!"};
+  }
+  else {
+    return pop(stack_);
+  }
+}
+
+auto vm::disassemble_instruction(decltype(codes_)::const_iterator ip,
+                                 std::size_t offset) const -> std::string
+{
+  std::stringstream ss;
+
+  auto print_hex_dump = [&ss](auto ip, std::size_t count) {
+    constexpr std::size_t max_byte =
+        5; // Over max byte of hex will cause misalignment in output
+    for (auto i = std::size_t{0}; i < count; ++i) {
+      ss << std::hex << std::setfill('0') << std::setw(2) << *ip << ' ';
+      ++ip;
+    }
+    for (auto i = count; i < max_byte; ++i) {
+      ss << "   ";
+    }
+  };
+
+  auto disassemble_simple_instruction = [&](auto& ip, std::string_view name) {
+    print_hex_dump(ip, 1);
+    ss << name << '\n';
+    ++ip;
+  };
+
+  // Print instruction with one constant argument
+  auto disassemble_instruction_with_one_const_parem =
+      [&](auto& ip, std::string_view name) {
+        print_hex_dump(ip, 2);
+        const auto v = read_constant(++ip);
+        ss << name << ' ' << v << '\n';
+      };
+
+  // Dump file in source line
+  constexpr std::size_t linum_digits = 4;
+  if (offset != 0 && lines_[offset].value == lines_[offset - 1].value) {
+    ss << std::setfill(' ') << std::setw(linum_digits) << '|';
+  }
+  else {
+    ss << std::setfill('0') << std::setw(linum_digits) << lines_[offset].value;
+  }
+  ss << "    ";
+
+  switch (*ip) {
+  case op_return:
+    disassemble_simple_instruction(ip, "return");
+    break;
+  case op_push: {
+    disassemble_instruction_with_one_const_parem(ip, "push");
+  } break;
+  case op_negate:
+    disassemble_simple_instruction(ip, "negate");
+    break;
+  case op_add:
+    disassemble_simple_instruction(ip, "add");
+    break;
+  case op_subtract:
+    disassemble_simple_instruction(ip, "sub");
+    break;
+  case op_multiply:
+    disassemble_simple_instruction(ip, "mult");
+    break;
+  case op_divide:
+    disassemble_simple_instruction(ip, "div");
+    break;
+  default:
+    ss << "Unknown instruction\n";
+  }
+
+  return ss.str();
+}
+
+} // namespace eml
