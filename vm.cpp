@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <string_view>
 
 #include "vm.hpp"
 

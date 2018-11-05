@@ -60,7 +60,7 @@ private:
   std::vector<value> constants_{};
   std::vector<line_num> lines_{}; // Source line information
 
-  auto read_constant(decltype(codes_)::const_iterator ip) const -> value
+  auto read_constant(const decltype(codes_)::const_iterator& ip) const -> value
   {
     const auto index = static_cast<std::underlying_type_t<opcode>>(*ip);
     return constants_.at(index);
