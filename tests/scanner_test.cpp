@@ -74,15 +74,15 @@ TEST_CASE("Error handling of the scanner")
         }
       }
     }
+  }
 
-    GIVEN("None-terminate string")
+  GIVEN("None-terminate string")
+  {
+    scanner s{R"("Hello world)"};
+    THEN("Should detect the problem")
     {
-      scanner s{R"("Hello world)"};
-      THEN("Should detect the problem")
-      {
-        token expected{token_type::error, "Unterminated string."};
-        REQUIRE(*s.begin() == expected);
-      }
+      token expected{token_type::error, "Unterminated string."};
+      REQUIRE(*s.begin() == expected);
     }
   }
 }

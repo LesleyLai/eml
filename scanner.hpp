@@ -21,58 +21,11 @@ constexpr auto isdigit(char c) noexcept -> bool
 }
 
 enum class token_type {
-  // Operators
-  left_paren,        // (
-  right_paren,       // )
-  left_brace,        // {
-  right_brace,       // }
-  comma,             // ,
-  dot,               // .
-  minus,             // -
-  minus_right_arrow, // ->
-  plus,              // +
-  colon,             // :
-  semicolon,         // ;
-  slash,             // /
-  star,              // *
-  bang,              // !
-  bang_equal,        // !=
-  equal,             // =
-  double_equal,      // ==
-  equal_right_arrow, // =>
-  greator,           // >
-  greator_greator,   // >>
-  greater_equal,     // >=
-  less,              // <
-  less_less,         // <<
-  less_equal,        // <=
-
-  // Literals.
-  identifier,
-  string_literal,
-  number_literal,
-
-  // Keywords.
-  keyword_and,
-  keyword_case,
-  keyword_class,
-  keyword_def,
-  keyword_else,
-  keyword_extern,
-  keyword_false,
-  keyword_for,
-  keyword_if,
-  keyword_let,
-  keyword_not,
-  keyword_or,
-  keyword_print,
-  keyword_return,
-  keyword_this,
-  keyword_true,
-  keyword_variant,
-
-  error,
-  eof
+#define TOKEN_TABLE_ENTRY(type, type_name) type,
+#include "token_table.impl"
+  TOKEN_TABLE
+#undef TOKEN_TABLE
+#undef TOKEN_TABLE_ENTRY
 };
 
 struct token {
@@ -82,6 +35,7 @@ struct token {
   std::size_t column = 1;
 };
 
+std::ostream& operator<<(std::ostream& s, token_type t);
 std::ostream& operator<<(std::ostream& s, token t);
 
 constexpr bool operator==(token lhs, token rhs)
@@ -204,7 +158,7 @@ struct scanner {
 
     auto identifier() noexcept -> token
     {
-      while (isalpha(peek()) || (isdigit(peek()) != 0)) {
+      while (isalpha(peek()) || (isdigit(peek()))) {
         advance();
       }
 
@@ -338,10 +292,10 @@ struct scanner {
       }
     }
 
-    auto check_keyword(std::size_t start, std::string_view rest,
+    auto check_keyword(std::size_t start_offset, std::string_view rest,
                        token_type type) const noexcept -> token_type
     {
-      if (std::string_view{this->start + start, rest.length()} == rest) {
+      if (std::string_view{start + start_offset, rest.length()} == rest) {
         return type;
       }
 
@@ -362,6 +316,7 @@ struct scanner {
             return check_keyword(2, "ass", token_type::keyword_class);
           }
         }
+        break;
       case 'd':
         return check_keyword(1, "ef", token_type::keyword_def);
       case 'e':

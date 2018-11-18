@@ -6,8 +6,8 @@ set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include("cmake/compiler.cmake")
-include("cmake/clang-tidy.cmake")
-include("cmake/cppcheck.cmake")
+#include("cmake/clang-tidy.cmake")
+#include("cmake/cppcheck.cmake")
 
 option(EML_VM_DEBUG_TRACE_EXECUTION
     "The CM will disassemble all the instruction when running with this option"
@@ -17,7 +17,7 @@ if(EML_VM_DEBUG_TRACE_EXECUTION)
 add_definitions(-DEML_VM_DEBUG_TRACE_EXECUTION)
 endif()
 
-add_library(lib${PROJECT_NAME} "scanner.hpp" "scanner.cpp" "value.hpp" "vm.hpp" "vm.cpp")
+add_library(lib${PROJECT_NAME} "token_table.impl" "scanner.hpp" "scanner.cpp" "value.hpp" "vm.hpp" "vm.cpp")
 
 add_executable(${PROJECT_NAME} "main.cpp")
 target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})

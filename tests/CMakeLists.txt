@@ -1,5 +1,6 @@
 add_executable(${PROJECT_NAME}Test
     "main.cpp"
+    "parser_test.cpp"
     "scanner_test.cpp"
     "value_test.cpp"
     "vm_test.cpp")

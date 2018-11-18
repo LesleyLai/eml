@@ -98,29 +98,30 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
 {
   std::stringstream ss;
 
-  auto print_hex_dump = [&ss](auto ip, std::size_t count) {
+  auto print_hex_dump = [&ss](auto current_ip, std::size_t count) {
     constexpr std::size_t max_byte =
         5; // Over max byte of hex will cause misalignment in output
     for (auto i = std::size_t{0}; i < count; ++i) {
-      ss << std::hex << std::setfill('0') << std::setw(2) << *ip << ' ';
-      ++ip;
+      ss << std::hex << std::setfill('0') << std::setw(2) << *current_ip << ' ';
+      ++current_ip;
     }
     for (auto i = count; i < max_byte; ++i) {
       ss << "   ";
     }
   };
 
-  auto disassemble_simple_instruction = [&](auto& ip, std::string_view name) {
-    print_hex_dump(ip, 1);
+  auto disassemble_simple_instruction = [&](auto& current_ip,
+                                            std::string_view name) {
+    print_hex_dump(current_ip, 1);
     ss << name << '\n';
-    ++ip;
+    ++current_ip;
   };
 
   // Print instruction with one constant argument
   auto disassemble_instruction_with_one_const_parem =
-      [&](auto& ip, std::string_view name) {
-        print_hex_dump(ip, 2);
-        const auto v = read_constant(++ip);
+      [&](auto& current_ip, std::string_view name) {
+        print_hex_dump(current_ip, 2);
+        const auto v = read_constant(++current_ip);
         ss << name << ' ' << v << '\n';
       };
 
