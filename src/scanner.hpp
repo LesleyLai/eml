@@ -21,7 +21,7 @@ constexpr auto isdigit(char c) noexcept -> bool
 }
 
 enum class token_type {
-#define TOKEN_TABLE_ENTRY(type, type_name) type,
+#define TOKEN_TABLE_ENTRY(type, name, prefix, infix, precedence) type,
 #include "token_table.impl"
 #undef TOKEN_TABLE_ENTRY
 };
@@ -65,6 +65,11 @@ struct scanner {
     auto operator*() const -> const token
     {
       return token_;
+    }
+
+    auto operator-> () const -> const token*
+    {
+      return &token_;
     }
 
     auto operator==(const iterator rhs) const -> bool
@@ -225,8 +230,7 @@ struct scanner {
 
     constexpr auto match(char expected) noexcept -> bool
     {
-      assert(!at_end());
-      if (*current != expected) {
+      if (*current != expected || at_end()) {
         return false;
       }
 

@@ -38,9 +38,8 @@ TEST_CASE("Manually write instructions")
 
       code.write(op_multiply, line_num{0});
       code.write(op_subtract, line_num{0});
-      code.write(op_pop, line_num{0});
 
-      vm machine{code};
+      VM machine{code};
 
       THEN("Evaluate to -8.75")
       {

@@ -18,7 +18,15 @@ if(EML_VM_DEBUG_TRACE_EXECUTION)
 add_definitions(-DEML_VM_DEBUG_TRACE_EXECUTION)
 endif()
 
-add_library(lib${PROJECT_NAME} "src/token_table.impl" "src/scanner.hpp" "src/scanner.cpp" "src/value.hpp" "src/vm.hpp" "src/vm.cpp")
+add_library(lib${PROJECT_NAME}
+    "src/parser.hpp"
+    "src/parser.cpp"
+    "src/token_table.impl"
+    "src/scanner.hpp"
+    "src/scanner.cpp"
+    "src/value.hpp"
+    "src/vm.hpp"
+    "src/vm.cpp")
 
 add_executable(${PROJECT_NAME} "src/main.cpp")
 target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})

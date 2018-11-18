@@ -43,7 +43,7 @@ template <typename F> void binary_operation(std::vector<value>& stack, F op)
 }
 } // anonymous namespace
 
-auto vm::interpret() -> value
+auto VM::interpret() -> value
 {
   size_t offset = 0;
   value result{};
@@ -91,7 +91,11 @@ auto vm::interpret() -> value
     ++offset;
   }
 
-  return result;
+  if (stack_.empty()) {
+    return value{};
+  } else {
+    return pop(stack_);
+  }
 }
 
 std::string chunk::disassemble() const
@@ -164,6 +168,9 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
     break;
   case op_push: {
     disassemble_instruction_with_one_const_parem(ip, "push");
+  } break;
+  case op_pop: {
+    disassemble_simple_instruction(ip, "pop");
   } break;
   case op_negate:
     disassemble_simple_instruction(ip, "negate");

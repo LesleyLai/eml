@@ -32,7 +32,7 @@ struct line_num {
   std::size_t value;
 };
 
-class vm;
+class VM;
 
 /**
  * @brief A chunk of eml bytecode
@@ -71,7 +71,7 @@ struct chunk {
   auto disassemble() const -> std::string;
 
 private:
-  friend vm;
+  friend VM;
   using instruction_iterator = decltype(instructions)::const_iterator;
   auto read_constant(const instruction_iterator& ip) const -> value
   {
@@ -83,9 +83,9 @@ private:
                                std::size_t offset) const -> std::string;
 };
 
-class vm {
+class VM {
 public:
-  explicit vm(chunk code) : code_{std::move(code)}
+  explicit VM(chunk code) : code_{std::move(code)}
   {
     constexpr size_t initial_stack_size = 256;
     stack_.reserve(initial_stack_size);
