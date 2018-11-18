@@ -23,6 +23,9 @@ enum opcode : std::uint8_t {
   op_divide,
 };
 
+/// @brief The underlying numerical type of the @link opcode enum
+using opcode_num_type = std::underlying_type_t<opcode>;
+
 /// @brief Line number
 struct line_num {
   std::size_t value;
@@ -50,17 +53,22 @@ struct chunk {
   }
 
   /**
-   * @brief Adds a constant value v to the chunk
+   * @brief Adds a constant value v to the chunk and returns its index
    *
-   * Add a constant value v to the chunk
+   * Adds a constant value v to the chunk. Returns the index where it was
+   * appended so that we can locate that same constant later.
    */
-  void add_constant(value v)
+  [[nodiscard]] std::optional<opcode_num_type> add_constant(value v)
   {
-    assert(constants.size() <
-           std::numeric_limits<std::underlying_type_t<opcode>>::max());
-    instructions.push_back(static_cast<opcode>(constants.size()));
+    if (constants.size() >= std::numeric_limits<opcode_num_type>::max()) {
+      fputs("EML: Too many constants in one chunk.", stderr);
+      return {};
+    }
     constants.push_back(v);
+    return constants.size() - 1;
   }
+
+  auto disassemble() const -> std::string;
 
 private:
   friend vm;

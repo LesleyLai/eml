@@ -11,7 +11,6 @@
 namespace eml {
 
 struct value {
-
   union val {
     constexpr explicit val(double d) : num{d} {}
 
@@ -20,6 +19,11 @@ struct value {
 
   constexpr explicit value(double v) noexcept : val{v} {}
 };
+
+constexpr auto as_double(value v) -> double
+{
+  return v.val.num;
+}
 
 /**
  * @brief Prints value v to the output stream s

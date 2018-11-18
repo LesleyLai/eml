@@ -93,6 +93,29 @@ auto vm::interpret() -> value
   }
 }
 
+std::string chunk::disassemble() const
+{
+  size_t offset = 0;
+
+  std::string result;
+
+  for (auto ip = instructions.begin(); ip != instructions.end(); ++ip) {
+    result += disassemble_instruction(ip, offset);
+    const auto instruction = *ip;
+    switch (instruction) {
+    case op_push: {
+      ++ip;
+      // value constant = read_constant(ip);
+    } break;
+    default:; // Nothing special
+    }
+
+    ++offset;
+  }
+
+  return result;
+}
+
 auto chunk::disassemble_instruction(instruction_iterator ip,
                                     std::size_t offset) const -> std::string
 {
