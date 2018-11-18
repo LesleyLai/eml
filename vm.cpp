@@ -20,7 +20,10 @@ void printStack(const std::vector<value>& stack)
 #endif
 
 // Push value to the stack
-void push(std::vector<value>& stack, value value) { stack.push_back(value); }
+void push(std::vector<value>& stack, value value)
+{
+  stack.push_back(value);
+}
 
 // Returns the value to the last
 // Warning: Calling pop on a vm with empty stack is undefined.
@@ -40,21 +43,14 @@ template <typename F> void binary_operation(std::vector<value>& stack, F op)
 }
 } // anonymous namespace
 
-void vm::add_constant(value v)
-{
-  assert(constants_.size() <
-         std::numeric_limits<std::underlying_type_t<opcode>>::max());
-  codes_.push_back(static_cast<opcode>(constants_.size()));
-  constants_.push_back(v);
-}
-
 auto vm::interpret() -> value
 {
   size_t offset = 0;
-  for (auto ip = codes_.begin(); ip != codes_.end(); ++ip) {
+  for (auto ip = code_.instructions.begin(); ip != code_.instructions.end();
+       ++ip) {
 #ifdef EML_VM_DEBUG_TRACE_EXECUTION
     printStack(stack_);
-    std::cout << disassemble_instruction(ip, offset);
+    std::cout << code_.disassemble_instruction(ip, offset);
 #endif
     const auto instruction = *ip;
     switch (instruction) {
@@ -62,7 +58,7 @@ auto vm::interpret() -> value
       return pop(stack_);
     case op_push: {
       ++ip;
-      value constant = read_constant(ip);
+      value constant = code_.read_constant(ip);
       push(stack_, constant);
     } break;
     case op_negate:
@@ -92,14 +88,13 @@ auto vm::interpret() -> value
   if (stack_.empty()) {
     std::cerr << "Invalid instruction sequences! No value to evaluate to!\n";
     std::exit(1);
-  }
-  else {
+  } else {
     return pop(stack_);
   }
 }
 
-auto vm::disassemble_instruction(decltype(codes_)::const_iterator ip,
-                                 std::size_t offset) const -> std::string
+auto chunk::disassemble_instruction(instruction_iterator ip,
+                                    std::size_t offset) const -> std::string
 {
   std::stringstream ss;
 
@@ -131,11 +126,10 @@ auto vm::disassemble_instruction(decltype(codes_)::const_iterator ip,
 
   // Dump file in source line
   constexpr std::size_t linum_digits = 4;
-  if (offset != 0 && lines_[offset].value == lines_[offset - 1].value) {
+  if (offset != 0 && lines[offset].value == lines[offset - 1].value) {
     ss << std::setfill(' ') << std::setw(linum_digits) << '|';
-  }
-  else {
-    ss << std::setfill('0') << std::setw(linum_digits) << lines_[offset].value;
+  } else {
+    ss << std::setfill('0') << std::setw(linum_digits) << lines[offset].value;
   }
   ss << "    ";
 

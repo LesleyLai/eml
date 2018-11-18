@@ -28,46 +28,66 @@ struct line_num {
   std::size_t value;
 };
 
-class vm {
-public:
-  vm()
-  {
-    constexpr size_t initial_stack_size = 256;
-    stack_.reserve(initial_stack_size);
-  }
+class vm;
+
+/**
+ * @brief A chunk of eml bytecode
+ */
+struct chunk {
+  std::vector<opcode> instructions; // Instructions
+  std::vector<value> constants;
+  std::vector<line_num> lines; // Source line information
 
   /**
-   * @brief Write an instruction to the vm
+   * @brief Write an instruction to the chunk
    * @param code The instruction
    * @param line The line this instruction in source
    */
   void write(opcode code, line_num line)
   {
-    codes_.push_back(code);
-    lines_.push_back(line);
+    instructions.push_back(code);
+    lines.push_back(line);
   }
 
   /**
-   * @brief Adds a constant value v to the vm
+   * @brief Adds a constant value v to the chunk
+   *
+   * Add a constant value v to the chunk
    */
-  void add_constant(value v);
+  void add_constant(value v)
+  {
+    assert(constants.size() <
+           std::numeric_limits<std::underlying_type_t<opcode>>::max());
+    instructions.push_back(static_cast<opcode>(constants.size()));
+    constants.push_back(v);
+  }
+
+private:
+  friend vm;
+  using instruction_iterator = decltype(instructions)::const_iterator;
+  auto read_constant(const instruction_iterator& ip) const -> value
+  {
+    const auto index = static_cast<std::underlying_type_t<opcode>>(*ip);
+    return constants.at(index);
+  }
+
+  auto disassemble_instruction(instruction_iterator ip,
+                               std::size_t offset) const -> std::string;
+};
+
+class vm {
+public:
+  explicit vm(chunk code) : code_{std::move(code)}
+  {
+    constexpr size_t initial_stack_size = 256;
+    stack_.reserve(initial_stack_size);
+  }
 
   auto interpret() -> value;
 
 private:
-  std::vector<opcode> codes_{}; // Codes
-  std::vector<value> stack_{};  // Stack of the vm
-  std::vector<value> constants_{};
-  std::vector<line_num> lines_{}; // Source line information
-
-  auto read_constant(const decltype(codes_)::const_iterator& ip) const -> value
-  {
-    const auto index = static_cast<std::underlying_type_t<opcode>>(*ip);
-    return constants_.at(index);
-  }
-
-  auto disassemble_instruction(decltype(codes_)::const_iterator ip,
-                               std::size_t offset) const -> std::string;
+  chunk code_;
+  std::vector<value> stack_{}; // Stack of the vm
 };
 
 } // namespace eml
