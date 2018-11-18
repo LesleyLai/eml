@@ -25,8 +25,8 @@
     TOKEN_TABLE_ENTRY(less_less, "<<")                  \
     TOKEN_TABLE_ENTRY(less_equal, "<=")                 \
     TOKEN_TABLE_ENTRY(identifier, "identifier")         \
-    TOKEN_TABLE_ENTRY(string_literal, "string") \
-    TOKEN_TABLE_ENTRY(number_literal, "number") \
+    TOKEN_TABLE_ENTRY(string_literal, "string")         \
+    TOKEN_TABLE_ENTRY(number_literal, "number")         \
     TOKEN_TABLE_ENTRY(keyword_and, "and")               \
     TOKEN_TABLE_ENTRY(keyword_case, "case")             \
     TOKEN_TABLE_ENTRY(keyword_class, "class")           \
@@ -46,3 +46,6 @@
     TOKEN_TABLE_ENTRY(keyword_variant, "variant")       \
     TOKEN_TABLE_ENTRY(error, "error")                   \
     TOKEN_TABLE_ENTRY(eof, "eof")
+
+TOKEN_TABLE
+#undef TOKEN_TABLE

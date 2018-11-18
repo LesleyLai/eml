@@ -23,8 +23,6 @@ constexpr auto isdigit(char c) noexcept -> bool
 enum class token_type {
 #define TOKEN_TABLE_ENTRY(type, type_name) type,
 #include "token_table.impl"
-  TOKEN_TABLE
-#undef TOKEN_TABLE
 #undef TOKEN_TABLE_ENTRY
 };
 

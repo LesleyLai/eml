@@ -11,8 +11,6 @@ std::ostream& operator<<(std::ostream& s, token_type t)
     break;
 
 #include "token_table.impl"
-    TOKEN_TABLE
-#undef TOKEN_TABLE
 #undef TOKEN_TABLE_ENTRY
   }
   return s;

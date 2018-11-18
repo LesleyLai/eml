@@ -2,7 +2,7 @@
 
 #include <array>
 
-#include "../scanner.hpp"
+#include "../src/scanner.hpp"
 
 TEST_CASE("Scanner")
 {

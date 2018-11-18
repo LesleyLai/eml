@@ -1,4 +1,4 @@
-#include "../vm.hpp"
+#include "../src/vm.hpp"
 
 #include <catch2/catch.hpp>
 

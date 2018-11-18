@@ -1,4 +1,4 @@
-#include "../value.hpp"
+#include "../src/value.hpp"
 
 #include <catch2/catch.hpp>
 #include <functional>

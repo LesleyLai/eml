@@ -1,5 +1,11 @@
-#include "../scanner.hpp"
-#include "../vm.hpp"
+#include "../src/scanner.hpp"
+#include "../src/vm.hpp"
+
+/**
+ * @file parser.hpp
+ * @brief A simple <a href="https://en.wikipedia.org/wiki/Pratt_parser">Pratt
+ * Parser</a> for Embeded ML
+ */
 
 namespace eml {
 
