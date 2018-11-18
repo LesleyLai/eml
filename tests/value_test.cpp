@@ -4,6 +4,35 @@
 #include <functional>
 #include <sstream>
 
+TEST_CASE("Value RTTI 'as' function")
+{
+  GIVEN("A unit value")
+  {
+    const eml::value v{};
+
+    WHEN("Invoke as<double>")
+    {
+      THEN("Should produce std::nullopt")
+      {
+        REQUIRE(v.as<double>() == std::nullopt);
+      }
+    }
+  }
+
+  GIVEN("A double value")
+  {
+    const eml::value v{1.25};
+
+    WHEN("Invoke as<double>")
+    {
+      THEN("Should produce the correct value")
+      {
+        REQUIRE(v.as<double>() == 1.25);
+      }
+    }
+  }
+}
+
 TEST_CASE("Value printing")
 {
   std::stringstream ss;
@@ -13,21 +42,21 @@ TEST_CASE("Value printing")
 
     THEN("Print as is")
     {
-      eml::operator<<(ss, v);
+      ss << v;
       REQUIRE(ss.str() == "0.5");
     }
   }
 
-  //  GIVEN("A unit value")
-  //  {
-  //    const eml::value v{eml::unit_type{}};
+  GIVEN("A unit value")
+  {
+    const eml::value v{};
 
-  //    THEN("Print Unit")
-  //    {
-  //      eml::operator<<(ss, v);
-  //      REQUIRE(ss.str() == "Unit");
-  //    }
-  //  }
+    THEN("Print Unit")
+    {
+      eml::operator<<(ss, v);
+      REQUIRE(ss.str() == "Unit");
+    }
+  }
 }
 
 TEST_CASE("Arithmatics")

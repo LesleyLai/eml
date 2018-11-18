@@ -7,22 +7,47 @@
  */
 
 #include <iostream>
+#include <optional>
+#include <type_traits>
 
 namespace eml {
 
 struct value {
+  enum class type {
+    Unit,
+    Number,
+  };
+
+  struct unit_t {
+  };
+
   union val {
+    constexpr val() : unit{} {}
     constexpr explicit val(double d) : num{d} {}
 
+    unit_t unit;
     double num;
   } val;
+  type type;
 
-  constexpr explicit value(double v) noexcept : val{v} {}
+  constexpr value() noexcept : type{type::Unit} {}
+  constexpr explicit value(double v) noexcept : val{v}, type{type::Number} {}
+
+  /**
+   * @brief Returns the value v as a double if it exist, nullopt otherwise
+   */
+  template <typename T> constexpr auto as() const -> std::optional<T>;
 };
 
-constexpr auto as_double(value v) -> double
+template <> constexpr auto value::as<double>() const -> std::optional<double>
 {
-  return v.val.num;
+  {
+    if (type == value::type::Number) {
+      return val.num;
+    }
+
+    return {};
+  }
 }
 
 /**
@@ -30,7 +55,15 @@ constexpr auto as_double(value v) -> double
  */
 inline auto operator<<(std::ostream& s, const value& v) -> std::ostream&
 {
-  s << v.val.num;
+  switch (v.type) {
+  case value::type::Number:
+    s << v.val.num;
+    break;
+  case value::type::Unit:
+    s << "Unit";
+    break;
+  }
+
   return s;
 }
 

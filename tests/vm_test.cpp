@@ -22,32 +22,31 @@ TEST_CASE("Manually write instructions")
       const auto v3 = value{4};
       const auto v4 = value{2};
       const auto v5 = value{5};
-      auto get_codes = [&]() {
-        chunk code;
-        push_constant(code, v1, line_num{0});
-        push_constant(code, v2, line_num{0});
 
-        code.write(op_add, line_num{0});
+      chunk code;
+      push_constant(code, v1, line_num{0});
+      push_constant(code, v2, line_num{0});
 
-        push_constant(code, v3, line_num{0});
+      code.write(op_add, line_num{0});
 
-        code.write(op_divide, line_num{0});
+      push_constant(code, v3, line_num{0});
 
-        push_constant(code, v4, line_num{0});
-        push_constant(code, v5, line_num{0});
+      code.write(op_divide, line_num{0});
 
-        code.write(op_multiply, line_num{0});
-        code.write(op_subtract, line_num{0});
-        code.write(op_return, line_num{0});
+      push_constant(code, v4, line_num{0});
+      push_constant(code, v5, line_num{0});
 
-        return code;
-      };
+      code.write(op_multiply, line_num{0});
+      code.write(op_subtract, line_num{0});
+      code.write(op_pop, line_num{0});
 
-      vm machine{get_codes()};
+      vm machine{code};
+
       THEN("Evaluate to -8.75")
       {
-        double result = as_double(((v1 + v2) / v3) - (v4 * v5));
-        REQUIRE(as_double(machine.interpret()) == Approx(result));
+        double expected = *(((v1 + v2) / v3) - (v4 * v5)).as<double>();
+        double result = *machine.interpret().as<double>();
+        REQUIRE(result == Approx(expected));
       }
     }
   }

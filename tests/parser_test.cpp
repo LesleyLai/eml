@@ -26,19 +26,6 @@ public:
     emit_code(op_return);
   }
 
-  void emit_constant(eml::value value)
-  {
-    compiling_chunk_->add_constant(value);
-
-    //    int constant = addConstant(currentChunk(), value);
-    //    if (constant > UINT8_MAX) {
-    //      error("Too many constants in one chunk.");
-    //      return 0;
-    //    }
-
-    //    return (uint8_t)constant;
-  }
-
   void emit_code(eml::opcode code)
   {
     compiling_chunk_->write(code, eml::line_num{previous_.line});
@@ -55,14 +42,10 @@ public:
     return previous_;
   }
 
-private:
-  scanner scanner_;
-  chunk* compiling_chunk_; // Should never be nullptr
-  scanner::iterator current_itr_;
-  token previous_;
-
-  bool had_error = false;
-  bool panic_mode = false;
+  chunk& compiling_chunk() const
+  {
+    return *compiling_chunk_;
+  }
 
   void error_at(const token& token, std::string_view message)
   {
@@ -88,6 +71,20 @@ private:
     had_error = true;
   }
 
+  void error_at_previous(std::string_view message)
+  {
+    error_at(previous_, message);
+  }
+
+private:
+  scanner scanner_;
+  chunk* compiling_chunk_; // Should never be nullptr
+  scanner::iterator current_itr_;
+  token previous_;
+
+  bool had_error = false;
+  bool panic_mode = false; // Ignore errors if in panic
+
   void advance()
   {
     previous_ = *current_itr_;
@@ -105,9 +102,16 @@ private:
 
 void parse_number(parser& parser)
 {
-  double value = strtod(parser.previous().text.data(), nullptr);
-  // parser.emit_constant(value);
-  // emitConstant(value);
+  double number = strtod(parser.previous().text.data(), nullptr);
+  auto& chunk = parser.compiling_chunk();
+  const auto offset = chunk.add_constant(eml::value{number});
+  if (!offset) {
+    parser.error_at_previous("EML: Too many constants in one chunk.");
+    return;
+  }
+
+  parser.emit_code(eml::op_push);
+  parser.emit_code(eml::opcode{*offset});
 }
 
 chunk compile(std::string_view source)

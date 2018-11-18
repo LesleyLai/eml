@@ -46,6 +46,8 @@ template <typename F> void binary_operation(std::vector<value>& stack, F op)
 auto vm::interpret() -> value
 {
   size_t offset = 0;
+  value result{};
+
   for (auto ip = code_.instructions.begin(); ip != code_.instructions.end();
        ++ip) {
 #ifdef EML_VM_DEBUG_TRACE_EXECUTION
@@ -55,12 +57,16 @@ auto vm::interpret() -> value
     const auto instruction = *ip;
     switch (instruction) {
     case op_return:
-      return pop(stack_);
+      std::fputs("EML: Do not know how to handle return yet\n", stderr);
+      std::exit(-1);
     case op_push: {
       ++ip;
       value constant = code_.read_constant(ip);
       push(stack_, constant);
     } break;
+    case op_pop:
+      result = pop(stack_);
+      break;
     case op_negate:
       push(stack_, -pop(stack_));
       break;
@@ -85,12 +91,7 @@ auto vm::interpret() -> value
     ++offset;
   }
 
-  if (stack_.empty()) {
-    std::cerr << "Invalid instruction sequences! No value to evaluate to!\n";
-    std::exit(1);
-  } else {
-    return pop(stack_);
-  }
+  return result;
 }
 
 std::string chunk::disassemble() const

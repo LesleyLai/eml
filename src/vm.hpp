@@ -13,6 +13,7 @@ namespace eml {
 enum opcode : std::uint8_t {
   op_return,
   op_push, // Pushes a constant to the stack
+  op_pop,  // Pop a constant from the stack
 
   // Unary Arithmatics
   op_negate,
@@ -61,7 +62,6 @@ struct chunk {
   [[nodiscard]] std::optional<opcode_num_type> add_constant(value v)
   {
     if (constants.size() >= std::numeric_limits<opcode_num_type>::max()) {
-      fputs("EML: Too many constants in one chunk.", stderr);
       return {};
     }
     constants.push_back(v);
