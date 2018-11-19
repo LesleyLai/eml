@@ -12,7 +12,7 @@ TEST_CASE("Test parsing")
       const auto value = vm.interpret();
       THEN("Should produces result 30")
       {
-        REQUIRE(*value.as<double>() == Approx{30});
+        REQUIRE(value.unsafe_as_number() == Approx{30});
       }
     }
   }
@@ -26,7 +26,7 @@ TEST_CASE("Test parsing")
       const auto value = vm.interpret();
       THEN("Should produces result 52")
       {
-        REQUIRE(*value.as<double>() == Approx{52});
+        REQUIRE(value.unsafe_as_number() == Approx{52});
       }
     }
   }

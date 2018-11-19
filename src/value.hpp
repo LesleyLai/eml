@@ -6,6 +6,7 @@
  * @brief This module contains the representation of a value in the EML VM
  */
 
+#include <iomanip>
 #include <iostream>
 #include <optional>
 #include <type_traits>
@@ -38,32 +39,47 @@ struct value {
   constexpr explicit value(bool b) noexcept : val{b}, type{type::Boolean} {}
 
   /**
-   * @brief Returns the value v as a double if it exist, nullopt otherwise
+   * @brief Returns whether the value is a unit value
    */
-  template <typename T> constexpr auto as() const -> std::optional<T>;
+  constexpr auto is_unit() const noexcept -> bool
+  {
+    return type == type::Unit;
+  }
+
+  /**
+   * @brief Returns whether the value is a double
+   */
+  constexpr auto is_number() const noexcept -> bool
+  {
+    return type == type::Number;
+  }
+
+  /**
+   * @brief Returns the value as a number
+   * @warning The result is undefined if the value is actually not a double
+   */
+  constexpr auto unsafe_as_number() const noexcept -> double
+  {
+    return val.num;
+  }
+
+  /**
+   * @brief Returns whether the value is a bool
+   */
+  constexpr auto is_boolean() const noexcept -> bool
+  {
+    return type == type::Boolean;
+  }
+
+  /**
+   * @brief Returns the value as a boolean
+   * @warning The result is undefined if the value is actually not a boolean
+   */
+  constexpr auto unsafe_as_boolean() const noexcept -> bool
+  {
+    return val.boolean;
+  }
 };
-
-template <> constexpr auto value::as<bool>() const -> std::optional<bool>
-{
-  {
-    if (type == value::type::Boolean) {
-      return val.boolean;
-    }
-
-    return {};
-  }
-}
-
-template <> constexpr auto value::as<double>() const -> std::optional<double>
-{
-  {
-    if (type == value::type::Number) {
-      return val.num;
-    }
-
-    return {};
-  }
-}
 
 /**
  * @brief Prints value v to the output stream s
@@ -72,58 +88,17 @@ inline auto operator<<(std::ostream& s, const value& v) -> std::ostream&
 {
   switch (v.type) {
   case value::type::Number:
-    s << v.val.num;
+    s << v.val.num << ": Number";
     break;
   case value::type::Boolean:
-    s << v.val.boolean;
+    s << std::boolalpha << v.val.boolean << ": Bool";
     break;
   case value::type::Unit:
-    s << "Unit";
+    s << "(): Unit";
     break;
   }
 
   return s;
-}
-
-/**
- * @brief Negates the value v if it is a type support negate operation
- */
-constexpr auto operator-(const value& v) noexcept -> value
-{
-  return eml::value{-v.val.num};
-}
-
-/**
- * @brief Adds the value v1 and v2 if they are the type support + operation
- */
-constexpr auto operator+(const value& v1, const value& v2) noexcept -> value
-{
-  return eml::value{v1.val.num + v2.val.num};
-}
-
-/**
- * @brief Subtracts the value v1 and v2 if they are the type support - operation
- */
-constexpr auto operator-(const value& v1, const value& v2) noexcept -> value
-{
-  return eml::value{v1.val.num - v2.val.num};
-}
-
-/**
- * @brief Multiplies the value v1 and v2 if they are the type support *
- * operation
- */
-constexpr auto operator*(const value& v1, const value& v2) noexcept -> value
-{
-  return eml::value{v1.val.num * v2.val.num};
-}
-
-/**
- * @brief Divides the value v1 and v2 if they are the type support / operation
- */
-constexpr auto operator/(const value& v1, const value& v2) noexcept -> value
-{
-  return eml::value{v1.val.num / v2.val.num};
 }
 
 } // namespace eml

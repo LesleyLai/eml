@@ -15,8 +15,13 @@ enum opcode : std::uint8_t {
   op_push, // Pushes a constant to the stack
   op_pop,  // Pop a constant from the stack
 
+  op_true,  // Pushes true to the stack
+  op_false, // Pushes false to the stack
+
   // Unary Arithmatics
   op_negate,
+  op_not,
+
   // Binary Arithmatics
   op_add,
   op_subtract,

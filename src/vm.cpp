@@ -34,13 +34,36 @@ auto pop(std::vector<value>& stack) -> value
   return v;
 }
 
+void runtime_error(std::string_view message)
+{
+  std::clog << "Runtime error: " << message.data() << '\n';
+}
+
 // Helper for binary operations
 template <typename F> void binary_operation(std::vector<value>& stack, F op)
 {
   value right = pop(stack);
   value left = pop(stack);
-  push(stack, op(left, right));
+
+  if (!left.is_number()) {
+    std::stringstream ss;
+    ss << "The left operands of a binary operation must be a number.\nGets "
+       << left;
+    runtime_error(ss.str());
+    return;
+  }
+
+  if (!right.is_number()) {
+    std::stringstream ss;
+    ss << "The right operands of a binary operation must be a number.\nGets "
+       << right;
+    runtime_error(ss.str());
+    return;
+  }
+
+  push(stack, value{op(left.unsafe_as_number(), right.unsafe_as_number())});
 }
+
 } // anonymous namespace
 
 auto VM::interpret() -> value
@@ -67,20 +90,40 @@ auto VM::interpret() -> value
     case op_pop:
       result = pop(stack_);
       break;
-    case op_negate:
-      push(stack_, -pop(stack_));
-      break;
+    case op_true: {
+      push(stack_, value{true});
+    } break;
+    case op_false: {
+      push(stack_, value{false});
+    } break;
+    case op_negate: {
+      const value v = stack_.back();
+      if (!v.is_number()) {
+        runtime_error("Operand of unary - must be a number.");
+        return value{};
+      }
+      push(stack_, value{-pop(stack_).unsafe_as_number()});
+    } break;
+    case op_not: {
+      const value v = stack_.back();
+      if (!v.is_boolean()) {
+        runtime_error("Operand of unary ! must be a boolean.");
+        return value{};
+      }
+
+      push(stack_, value{!pop(stack_).unsafe_as_boolean()});
+    } break;
     case op_add:
-      binary_operation(stack_, std::plus<value>{});
+      binary_operation(stack_, std::plus<double>{});
       break;
     case op_subtract:
-      binary_operation(stack_, std::minus<value>{});
+      binary_operation(stack_, std::minus<double>{});
       break;
     case op_multiply:
-      binary_operation(stack_, std::multiplies<value>{});
+      binary_operation(stack_, std::multiplies<double>{});
       break;
     case op_divide:
-      binary_operation(stack_, std::divides<value>{});
+      binary_operation(stack_, std::divides<double>{});
       break;
     default:
       std::cerr << "EML Virtual Machine: Unknown instruction " << instruction
@@ -169,9 +212,18 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
   case op_push: {
     disassemble_instruction_with_one_const_parem(ip, "push");
   } break;
-  case op_pop: {
+  case op_pop:
     disassemble_simple_instruction(ip, "pop");
-  } break;
+    break;
+  case op_true:
+    disassemble_simple_instruction(ip, "push true");
+    break;
+  case op_false:
+    disassemble_simple_instruction(ip, "push false");
+    break;
+  case op_not:
+    disassemble_simple_instruction(ip, "not");
+    break;
   case op_negate:
     disassemble_simple_instruction(ip, "negate");
     break;

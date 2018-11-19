@@ -43,8 +43,8 @@ TEST_CASE("Manually write instructions")
 
       THEN("Evaluate to -8.75")
       {
-        double expected = *(((v1 + v2) / v3) - (v4 * v5)).as<double>();
-        double result = *machine.interpret().as<double>();
+        const double expected = -8.75;
+        const double result = machine.interpret().unsafe_as_number();
         REQUIRE(result == Approx(expected));
       }
     }

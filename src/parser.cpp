@@ -126,6 +126,20 @@ void parse_number(parser& parser)
   parser.emit_code(eml::opcode{*offset});
 }
 
+void parse_literal(parser& parser)
+{
+  switch (parser.previous.type) {
+  case token_type::keyword_true:
+    parser.emit_code(eml::op_true);
+    break;
+  case token_type::keyword_false:
+    parser.emit_code(eml::op_false);
+    break;
+  default:
+    return; // Unreachable.
+  }
+}
+
 // parses any expression of a given precedence level or higher:
 void parse_precedence(parser& parser, Precedence precedence)
 {
@@ -172,6 +186,9 @@ void parse_unary(parser& parser)
 
   // Emit the operator instruction.
   switch (operator_type) {
+  case token_type::bang:
+    parser.emit_code(eml::op_not);
+    break;
   case token_type::minus:
     parser.emit_code(eml::op_negate);
     break;

@@ -4,18 +4,25 @@
 #include <functional>
 #include <sstream>
 
-TEST_CASE("Value RTTI 'as' function")
+TEST_CASE("Values' RTTI 'unsafe_as_xxx' and 'is_xxx' function")
 {
   GIVEN("A unit value")
   {
     const eml::value v{};
 
-    WHEN("Invoke as<double>")
+    THEN("Is unit value")
     {
-      THEN("Should produce std::nullopt")
-      {
-        REQUIRE(v.as<double>() == std::nullopt);
-      }
+      REQUIRE(v.is_unit());
+    }
+
+    THEN("Is not a number")
+    {
+      REQUIRE(!v.is_number());
+    }
+
+    THEN("Is not a boolean")
+    {
+      REQUIRE(!v.is_boolean());
     }
   }
 
@@ -23,11 +30,54 @@ TEST_CASE("Value RTTI 'as' function")
   {
     const eml::value v{1.25};
 
-    WHEN("Invoke as<double>")
+    THEN("Is not a unit value")
+    {
+      REQUIRE(!v.is_unit());
+    }
+
+    THEN("Is a number")
+    {
+      REQUIRE(v.is_number());
+    }
+
+    THEN("Is not a boolean")
+    {
+      REQUIRE(!v.is_boolean());
+    }
+
+    WHEN("Invoke unsafe_as_number")
     {
       THEN("Should produce the correct value")
       {
-        REQUIRE(v.as<double>() == 1.25);
+        REQUIRE(v.unsafe_as_number() == 1.25);
+      }
+    }
+  }
+
+  GIVEN("A boolean value")
+  {
+    const eml::value v{true};
+
+    THEN("Is not a unit value")
+    {
+      REQUIRE(!v.is_unit());
+    }
+
+    THEN("Is not a number")
+    {
+      REQUIRE(!v.is_number());
+    }
+
+    THEN("Is a boolean")
+    {
+      REQUIRE(v.is_boolean());
+    }
+
+    WHEN("Invoke unsafe_as_boolean")
+    {
+      THEN("Should produce the correct value")
+      {
+        REQUIRE(v.unsafe_as_boolean() == true);
       }
     }
   }
@@ -43,7 +93,7 @@ TEST_CASE("Value printing")
     THEN("Print as is")
     {
       ss << v;
-      REQUIRE(ss.str() == "0.5");
+      REQUIRE(ss.str() == "0.5: Number");
     }
   }
 
@@ -51,49 +101,10 @@ TEST_CASE("Value printing")
   {
     const eml::value v{};
 
-    THEN("Print Unit")
+    THEN("Print (): Unit")
     {
       eml::operator<<(ss, v);
-      REQUIRE(ss.str() == "Unit");
-    }
-  }
-}
-
-TEST_CASE("Arithmatics")
-{
-  GIVEN("Two double value v1=1.1 and v2=2.2")
-  {
-    const eml::value v1{1.1};
-    const eml::value v2{2.2};
-
-    THEN("-v1 = -1.1")
-    {
-      const double result = -1.1;
-      REQUIRE(eml::operator-(v1).val.num == Approx(result));
-    }
-
-    THEN("v1 + v2 = 3.3")
-    {
-      const double result = 3.3;
-      REQUIRE(eml::operator+(v1, v2).val.num == Approx(result));
-    }
-
-    THEN("v1 - v2 = -1.1")
-    {
-      const double result = -1.1;
-      REQUIRE(eml::operator-(v1, v2).val.num == Approx(result));
-    }
-
-    THEN("v1 * v2 = 2.42")
-    {
-      const double result = 2.42;
-      REQUIRE(eml::operator*(v1, v2).val.num == Approx(result));
-    }
-
-    THEN("v1 / v2 = 0.5")
-    {
-      const double result = 0.5;
-      REQUIRE(eml::operator/(v1, v2).val.num == Approx(result));
+      REQUIRE(ss.str() == "(): Unit");
     }
   }
 }
