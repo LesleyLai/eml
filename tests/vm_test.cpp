@@ -17,11 +17,11 @@ TEST_CASE("Manually write instructions")
   {
     GIVEN("(((2 3 +) 4 /) (2 5 *) -)")
     {
-      const auto v1 = value{2};
-      const auto v2 = value{3};
-      const auto v3 = value{4};
-      const auto v4 = value{2};
-      const auto v5 = value{5};
+      const auto v1 = value{2.};
+      const auto v2 = value{3.};
+      const auto v3 = value{4.};
+      const auto v4 = value{2.};
+      const auto v5 = value{5.};
 
       chunk code;
       push_constant(code, v1, line_num{0});

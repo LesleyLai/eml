@@ -154,7 +154,6 @@ void parse_precedence(parser& parser, Precedence precedence)
 void parse_expression(parser& parser)
 {
   parse_precedence(parser, prec_assignment);
-  parser.consume(eml::token_type::eof, "unhandled token");
 }
 
 void parse_grouping(parser& parser)

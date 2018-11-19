@@ -15,6 +15,7 @@ namespace eml {
 struct value {
   enum class type {
     Unit,
+    Boolean,
     Number,
   };
 
@@ -24,20 +25,34 @@ struct value {
   union val {
     constexpr val() : unit{} {}
     constexpr explicit val(double d) : num{d} {}
+    constexpr explicit val(bool b) : boolean{b} {}
 
     unit_t unit;
     double num;
+    bool boolean;
   } val;
   type type;
 
   constexpr value() noexcept : type{type::Unit} {}
   constexpr explicit value(double v) noexcept : val{v}, type{type::Number} {}
+  constexpr explicit value(bool b) noexcept : val{b}, type{type::Boolean} {}
 
   /**
    * @brief Returns the value v as a double if it exist, nullopt otherwise
    */
   template <typename T> constexpr auto as() const -> std::optional<T>;
 };
+
+template <> constexpr auto value::as<bool>() const -> std::optional<bool>
+{
+  {
+    if (type == value::type::Boolean) {
+      return val.boolean;
+    }
+
+    return {};
+  }
+}
 
 template <> constexpr auto value::as<double>() const -> std::optional<double>
 {
@@ -58,6 +73,9 @@ inline auto operator<<(std::ostream& s, const value& v) -> std::ostream&
   switch (v.type) {
   case value::type::Number:
     s << v.val.num;
+    break;
+  case value::type::Boolean:
+    s << v.val.boolean;
     break;
   case value::type::Unit:
     s << "Unit";
