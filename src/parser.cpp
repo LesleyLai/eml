@@ -14,6 +14,7 @@ struct parser {
                                                               scanner.begin()}
   {
     parse_expression(*this);
+    consume(token_type::eof, "Expect end of expression");
   }
 
   eml::scanner scanner;

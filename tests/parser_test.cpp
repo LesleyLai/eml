@@ -31,3 +31,12 @@ TEST_CASE("Test parsing")
     }
   }
 }
+
+// TEST_CASE("Error handling of the parser")
+//{
+//  GIVEN("1!!!")
+//  {
+//    const auto bytecode = eml::compile("1!!!");
+//    THEN("Should produces error") {}
+//  }
+//}
