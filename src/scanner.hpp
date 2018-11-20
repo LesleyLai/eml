@@ -108,7 +108,8 @@ struct scanner {
 
       switch (c) {
       case '(':
-        return make_token(token_type::left_paren);
+        return make_token(match(')') ? token_type::keyword_unit
+                                     : token_type::left_paren);
       case ')':
         return make_token(token_type::right_paren);
       case '{':

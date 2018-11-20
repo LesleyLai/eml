@@ -44,6 +44,7 @@
   TOKEN_TABLE_ENTRY(keyword_this, "this", nullptr, nullptr, none)       \
   TOKEN_TABLE_ENTRY(keyword_true, "true", parse_literal, nullptr, none) \
   TOKEN_TABLE_ENTRY(keyword_variant, "variant", nullptr, nullptr, none) \
+  TOKEN_TABLE_ENTRY(keyword_unit, "()", parse_literal, nullptr, none)   \
   TOKEN_TABLE_ENTRY(error, "error", nullptr, nullptr, none)             \
   TOKEN_TABLE_ENTRY(eof, "eof", nullptr, nullptr, none)
 

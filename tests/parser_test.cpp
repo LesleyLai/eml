@@ -30,6 +30,20 @@ TEST_CASE("Test parsing")
       }
     }
   }
+
+  GIVEN("()")
+  {
+    const auto bytecode = *eml::compile("()");
+    WHEN("Evaluated")
+    {
+      eml::VM vm{bytecode};
+      const auto value = vm.interpret();
+      THEN("Should produces a unit value")
+      {
+        REQUIRE(value.is_unit());
+      }
+    }
+  }
 }
 
 // TEST_CASE("Error handling of the parser")

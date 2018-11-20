@@ -90,6 +90,9 @@ auto VM::interpret() -> value
     case op_pop:
       result = pop(stack_);
       break;
+    case op_unit:
+      push(stack_, value{});
+      break;
     case op_true: {
       push(stack_, value{true});
     } break;
@@ -216,10 +219,13 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
     disassemble_simple_instruction(ip, "pop");
     break;
   case op_true:
-    disassemble_simple_instruction(ip, "push true");
+    disassemble_simple_instruction(ip, "true // push true");
     break;
   case op_false:
-    disassemble_simple_instruction(ip, "push false");
+    disassemble_simple_instruction(ip, "false // push false");
+    break;
+  case op_unit:
+    disassemble_simple_instruction(ip, "unit // push ()");
     break;
   case op_not:
     disassemble_simple_instruction(ip, "not");

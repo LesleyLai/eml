@@ -149,6 +149,9 @@ void parse_number(parser& parser)
 void parse_literal(parser& parser)
 {
   switch (parser.previous.type) {
+  case token_type::keyword_unit:
+    parser.emit_code(eml::op_unit);
+    break;
   case token_type::keyword_true:
     parser.emit_code(eml::op_true);
     break;

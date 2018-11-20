@@ -17,6 +17,7 @@ enum opcode : std::uint8_t {
 
   op_true,  // Pushes true to the stack
   op_false, // Pushes false to the stack
+  op_unit,  // Pushes unit to the stack
 
   // Unary Arithmatics
   op_negate,
