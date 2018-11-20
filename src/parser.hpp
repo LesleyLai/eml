@@ -2,12 +2,13 @@
 #define EML_PARSER_HPP
 
 #include "vm.hpp"
+#include <optional>
 #include <string_view>
 
 /**
  * @file parser.hpp
- * @brief A simple <a href="https://en.wikipedia.org/wiki/Pratt_parser">Pratt
- * Parser</a> for Embeded ML
+ * @brief A simple [Pratt Parser](https://en.wikipedia.org/wiki/Pratt_parser)
+ * for Embedded ML
  */
 
 namespace eml {
@@ -15,7 +16,7 @@ namespace eml {
 /**
  * @brief Compiles source code string into byte-code chunk
  */
-eml::chunk compile(std::string_view source);
+std::optional<eml::chunk> compile(std::string_view source);
 
 } // namespace eml
 

@@ -1,5 +1,5 @@
-#ifndef SCANNER_HPP
-#define SCANNER_HPP
+#ifndef EML_SCANNER_HPP
+#define EML_SCANNER_HPP
 
 #include <cassert>
 #include <cctype>
@@ -22,7 +22,7 @@ constexpr auto isdigit(char c) noexcept -> bool
 
 enum class token_type {
 #define TOKEN_TABLE_ENTRY(type, name, prefix, infix, precedence) type,
-#include "token_table.impl"
+#include "token_table.inc"
 #undef TOKEN_TABLE_ENTRY
 };
 
@@ -383,4 +383,4 @@ struct scanner {
 
 } // namespace eml
 
-#endif // SCANNER_HPP
+#endif // EML_SCANNER_HPP

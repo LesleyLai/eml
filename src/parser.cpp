@@ -84,6 +84,25 @@ struct parser {
   }
 };
 
+// clang-format off
+/**
+ * @page precedence Precedence and Associativity
+ * This page shows which expressions have higher precedence, and their
+ * associativity.
+ *
+| Precedence | Operators          | Description                        | Associativity |
+| ----:      | :----:             | :----                              | :----         |
+| 1          | `.` `()` `[]`      | Grouping, Subscript, Function call | Left          |
+| 2          | `!` `-`            | Unary                              | Right         |
+| 3          | `*` `/`            | Multiply, Divide                   | Left          |
+| 4          | `+` `-`            | Add, Subtract                      | Left          |
+| 5          | `<` `>` `<=` `>=`  | Comparison                         | Left          |
+| 6          | `==` `!=`          | Equality comparison                | Left          |
+| 7          | `and`              | Logical and                        | Left          |
+| 8          | `or`               | Logical or                         | Left          |
+| 9          | `=`                | Definition, Assignment             | Right         |
+ */
+// clang-format on
 enum Precedence : std::uint8_t {
   prec_none,
   prec_assignment, // =
@@ -93,7 +112,7 @@ enum Precedence : std::uint8_t {
   prec_comparison, // < > <= >=
   prec_term,       // + -
   prec_factor,     // * /
-  prec_unary,      // ! - +
+  prec_unary,      // ! -
   prec_call,       // . () []
   prec_primary
 };
@@ -236,7 +255,7 @@ constexpr auto get_rule(token_type type) -> ParseRule
   case token_type::type:                                                       \
     return ParseRule{prefix, infix, prec_##precedence};
 
-#include "../src/token_table.impl"
+#include "../src/token_table.inc"
 #undef TOKEN_TABLE_ENTRY
   }
 
@@ -244,14 +263,14 @@ constexpr auto get_rule(token_type type) -> ParseRule
   return ParseRule{};
 }
 
-chunk compile(std::string_view source)
+std::optional<chunk> compile(std::string_view source)
 {
   chunk output_chunk;
   parser parser{source, output_chunk};
   if (parser.had_error) {
-    return chunk{};
+    return {};
   }
-  return output_chunk;
+  return std::optional<chunk>{std::in_place, output_chunk};
 }
 
 } // namespace eml

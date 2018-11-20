@@ -1,5 +1,5 @@
-#ifndef VM_HPP
-#define VM_HPP
+#ifndef EML_VM_HPP
+#define EML_VM_HPP
 
 #include <cassert>
 #include <functional>
@@ -105,4 +105,4 @@ private:
 
 } // namespace eml
 
-#endif // VM_HPP
+#endif // EML_VM_HPP

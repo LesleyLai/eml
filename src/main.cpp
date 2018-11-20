@@ -13,9 +13,11 @@
     std::getline(std::cin, line);
     if (!line.empty()) {
       const auto bytecode = eml::compile(line);
-      // std::cout << bytecode.disassemble() << '\n';
-      eml::VM vm{bytecode};
-      std::cout << vm.interpret() << '\n';
+      if (bytecode) {
+        // std::cout << *bytecode.disassemble() << '\n';
+        eml::VM vm{*bytecode};
+        std::cout << vm.interpret() << '\n';
+      }
     }
   }
 }

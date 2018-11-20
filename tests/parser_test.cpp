@@ -5,7 +5,7 @@ TEST_CASE("Test parsing")
 {
   GIVEN("(5 * 6)")
   {
-    const auto bytecode = eml::compile("(5 * 6)");
+    const auto bytecode = *eml::compile("(5 * 6)");
     WHEN("Evaluated")
     {
       eml::VM vm{bytecode};
@@ -19,7 +19,7 @@ TEST_CASE("Test parsing")
 
   GIVEN("(5 * 2 + 3) * 4")
   {
-    const auto bytecode = eml::compile("(5 * 2 + 3) * 4");
+    const auto bytecode = *eml::compile("(5 * 2 + 3) * 4");
     WHEN("Evaluated")
     {
       eml::VM vm{bytecode};
@@ -36,7 +36,10 @@ TEST_CASE("Test parsing")
 //{
 //  GIVEN("1!!!")
 //  {
-//    const auto bytecode = eml::compile("1!!!");
-//    THEN("Should produces error") {}
+//    const auto output = eml::compile("1!!!");
+//    THEN("Should produces error")
+//    {
+//      REQUIRE(output == std::nullopt);
+//    }
 //  }
 //}

@@ -19,9 +19,10 @@ add_definitions(-DEML_VM_DEBUG_TRACE_EXECUTION)
 endif()
 
 add_library(lib${PROJECT_NAME}
+    "src/ast.hpp"
     "src/parser.hpp"
     "src/parser.cpp"
-    "src/token_table.impl"
+    "src/token_table.inc"
     "src/scanner.hpp"
     "src/scanner.cpp"
     "src/value.hpp"

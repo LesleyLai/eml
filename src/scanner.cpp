@@ -10,7 +10,7 @@ std::ostream& operator<<(std::ostream& s, token_type t)
     s << std::string_view(type_name);                                          \
     break;
 
-#include "token_table.impl"
+#include "token_table.inc"
 #undef TOKEN_TABLE_ENTRY
   }
   return s;

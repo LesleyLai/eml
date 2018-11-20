@@ -8,12 +8,16 @@
 
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <optional>
 #include <type_traits>
 
 namespace eml {
 
 struct value {
+  static_assert(std::numeric_limits<double>::is_iec559,
+                "Embedded ML require IEEE 754 floating point number is in use");
+
   enum class type {
     Unit,
     Boolean,
