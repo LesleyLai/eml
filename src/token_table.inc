@@ -6,7 +6,7 @@
   TOKEN_TABLE_ENTRY(right_brace, "}", nullptr, nullptr, none)           \
   TOKEN_TABLE_ENTRY(comma, ",", nullptr, nullptr, none)                 \
   TOKEN_TABLE_ENTRY(dot, ".", nullptr, nullptr, call)                   \
-    TOKEN_TABLE_ENTRY(minus, "-", parse_unary, parse_binary, term)      \
+  TOKEN_TABLE_ENTRY(minus, "-", parse_unary, parse_binary, term)        \
   TOKEN_TABLE_ENTRY(minus_right_arrow, "->", nullptr, nullptr, none)    \
   TOKEN_TABLE_ENTRY(plus, "+", nullptr, parse_binary, term)             \
   TOKEN_TABLE_ENTRY(colon, ":", nullptr, nullptr, none)                 \

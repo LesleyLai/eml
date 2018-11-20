@@ -25,6 +25,43 @@ struct parser {
   bool had_error = false;
   bool panic_mode = false; // Ignore errors if in panic
 
+  void check_unsupported_token_type(const eml::token& token)
+  {
+    const auto type = token.type;
+    switch (type) {
+    case token_type::minus_right_arrow:
+    case token_type::colon:
+    case token_type::semicolon:
+    case token_type::greator_greator:
+    case token_type::less_less:
+      error_at(token, "This operator is reserved by EML language for future "
+                      "development, but "
+                      "currently the language does not support it");
+      break;
+    case token_type::keyword_and:
+    case token_type::keyword_case:
+    case token_type::keyword_class:
+    case token_type::keyword_def:
+    case token_type::keyword_else:
+    case token_type::keyword_extern:
+    case token_type::keyword_false:
+    case token_type::keyword_for:
+    case token_type::keyword_if:
+    case token_type::keyword_let:
+    case token_type::keyword_not:
+    case token_type::keyword_or:
+    case token_type::keyword_return:
+    case token_type::keyword_this:
+    case token_type::keyword_variant:
+      error_at(token, "This keyword is reserved by EML language for future "
+                      "development, but "
+                      "currently the language does not support it");
+      break;
+    default:
+      return; // Do nothing
+    }
+  }
+
   void emit_code(eml::opcode code)
   {
     compiling_chunk->write(code, eml::line_num{previous.line});
@@ -75,6 +112,7 @@ struct parser {
 
     while (true) {
       const auto current = *(++current_itr);
+      check_unsupported_token_type(current);
       if (current.type != token_type::error) {
         break;
       }
