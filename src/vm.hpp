@@ -28,6 +28,14 @@ enum opcode : std::uint8_t {
   op_subtract,
   op_multiply,
   op_divide,
+
+  // Comparisons
+  op_equal,
+  op_not_equal,
+  op_less,
+  op_less_equal,
+  op_greater,
+  op_greater_equal,
 };
 
 /// @brief The underlying numerical type of the @link opcode enum

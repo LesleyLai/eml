@@ -14,16 +14,16 @@
   TOKEN_TABLE_ENTRY(slash, "/", nullptr, parse_binary, factor)          \
   TOKEN_TABLE_ENTRY(star, "*", nullptr, parse_binary, factor)           \
   TOKEN_TABLE_ENTRY(bang, "!", parse_unary, nullptr, none)              \
-  TOKEN_TABLE_ENTRY(bang_equal, "!=", nullptr, nullptr, equality)       \
+  TOKEN_TABLE_ENTRY(bang_equal, "!=", nullptr, parse_binary, equality)  \
   TOKEN_TABLE_ENTRY(equal, "=", nullptr, nullptr, none)                 \
-  TOKEN_TABLE_ENTRY(double_equal, "==", nullptr, nullptr, equality)     \
+  TOKEN_TABLE_ENTRY(double_equal, "==", nullptr, parse_binary, equality) \
   TOKEN_TABLE_ENTRY(equal_right_arrow, "=>", nullptr, nullptr, none)    \
-  TOKEN_TABLE_ENTRY(greator, ">", nullptr, nullptr, comparison)         \
+  TOKEN_TABLE_ENTRY(greator, ">", nullptr, parse_binary, comparison)    \
   TOKEN_TABLE_ENTRY(greator_greator, ">>", nullptr, nullptr, none)      \
-  TOKEN_TABLE_ENTRY(greater_equal, ">=", nullptr, nullptr, comparison)  \
-  TOKEN_TABLE_ENTRY(less, "<", nullptr, nullptr, comparison)            \
+  TOKEN_TABLE_ENTRY(greater_equal, ">=", nullptr, parse_binary, comparison) \
+  TOKEN_TABLE_ENTRY(less, "<", nullptr, parse_binary, comparison)       \
   TOKEN_TABLE_ENTRY(less_less, "<<", nullptr, nullptr, none)            \
-  TOKEN_TABLE_ENTRY(less_equal, "<=", nullptr, nullptr, comparison)     \
+  TOKEN_TABLE_ENTRY(less_equal, "<=", nullptr, parse_binary, comparison) \
   TOKEN_TABLE_ENTRY(identifier, "identifier", nullptr, nullptr, none)   \
   TOKEN_TABLE_ENTRY(string_literal, "string", nullptr, nullptr, none)   \
   TOKEN_TABLE_ENTRY(number_literal, "number", parse_number, nullptr, none) \

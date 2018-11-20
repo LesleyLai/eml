@@ -44,7 +44,6 @@ struct parser {
     case token_type::keyword_def:
     case token_type::keyword_else:
     case token_type::keyword_extern:
-    case token_type::keyword_false:
     case token_type::keyword_for:
     case token_type::keyword_if:
     case token_type::keyword_let:
@@ -282,8 +281,27 @@ void parse_binary(parser& parser)
   case token_type::slash:
     parser.emit_code(op_divide);
     break;
+  case token_type::double_equal:
+    parser.emit_code(op_equal);
+    break;
+  case token_type::bang_equal:
+    parser.emit_code(op_not_equal);
+    break;
+  case token_type::less:
+    parser.emit_code(op_less);
+    break;
+  case token_type::less_equal:
+    parser.emit_code(op_less_equal);
+    break;
+  case token_type::greator:
+    parser.emit_code(op_greater);
+    break;
+  case token_type::greater_equal:
+    parser.emit_code(op_greater_equal);
+    break;
   default:
-    std::clog << "Unsupported token " << parser.previous << '\n';
+    std::clog << "Unsupported token type " << operator_type
+              << " in binary expression.\n";
     std::exit(-1);
   }
 }

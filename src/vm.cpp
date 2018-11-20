@@ -64,6 +64,15 @@ template <typename F> void binary_operation(std::vector<value>& stack, F op)
   push(stack, value{op(left.unsafe_as_number(), right.unsafe_as_number())});
 }
 
+// Helper for comparison operations
+template <typename F> void comparison_operation(std::vector<value>& stack, F op)
+{
+  value right = pop(stack);
+  value left = pop(stack);
+
+  push(stack, value{op(left, right)});
+}
+
 } // anonymous namespace
 
 auto VM::interpret() -> value
@@ -127,6 +136,24 @@ auto VM::interpret() -> value
       break;
     case op_divide:
       binary_operation(stack_, std::divides<double>{});
+      break;
+    case op_equal:
+      comparison_operation(stack_, std::equal_to<value>{});
+      break;
+    case op_not_equal:
+      comparison_operation(stack_, std::not_equal_to<value>{});
+      break;
+    case op_less:
+      comparison_operation(stack_, std::less<value>{});
+      break;
+    case op_less_equal:
+      comparison_operation(stack_, std::less_equal<value>{});
+      break;
+    case op_greater:
+      comparison_operation(stack_, std::greater<value>{});
+      break;
+    case op_greater_equal:
+      comparison_operation(stack_, std::greater_equal<value>{});
       break;
     default:
       std::cerr << "EML Virtual Machine: Unknown instruction " << instruction
@@ -244,6 +271,24 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
     break;
   case op_divide:
     disassemble_simple_instruction(ip, "div");
+    break;
+  case op_equal:
+    disassemble_simple_instruction(ip, "eq // equal to");
+    break;
+  case op_not_equal:
+    disassemble_simple_instruction(ip, "ne // not equal to");
+    break;
+  case op_less:
+    disassemble_simple_instruction(ip, "lt // less than");
+    break;
+  case op_less_equal:
+    disassemble_simple_instruction(ip, "le // less than or equal to");
+    break;
+  case op_greater:
+    disassemble_simple_instruction(ip, "gt // greater than");
+    break;
+  case op_greater_equal:
+    disassemble_simple_instruction(ip, "ge // greater than or equal to");
     break;
   default:
     ss << "Unknown instruction\n";

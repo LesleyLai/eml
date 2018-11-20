@@ -85,6 +85,66 @@ struct value {
   }
 };
 
+constexpr auto operator==(const value& lhs, const value& rhs)
+{
+  if (lhs.type != rhs.type) {
+    std::clog << "Runtime error: equality test on different types\n";
+    return false;
+  }
+
+  switch (lhs.type) {
+  case value::type::Boolean:
+    return lhs.unsafe_as_boolean() == rhs.unsafe_as_boolean();
+  case value::type::Number:
+    return lhs.unsafe_as_number() == rhs.unsafe_as_number();
+  case value::type::Unit:
+    return true;
+  }
+
+  return false; // Unreachable
+}
+
+constexpr auto operator!=(const value& lhs, const value& rhs)
+{
+  return !(lhs == rhs);
+}
+
+constexpr auto operator<(const value& lhs, const value& rhs)
+{
+  if (lhs.type != rhs.type) {
+    std::clog << "Runtime error: comparing different types\n";
+    return false;
+  }
+
+  switch (lhs.type) {
+  case value::type::Boolean:
+    std::clog << "Runtime error: comparing boolean types\n";
+    return false;
+  case value::type::Number:
+    return lhs.unsafe_as_number() < rhs.unsafe_as_number();
+  case value::type::Unit:
+    std::clog << "Runtime error: comparing unit types\n";
+    return false;
+  }
+
+  return false; // Unreachable
+}
+
+constexpr auto operator<=(const value& lhs, const value& rhs)
+{
+  return (lhs < rhs) || (lhs == rhs);
+}
+
+constexpr auto operator>(const value& lhs, const value& rhs)
+{
+  return !(lhs <= rhs);
+}
+
+constexpr auto operator>=(const value& lhs, const value& rhs)
+{
+  return !(lhs < rhs);
+}
+
 /**
  * @brief Prints value v to the output stream s
  */
