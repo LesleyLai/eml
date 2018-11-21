@@ -64,14 +64,4 @@ TEST_CASE("Assignment deletion", "[assignment.deletion]")
   eml::expected<has_all, has_all> e1 = {};
   eml::expected<has_all, has_all> e2 = {};
   e1 = e2;
-
-  struct except_move {
-    except_move() = default;
-    except_move(const except_move&) = default;
-    except_move(except_move&&) noexcept(false){};
-    except_move& operator=(const except_move&) = default;
-  };
-  eml::expected<except_move, except_move> e3 = {};
-  eml::expected<except_move, except_move> e4 = {};
-  // e3 = e4; should not compile
 }

@@ -68,7 +68,7 @@ eml::expected<int, std::string> error()
 {
   return eml::make_unexpected(std::string("error1 "));
 }
-std::string maperror(std::string s)
+std::string maperror(const std::string& s)
 {
   return s + "maperror ";
 }
@@ -95,7 +95,7 @@ TEST_CASE("Issue 33", "[expected.issues.33]")
 {
   eml::expected<void, int> res{eml::unexpect, 0};
   REQUIRE(!res);
-  res = res.map_error([](int i) { return 42; });
+  res = res.map_error([](int) { return 42; });
   REQUIRE(res.error() == 42);
 }
 
@@ -107,7 +107,7 @@ eml::expected<int, std::string> work2()
 {
   return 42;
 }
-void errorhandling(std::string) {}
+void errorhandling(const std::string&) {}
 
 TEST_CASE("Issue 34", "[expected.issues.34]")
 {

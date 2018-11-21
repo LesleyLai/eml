@@ -4,7 +4,7 @@
 #define TOKENPASTE(x, y) x##y
 #define TOKENPASTE2(x, y) TOKENPASTE(x, y)
 #define STATIC_REQUIRE(e)                                                      \
-  constexpr bool TOKENPASTE2(rqure, __LINE__) = e;                             \
+  [[maybe_unused]] constexpr bool TOKENPASTE2(rqure, __LINE__) = e;            \
   REQUIRE(e);
 
 TEST_CASE("Map extensions", "[expected.map]")
@@ -28,14 +28,14 @@ TEST_CASE("Map extensions", "[expected.map]")
 
   {
     eml::expected<int, int> e = 21;
-    auto ret = std::move(e).map(mul2);
+    auto ret = e.map(mul2);
     REQUIRE(ret);
     REQUIRE(*ret == 42);
   }
 
   {
     const eml::expected<int, int> e = 21;
-    auto ret = std::move(e).map(mul2);
+    auto ret = e.map(mul2);
     REQUIRE(ret);
     REQUIRE(*ret == 42);
   }
@@ -56,14 +56,14 @@ TEST_CASE("Map extensions", "[expected.map]")
 
   {
     eml::expected<int, int> e(eml::unexpect, 21);
-    auto ret = std::move(e).map(mul2);
+    auto ret = e.map(mul2);
     REQUIRE(!ret);
     REQUIRE(ret.error() == 21);
   }
 
   {
     const eml::expected<int, int> e(eml::unexpect, 21);
-    auto ret = std::move(e).map(mul2);
+    auto ret = e.map(mul2);
     REQUIRE(!ret);
     REQUIRE(ret.error() == 21);
   }

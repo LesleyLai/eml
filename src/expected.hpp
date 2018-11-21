@@ -1252,108 +1252,99 @@ public:
   }
 #endif
 
-  /// \brief Carries out some operation on the stored object if there is one.
-  /// \returns Let `U` be the result of `std::invoke(std::forward<F>(f),
-  /// value())`. If `U` is `void`, returns an `expected<monostate,E>, otherwise
-  //  returns an `expected<U,E>`. If `*this` is unexpected, the
+  /// @brief Carries out some operation on the stored object if there is one.
+  ///
+  /// Let `U` be the result of `std::invoke(std::forward<F>(f), value())`. If
+  /// `U` is `void`, returns an `expected<monostate,E>, otherwise
+  ///  returns an `expected<U,E>`. If `*this` is unexpected, the
   /// result is `*this`, otherwise an `expected<U,E>` is constructed from the
   /// return value of `std::invoke(std::forward<F>(f), value())` and is
   /// returned.
-  ///
-  /// \group map
-  /// \synopsis template <class F> constexpr auto map(F &&f) &;
   template <class F> constexpr auto map(F&& f) &
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
-  /// \group map
-  /// \synopsis template <class F> constexpr auto map(F &&f) &&;
+  /// @overload
   template <class F> constexpr auto map(F&& f) &&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 
-  /// \group map
-  /// \synopsis template <class F> constexpr auto map(F &&f) const &;
+  /// @overload
   template <class F> constexpr auto map(F&& f) const&
   {
     return expected_map_impl(*this, std::forward<F>(f));
   }
 
-  /// \group map
-  /// \synopsis template <class F> constexpr auto map(F &&f) const &&;
+  /// @overload
   template <class F> constexpr auto map(F&& f) const&&
   {
     return expected_map_impl(std::move(*this), std::forward<F>(f));
   }
 
-  /// \brief Carries out some operation on the stored unexpected object if there
+  /// @brief Carries out some operation on the stored unexpected object if there
   /// is one.
-  /// \returns Let `U` be the result of `std::invoke(std::forward<F>(f),
+  ///
+  /// Let `U` be the result of `std::invoke(std::forward<F>(f),
   /// value())`. If `U` is `void`, returns an `expected<T,monostate>`, otherwise
   /// returns an `expected<T,U>`. If `*this` has an expected
   /// value, the result is `*this`, otherwise an `expected<T,U>` is constructed
   /// from `make_unexpected(std::invoke(std::forward<F>(f), value()))` and is
   /// returned.
-  ///
-  /// \group map_error
-  /// \synopsis template <class F> constexpr auto map_error(F &&f) &;
   template <class F> constexpr auto map_error(F&& f) &
   {
     return map_error_impl(*this, std::forward<F>(f));
   }
 
-  /// \group map_error
-  /// \synopsis template <class F> constexpr auto map_error(F &&f) &&;
+  /// @overload
   template <class F> constexpr auto map_error(F&& f) &&
   {
     return map_error_impl(std::move(*this), std::forward<F>(f));
   }
 
-  /// \group map_error
-  /// \synopsis template <class F> constexpr auto map_error(F &&f) const &;
+  /// @overload
   template <class F> constexpr auto map_error(F&& f) const&
   {
     return map_error_impl(*this, std::forward<F>(f));
   }
 
-  /// \group map_error
-  /// \synopsis template <class F> constexpr auto map_error(F &&f) const &&;
+  /// @overload
   template <class F> constexpr auto map_error(F&& f) const&&
   {
     return map_error_impl(std::move(*this), std::forward<F>(f));
   }
 
   /// \brief Calls `f` if the expectd is in the unexpected state
-  /// \requires `F` is invokable with `E`, and `std::invoke_result_t<F>`
+  /// @pre `F` is invokable with `E`, and `std::invoke_result_t<F>`
   /// must be void or convertible to `expcted<T,E>`.
-  /// \effects If `*this` has a value, returns `*this`.
-  /// Otherwise, if `f` returns `void`, calls `std::forward<F>(f)(E)` and
-  /// returns `std::nullopt`. Otherwise, returns `std::forward<F>(f)(E)`.
   ///
-  /// \group or_else
+  /// If `*this` has a value, returns `*this`. Otherwise, if `f` returns `void`,
+  /// calls `std::forward<F>(f)(E)` and returns `std::nullopt`. Otherwise,
+  /// returns `std::forward<F>(f)(E)`.
   template <class F> expected constexpr or_else(F&& f) &
   {
     return or_else_impl(*this, std::forward<F>(f));
   }
 
+  /// @overload
   template <class F> expected constexpr or_else(F&& f) &&
   {
     return or_else_impl(std::move(*this), std::forward<F>(f));
   }
 
+  /// @overload
   template <class F> expected constexpr or_else(F&& f) const&
   {
     return or_else_impl(*this, std::forward<F>(f));
   }
 
-#ifndef EML_EXPECTED_NO_CONSTRR
+  /// @overload
   template <class F> expected constexpr or_else(F&& f) const&&
   {
     return or_else_impl(std::move(*this), std::forward<F>(f));
   }
-#endif
+
   constexpr expected() = default;
   constexpr expected(const expected& rhs) = default;
   constexpr expected(expected&& rhs) = default;
@@ -1363,7 +1354,7 @@ public:
   template <class... Args,
             detail::enable_if_t<std::is_constructible<T, Args&&...>::value>* =
                 nullptr>
-  constexpr expected(in_place_t, Args&&... args)
+  explicit constexpr expected(in_place_t, Args&&... args)
       : impl_base(in_place, std::forward<Args>(args)...),
         ctor_base(detail::default_constructor_tag{})
   {
@@ -1390,16 +1381,17 @@ public:
   {
   }
 
-  /// \exclude
+  /// @cond
   template <
       class G = E,
-      detail::enable_if_t<std::is_constructible<E, const G&>::value>* = nullptr,
-      detail::enable_if_t<std::is_convertible<const G&, E>::value>* = nullptr>
+      detail::enable_if_t<std::is_constructible_v<E, const G&>>* = nullptr,
+      detail::enable_if_t<std::is_convertible_v<const G&, E>>* = nullptr>
   constexpr expected(unexpected<G> const& e)
       : impl_base(unexpect, e.value()),
         ctor_base(detail::default_constructor_tag{})
   {
   }
+  /// @endcond
 
   /// \group unexpected_ctor
   /// \synopsis EXPLICIT constexpr expected(unexpected<G> &&e);
@@ -1644,7 +1636,6 @@ public:
       auto tmp = std::move(err());
       err().~unexpected<E>();
 
-#ifdef EML_EXPECTED_EXCEPTIONS_ENABLED
       try {
         ::new (valptr()) T(std::forward<Args>(args)...);
         this->m_has_val = true;
@@ -1652,10 +1643,6 @@ public:
         err() = std::move(tmp);
         throw;
       }
-#else
-      ::new (valptr()) T(std::forward<Args>(args)...);
-      this->m_has_val = true;
-#endif
     }
   }
 
