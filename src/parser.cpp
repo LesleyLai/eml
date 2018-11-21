@@ -13,6 +13,7 @@ struct parser {
       : scanner{source}, compiling_chunk{&current_chunk}, current_itr{
                                                               scanner.begin()}
   {
+    check_unsupported_token_type(*current_itr);
     parse_expression(*this);
     consume(token_type::eof, "Expect end of expression");
   }
@@ -39,6 +40,8 @@ struct parser {
                       "currently the language does not support it");
       break;
     case token_type::keyword_and:
+    case token_type::keyword_async:
+    case token_type::keyword_await:
     case token_type::keyword_case:
     case token_type::keyword_class:
     case token_type::keyword_def:
@@ -51,6 +54,7 @@ struct parser {
     case token_type::keyword_or:
     case token_type::keyword_return:
     case token_type::keyword_this:
+    case token_type::keyword_unsafe:
     case token_type::keyword_variant:
       error_at(token, "This keyword is reserved by EML language for future "
                       "development, but "

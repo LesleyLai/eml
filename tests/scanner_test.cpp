@@ -10,8 +10,9 @@ TEST_CASE("Scanner")
 
   GIVEN("A string of keywords")
   {
-    const auto keywords = R"(and case class def else extern false for if let not
-        or print return this true variant)";
+    const auto keywords =
+        R"(and async await case class def else extern false for if let not
+        or print return this true () unsafe variant)";
 
     scanner s{keywords};
 
@@ -21,6 +22,8 @@ TEST_CASE("Scanner")
       {
         std::array expected{
             token{token_type::keyword_and, "and"},
+            token{token_type::keyword_async, "async"},
+            token{token_type::keyword_await, "await"},
             token{token_type::keyword_case, "case"},
             token{token_type::keyword_class, "class"},
             token{token_type::keyword_def, "def"},
@@ -36,6 +39,8 @@ TEST_CASE("Scanner")
             token{token_type::keyword_return, "return"},
             token{token_type::keyword_this, "this"},
             token{token_type::keyword_true, "true"},
+            token{token_type::keyword_unit, "()"},
+            token{token_type::keyword_unsafe, "unsafe"},
             token{token_type::keyword_variant, "variant"},
         };
 

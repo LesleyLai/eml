@@ -309,7 +309,17 @@ struct scanner {
     {
       switch (start[0]) {
       case 'a':
-        return check_keyword(1, "nd", token_type::keyword_and);
+        if (current - start > 1) {
+          switch (start[1]) {
+          case 'n':
+            return check_keyword(2, "d", token_type::keyword_and);
+          case 's':
+            return check_keyword(2, "ync", token_type::keyword_async);
+          case 'w':
+            return check_keyword(2, "ait", token_type::keyword_await);
+          }
+        }
+        break;
       case 'c':
         if (current - start > 1) {
           switch (start[1]) {
@@ -364,6 +374,8 @@ struct scanner {
           }
         }
         break;
+      case 'u':
+        return check_keyword(1, "nsafe", token_type::keyword_unsafe);
       case 'v':
         return check_keyword(1, "ariant", token_type::keyword_variant);
       }
@@ -380,7 +392,7 @@ struct scanner {
   {
     return iterator{"\0"};
   }
-};
+}; // namespace eml
 
 } // namespace eml
 
