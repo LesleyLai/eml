@@ -20,6 +20,7 @@ endif()
 
 add_library(lib${PROJECT_NAME}
     "src/ast.hpp"
+    "src/expected.hpp"
     "src/parser.hpp"
     "src/parser.cpp"
     "src/token_table.inc"
@@ -28,6 +29,7 @@ add_library(lib${PROJECT_NAME}
     "src/value.hpp"
     "src/vm.hpp"
     "src/vm.cpp")
+target_include_directories(lib${PROJECT_NAME} PUBLIC "src")
 
 add_executable(${PROJECT_NAME} "src/main.cpp")
 target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})

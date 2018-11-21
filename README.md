@@ -3,3 +3,7 @@ Embedded ML aims to be a static-typed scripting language that gets performance a
 
 ## Quick Start
 See how to build the project [here](docs/build.md).
+
+## Acknowledgements
+
+Thanks to Simon Brand for his [tl::expected](https://github.com/TartanLlama/expected).

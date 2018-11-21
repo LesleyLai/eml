@@ -18,6 +18,7 @@ Checks:          '*,
 -google-build-using-namespace,
 -hicpp-no-malloc,
 -hicpp-braces-around-statements,
+-hicpp-exception-baseclass,
 -hicpp-special-member-functions
 '
 WarningsAsErrors: ''

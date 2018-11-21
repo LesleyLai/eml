@@ -1,4 +1,11 @@
 add_executable(${PROJECT_NAME}Test
+    "expected/assignment.cpp"
+    "expected/bases.cpp"
+    "expected/constructors.cpp"
+    "expected/emplace.cpp"
+    "expected/extensions.cpp"
+    "expected/issues.cpp"
+    "expected/observers.cpp"
     "main.cpp"
     "parser_test.cpp"
     "scanner_test.cpp"
