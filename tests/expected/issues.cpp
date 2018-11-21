@@ -30,7 +30,7 @@ eml::expected<int, int> operation1()
   return 42;
 }
 
-eml::expected<std::string, int> operation2(int const val)
+eml::expected<std::string, int> operation2(int const  /*val*/)
 {
   return "Bananas";
 }

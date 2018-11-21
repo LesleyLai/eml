@@ -16,7 +16,7 @@ TEST_CASE("Simple assignment", "[assignment.simple]")
   REQUIRE(e2);
   REQUIRE(*e2 == 17);
 
-  e1 = std::move(e2);
+  e1 = e2;
   REQUIRE(e1);
   REQUIRE(*e1 == 17);
   REQUIRE(e2);
@@ -43,7 +43,7 @@ TEST_CASE("Simple assignment", "[assignment.simple]")
   REQUIRE(!e4);
   REQUIRE(e4.error() == 17);
 
-  e4 = std::move(e6);
+  e4 = e6;
   REQUIRE(!e4);
   REQUIRE(e4.error() == 21);
 

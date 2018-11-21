@@ -3,7 +3,7 @@
 
 struct move_detector {
   move_detector() = default;
-  move_detector(move_detector&& rhs)
+  move_detector(move_detector&& rhs) noexcept
   {
     rhs.been_moved = true;
   }
@@ -25,16 +25,16 @@ TEST_CASE("Observers", "[observers]")
   REQUIRE(success);
   success = std::is_same<decltype(o3.value()), const int&>::value;
   REQUIRE(success);
-  success = std::is_same<decltype(std::move(o1).value()), int&&>::value;
+  success =
+      std::is_same<decltype(std::move(o1).value()), int&&>::value; // NOLINT
   REQUIRE(success);
 
-#ifndef TL_EXPECTED_NO_CONSTRR
-  success = std::is_same<decltype(std::move(o3).value()), const int&&>::value;
+  success = std::is_same<decltype(std::move(o3).value()),
+                         const int&&>::value; // NOLINT
   REQUIRE(success);
-#endif
 
   eml::expected<move_detector, int> o4{eml::in_place};
   move_detector o5 = std::move(o4).value();
-  REQUIRE(o4->been_moved);
+  REQUIRE(o4->been_moved); // NOLINT
   REQUIRE(!o5.been_moved);
 }
