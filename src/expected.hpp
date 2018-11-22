@@ -1,7 +1,7 @@
+/// @file expected.hpp
 /// @brief expected - An implementation of std::expected with extensions
 /// Written in 2017 by Simon Brand (\@TartanLlama)
-/// Adopted by Lesley Lai for the Embedded ML project
-//
+/// Adopted by Lesley Lai in 2018 for the Embedded ML project
 // To the extent possible under law, the author(s) have dedicated all
 // copyright and related and neighboring rights to this software to the
 // public domain worldwide. This software is distributed without any warranty.
@@ -49,23 +49,22 @@ public:
 
   constexpr explicit unexpected(E&& e) : m_val(std::move(e)) {}
 
-  /// \returns the contained value
-  /// \group unexpected_value
+  /// @brief Returns the contained value
   constexpr const E& value() const&
   {
     return m_val;
   }
-  /// \group unexpected_value
+  /// @overload
   constexpr E& value() &
   {
     return m_val;
   }
-  /// \group unexpected_value
+  /// @overload
   constexpr E&& value() &&
   {
     return std::move(m_val);
   }
-  /// \exclude
+  /// @overload
   constexpr const E&& value() const&&
   {
     return std::move(m_val);
@@ -75,39 +74,31 @@ private:
   E m_val;
 };
 
-/// \brief Compares two unexpected objects
-/// \details Simply compares lhs.value() to rhs.value()
-/// \group unexpected_relop
 template <class E>
 constexpr bool operator==(const unexpected<E>& lhs, const unexpected<E>& rhs)
 {
   return lhs.value() == rhs.value();
 }
-/// \group unexpected_relop
 template <class E>
 constexpr bool operator!=(const unexpected<E>& lhs, const unexpected<E>& rhs)
 {
   return lhs.value() != rhs.value();
 }
-/// \group unexpected_relop
 template <class E>
 constexpr bool operator<(const unexpected<E>& lhs, const unexpected<E>& rhs)
 {
   return lhs.value() < rhs.value();
 }
-/// \group unexpected_relop
 template <class E>
 constexpr bool operator<=(const unexpected<E>& lhs, const unexpected<E>& rhs)
 {
   return lhs.value() <= rhs.value();
 }
-/// \group unexpected_relop
 template <class E>
 constexpr bool operator>(const unexpected<E>& lhs, const unexpected<E>& rhs)
 {
   return lhs.value() > rhs.value();
 }
-/// \group unexpected_relop
 template <class E>
 constexpr bool operator>=(const unexpected<E>& lhs, const unexpected<E>& rhs)
 {
@@ -1121,7 +1112,7 @@ template <class E> class bad_expected_access : public std::exception {
 public:
   explicit bad_expected_access(E e) : m_val(std::move(e)) {}
 
-  virtual const char* what() const noexcept override
+  const char* what() const noexcept override
   {
     return "Bad expected access";
   }
@@ -1347,9 +1338,9 @@ public:
 
   constexpr expected() = default;
   constexpr expected(const expected& rhs) = default;
-  constexpr expected(expected&& rhs) = default;
+  constexpr expected(expected&& rhs) = default; // NOLINT
   expected& operator=(const expected& rhs) = default;
-  expected& operator=(expected&& rhs) = default;
+  expected& operator=(expected&& rhs) = default; // NOLINT
 
   template <class... Args,
             detail::enable_if_t<std::is_constructible<T, Args&&...>::value>* =
@@ -1369,8 +1360,7 @@ public:
   {
   }
 
-  /// \group unexpected_ctor
-  /// \synopsis EXPLICIT constexpr expected(const unexpected<G> &e);
+  /// @overload
   template <
       class G = E,
       detail::enable_if_t<std::is_constructible<E, const G&>::value>* = nullptr,
@@ -1388,13 +1378,12 @@ public:
       detail::enable_if_t<std::is_convertible_v<const G&, E>>* = nullptr>
   constexpr expected(unexpected<G> const& e)
       : impl_base(unexpect, e.value()),
-        ctor_base(detail::default_constructor_tag{})
+        ctor_base(detail::default_constructor_tag{}) // NOLINT
   {
   }
   /// @endcond
 
-  /// \group unexpected_ctor
-  /// \synopsis EXPLICIT constexpr expected(unexpected<G> &&e);
+  /// @overload
   template <
       class G = E,
       detail::enable_if_t<std::is_constructible<E, G&&>::value>* = nullptr,
@@ -1406,7 +1395,7 @@ public:
   {
   }
 
-  /// \exclude
+  /// @cond
   template <
       class G = E,
       detail::enable_if_t<std::is_constructible<E, G&&>::value>* = nullptr,
@@ -1414,9 +1403,10 @@ public:
   constexpr expected(unexpected<G>&& e) noexcept(
       std::is_nothrow_constructible<E, G&&>::value)
       : impl_base(unexpect, std::move(e.value())),
-        ctor_base(detail::default_constructor_tag{})
+        ctor_base(detail::default_constructor_tag{}) // NOLINT
   {
   }
+  /// @endcond
 
   template <class... Args,
             detail::enable_if_t<std::is_constructible<E, Args&&...>::value>* =
@@ -1427,7 +1417,7 @@ public:
   {
   }
 
-  /// \exclude
+  /// @cond
   template <class U, class... Args,
             detail::enable_if_t<std::is_constructible<
                 E, std::initializer_list<U>&, Args&&...>::value>* = nullptr>
@@ -1437,6 +1427,7 @@ public:
         ctor_base(detail::default_constructor_tag{})
   {
   }
+  /// @endcond
 
   template <class U, class G,
             detail::enable_if_t<!(std::is_convertible<U const&, T>::value &&
@@ -1454,14 +1445,14 @@ public:
     }
   }
 
-  /// \exclude
+  /// @cond
   template <
       class U, class G,
       detail::enable_if_t<(std::is_convertible<U const&, T>::value &&
                            std::is_convertible<G const&, E>::value)>* = nullptr,
       detail::expected_enable_from_other<T, E, U, G, const U&, const G&>* =
           nullptr>
-  constexpr expected(const expected<U, G>& rhs)
+  constexpr expected(const expected<U, G>& rhs) // NOLINT
       : ctor_base(detail::default_constructor_tag{})
   {
     if (rhs.has_value()) {
@@ -1470,6 +1461,7 @@ public:
       this->construct_error(rhs.error());
     }
   }
+  /// @endcond
 
   template <
       class U, class G,
@@ -1486,13 +1478,13 @@ public:
     }
   }
 
-  /// \exclude
+  /// @cond
   template <
       class U, class G,
       detail::enable_if_t<(std::is_convertible<U&&, T>::value &&
                            std::is_convertible<G&&, E>::value)>* = nullptr,
       detail::expected_enable_from_other<T, E, U, G, U&&, G&&>* = nullptr>
-  constexpr expected(expected<U, G>&& rhs)
+  constexpr expected(expected<U, G>&& rhs) // NOLINT
       : ctor_base(detail::default_constructor_tag{})
   {
     if (rhs.has_value()) {
@@ -1501,6 +1493,7 @@ public:
       this->construct_error(std::move(rhs.error()));
     }
   }
+  /// @endcond
 
   template <class U = T,
             detail::enable_if_t<!std::is_convertible<U&&, T>::value>* = nullptr,
@@ -1509,13 +1502,16 @@ public:
   {
   }
 
-  /// \exclude
+  /// @cond
   template <class U = T,
             detail::enable_if_t<std::is_convertible<U&&, T>::value>* = nullptr,
             detail::expected_enable_forward_value<T, E, U>* = nullptr>
-  constexpr expected(U&& v) : expected(in_place, std::forward<U>(v))
+  constexpr expected(U&& v) : expected(in_place, std::forward<U>(v)) // NOLINT
   {
   }
+
+  ~expected() = default;
+  /// @endcond
 
   template <
       class U = T, class G = T,
@@ -1542,7 +1538,7 @@ public:
     return *this;
   }
 
-  /// \exclude
+  /// @cond
   template <
       class U = T, class G = T,
       detail::enable_if_t<!std::is_nothrow_constructible<T, U&&>::value>* =
@@ -1565,7 +1561,7 @@ public:
 
 #ifdef EML_EXPECTED_EXCEPTIONS_ENABLED
       try {
-        ::new (valptr()) T(std::move(v));
+        ::new (valptr()) T(std::move(v)); // NOLINT
         this->m_has_val = true;
       } catch (...) {
         err() = std::move(tmp);
@@ -1579,6 +1575,7 @@ public:
 
     return *this;
   }
+  /// @endcond
 
   template <class G = E,
             detail::enable_if_t<std::is_nothrow_copy_constructible<G>::value &&
@@ -1625,7 +1622,7 @@ public:
     }
   }
 
-  /// \exclude
+  /// @cond
   template <class... Args, detail::enable_if_t<!std::is_nothrow_constructible<
                                T, Args&&...>::value>* = nullptr>
   void emplace(Args&&... args)
@@ -1645,6 +1642,7 @@ public:
       }
     }
   }
+  /// @endcond
 
   template <class U, class... Args,
             detail::enable_if_t<std::is_nothrow_constructible<
@@ -1661,7 +1659,7 @@ public:
     }
   }
 
-  /// \exclude
+  /// @cond
   template <class U, class... Args,
             detail::enable_if_t<!std::is_nothrow_constructible<
                 T, std::initializer_list<U>&, Args&&...>::value>* = nullptr>
@@ -1688,6 +1686,7 @@ public:
 #endif
     }
   }
+  /// @endcond
 
   void swap(expected& rhs) noexcept(
       std::is_nothrow_move_constructible<T>::value&& noexcept(
@@ -1714,43 +1713,44 @@ public:
     }
   }
 
-  /// \returns a pointer to the stored value
-  /// \requires a value is stored
-  /// \group pointer
+  /// @brief Returns a pointer to the stored value
+  /// @pre a value is stored
+  /// @warning The behavior of dereferencing without a value stored is undefined
   constexpr const T* operator->() const
   {
     return valptr();
   }
-  /// \group pointer
+  /// @overload
   constexpr T* operator->()
   {
     return valptr();
   }
 
-  /// \returns the stored value
-  /// \requires a value is stored
-  /// \group deref
+  /// @brief returns the stored value
+  /// @pre a value is stored
+  /// @warning The behavior of dereferencing without a value stored is undefined
   template <class U = T,
             detail::enable_if_t<!std::is_void<U>::value>* = nullptr>
   constexpr const U& operator*() const&
   {
     return val();
   }
-  /// \group deref
+  /// @overload
   template <class U = T,
             detail::enable_if_t<!std::is_void<U>::value>* = nullptr>
   constexpr U& operator*() &
   {
     return val();
   }
-  /// \group deref
+  /// @overload
   template <class U = T,
             detail::enable_if_t<!std::is_void<U>::value>* = nullptr>
   constexpr const U&& operator*() const&&
   {
     return std::move(val());
   }
-  /// \group deref
+
+  /// @overload
   template <class U = T,
             detail::enable_if_t<!std::is_void<U>::value>* = nullptr>
   constexpr U&& operator*() &&
@@ -1764,7 +1764,8 @@ public:
     return this->m_has_val;
   }
 
-  /// @overload
+  /// @brief returns whether or not the optional has a value
+  /// @see has_value
   constexpr explicit operator bool() const noexcept
   {
     return this->m_has_val;

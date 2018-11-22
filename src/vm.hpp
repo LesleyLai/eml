@@ -10,6 +10,9 @@
 
 namespace eml {
 
+/**
+ * @brief The instruction set of the Embedded ML vm
+ */
 enum opcode : std::uint8_t {
   op_return,
   op_push, // Pushes a constant to the stack
@@ -38,7 +41,7 @@ enum opcode : std::uint8_t {
   op_greater_equal,
 };
 
-/// @brief The underlying numerical type of the @link opcode enum
+/// @brief The underlying numerical type of the @ref opcode enum
 using opcode_num_type = std::underlying_type_t<opcode>;
 
 /// @brief Line number
