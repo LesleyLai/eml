@@ -11,6 +11,11 @@ namespace eml {
  */
 auto bytecode_from_ast(const ast::Expr& expr) -> chunk;
 
+/**
+ * @brief Compiles source code string into byte-code chunk
+ */
+std::optional<eml::chunk> compile(std::string_view source);
+
 } // namespace eml
 
 #endif // EML_COMPILER_HPP

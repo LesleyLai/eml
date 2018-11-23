@@ -1,27 +1,25 @@
 #include "parser.hpp"
+#include "ast.hpp"
 #include "scanner.hpp"
 
 #include <cstdint>
 
 namespace eml {
 
-struct parser;
-void parse_expression(parser& parser);
+struct Parser;
+auto parse_expression(Parser& parser) -> ast::Expr_ptr;
 
-struct parser {
-  parser(std::string_view source, eml::chunk& current_chunk)
-      : scanner{source}, compiling_chunk{&current_chunk}, current_itr{
-                                                              scanner.begin()}
+struct Parser {
+  explicit Parser(std::string_view source)
+      : scanner{source}, current_itr{scanner.begin()}
   {
     check_unsupported_token_type(*current_itr);
-    parse_expression(*this);
-    consume(token_type::eof, "Expect end of expression");
   }
 
   eml::scanner scanner;
-  eml::chunk* compiling_chunk; // Should never be nullptr
   eml::scanner::iterator current_itr;
   eml::token previous;
+  std::vector<SyntaxError> errors;
 
   bool had_error = false;
   bool panic_mode = false; // Ignore errors if in panic
@@ -65,11 +63,6 @@ struct parser {
     }
   }
 
-  void emit_code(eml::opcode code)
-  {
-    compiling_chunk->write(code, eml::line_num{previous.line});
-  }
-
   void consume(const eml::token_type type, const char* message)
   {
     if (current_itr->type == type) {
@@ -100,7 +93,7 @@ struct parser {
       std::clog << " at \"" << token.text << "\"";
     }
 
-    std::clog << ": " << message << std::endl;
+    errors.emplace_back(message);
     had_error = true;
   }
 
@@ -158,11 +151,12 @@ enum Precedence : std::uint8_t {
   prec_primary
 };
 
-using ParserFn = void (*)(parser& parser);
+using PrefixParselet = ast::Expr_ptr (*)(Parser& Parser);
+using InfixParselet = ast::Expr_ptr (*)(Parser& Parser, ast::Expr_ptr left);
 
 struct ParseRule {
-  ParserFn prefix;
-  ParserFn infix;
+  PrefixParselet prefix;
+  InfixParselet infix;
   Precedence precedence;
 };
 
@@ -174,139 +168,133 @@ Precedence higher(Precedence p)
       static_cast<std::underlying_type_t<Precedence>>(p) + 1);
 }
 
-void parse_number(parser& parser)
+auto parse_number(Parser& parser) -> ast::Expr_ptr
 {
   const double number = strtod(parser.previous.text.data(), nullptr);
-  const auto offset = parser.compiling_chunk->add_constant(eml::Value{number});
-  if (!offset) {
-    parser.error_at_previous("EML: Too many constants in one chunk.");
-    return;
-  }
-
-  parser.emit_code(eml::op_push);
-  parser.emit_code(eml::opcode{*offset});
+  return ast::LiteralExpr::create(Value{number});
 }
 
-void parse_literal(parser& parser)
+auto parse_literal(Parser& parser) -> ast::Expr_ptr
 {
   switch (parser.previous.type) {
   case token_type::keyword_unit:
-    parser.emit_code(eml::op_unit);
-    break;
+    return ast::LiteralExpr::create(Value{});
+
   case token_type::keyword_true:
-    parser.emit_code(eml::op_true);
-    break;
+    return ast::LiteralExpr::create(Value{true});
+
   case token_type::keyword_false:
-    parser.emit_code(eml::op_false);
-    break;
+    return ast::LiteralExpr::create(Value{false});
+
   default:
-    return; // Unreachable.
+    return ast::ErrorExpr::create(); // Unreachable.
   }
 }
 
 // parses any expression of a given precedence level or higher:
-void parse_precedence(parser& parser, Precedence precedence)
+auto parse_precedence(Parser& parser, Precedence precedence) -> ast::Expr_ptr
 {
-
   parser.advance();
 
   const auto prefix_rule = get_rule(parser.previous.type).prefix;
   if (prefix_rule == nullptr) {
     parser.error_at_previous("expect a prefix operator");
-    return;
+    return ast::ErrorExpr::create();
   }
 
-  prefix_rule(parser);
+  auto left_ptr = prefix_rule(parser);
 
   while (precedence <= get_rule(parser.current_itr->type).precedence) {
     parser.advance();
     const auto infix_rule = get_rule(parser.previous.type).infix;
     if (infix_rule == nullptr) {
       parser.error_at_previous("expect a infix operator");
-      return;
+      return ast::ErrorExpr::create();
     }
-    infix_rule(parser);
+    left_ptr = infix_rule(parser, std::move(left_ptr));
   }
+
+  return left_ptr;
 }
 
-void parse_expression(parser& parser)
+auto parse_expression(Parser& parser) -> ast::Expr_ptr
 {
-  parse_precedence(parser, prec_assignment);
+  return parse_precedence(parser, prec_assignment);
 }
 
-void parse_grouping(parser& parser)
+auto parse_grouping(Parser& parser)
 {
-  parse_expression(parser);
+  auto expr_ptr = parse_expression(parser);
+
   parser.consume(eml::token_type::right_paren,
                  "Expect `)` at the end of the expression");
+  return expr_ptr;
 }
 
-void parse_unary(parser& parser)
+auto parse_unary(Parser& parser) -> ast::Expr_ptr
 {
   const token_type operator_type = parser.previous.type;
 
   // Compile the operand.
-  parse_precedence(parser, prec_unary);
+  auto operand_ptr = parse_precedence(parser, prec_unary);
 
   // Emit the operator instruction.
   switch (operator_type) {
   case token_type::bang:
-    parser.emit_code(eml::op_not);
-    break;
+    return ast::UnaryNotExpr::create(std::move(operand_ptr));
   case token_type::minus:
-    parser.emit_code(eml::op_negate);
-    break;
+    return ast::UnaryNotExpr::create(std::move(operand_ptr));
   default:
     std::clog << "Unsupported token " << parser.previous << '\n';
     std::exit(1);
   }
 }
 
-void parse_binary(parser& parser)
+auto parse_binary(Parser& parser, ast::Expr_ptr left_ptr) -> ast::Expr_ptr
 {
   // Remember the operator.
   token_type operator_type = parser.previous.type;
 
   // Compile the right operand.
   const ParseRule rule = get_rule(operator_type);
-  parse_precedence(parser, higher(rule.precedence));
+
+  auto rhs_ptr = parse_precedence(parser, higher(rule.precedence));
 
   // Emit the operator instruction.
   switch (operator_type) {
   case token_type::plus:
-    parser.emit_code(op_add);
-    break;
+    return ast::PlusOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
   case token_type::minus:
-    parser.emit_code(op_subtract);
-    break;
+    return ast::MinusOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   case token_type::star:
-    parser.emit_code(op_multiply);
-    break;
+    return ast::MultOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   case token_type::slash:
-    parser.emit_code(op_divide);
-    break;
+    return ast::DivOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   case token_type::double_equal:
-    parser.emit_code(op_equal);
-    break;
+    return ast::EqOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   case token_type::bang_equal:
-    parser.emit_code(op_not_equal);
-    break;
+    return ast::NeqOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   case token_type::less:
-    parser.emit_code(op_less);
-    break;
+    return ast::LessOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   case token_type::less_equal:
-    parser.emit_code(op_less_equal);
-    break;
+    return ast::LeOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   case token_type::greator:
-    parser.emit_code(op_greater);
-    break;
+    return ast::GreaterOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   case token_type::greater_equal:
-    parser.emit_code(op_greater_equal);
-    break;
+    return ast::GeExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
   default:
     std::clog << "Unsupported token type " << operator_type
               << " in binary expression.\n";
-    std::exit(-1);
+    return ast::ErrorExpr::create();
   }
 }
 
@@ -326,14 +314,16 @@ constexpr auto get_rule(token_type type) -> ParseRule
   return ParseRule{};
 }
 
-std::optional<chunk> compile(std::string_view source)
+auto parse(std::string_view source) -> ParseResult
 {
-  chunk output_chunk;
-  parser parser{source, output_chunk};
+  Parser parser{source};
+  auto expr = parse_expression(parser);
+  parser.consume(token_type::eof, "Expect end of expression");
   if (parser.had_error) {
-    return {};
+    return unexpected{std::move(parser.errors)};
+  } else {
+    return std::move(expr);
   }
-  return {std::move(output_chunk)};
 }
 
 } // namespace eml

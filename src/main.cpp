@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include "compiler.hpp"
+#include "debug.hpp"
 #include "parser.hpp"
 #include "scanner.hpp"
 #include "vm.hpp"
@@ -12,11 +14,16 @@
     std::string line;
     std::getline(std::cin, line);
     if (!line.empty()) {
-      const auto bytecode = eml::compile(line);
-      if (bytecode) {
-        // std::cout << *bytecode.disassemble() << '\n';
-        eml::VM vm{*bytecode};
+      const auto ast = eml::parse(line);
+      if (ast) {
+        std::cout << eml::string_from_ast(**ast) << "\n\n";
+        const auto bytecode = eml::bytecode_from_ast(**ast);
+        eml::VM vm{bytecode};
         std::cout << vm.interpret() << '\n';
+      } else {
+        for (const auto& e : ast.error()) {
+          std::clog << e.msg_ << '\n';
+        }
       }
     }
   }

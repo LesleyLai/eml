@@ -1,9 +1,11 @@
 #ifndef EML_PARSER_HPP
 #define EML_PARSER_HPP
 
-#include "vm.hpp"
+#include <memory>
 #include <optional>
 #include <string_view>
+
+#include "expected.hpp"
 
 /**
  * @file parser.hpp
@@ -13,10 +15,20 @@
 
 namespace eml {
 
-/**
- * @brief Compiles source code string into byte-code chunk
- */
-std::optional<eml::chunk> compile(std::string_view source);
+struct SyntaxError {
+  std::string_view msg_;
+
+  explicit SyntaxError(std::string_view msg) : msg_{msg} {}
+};
+
+namespace ast {
+struct Expr;
+} // namespace ast
+
+using ParseResult =
+    expected<std::unique_ptr<ast::Expr>, std::vector<SyntaxError>>;
+
+auto parse(std::string_view source) -> ParseResult;
 
 } // namespace eml
 
