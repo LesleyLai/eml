@@ -1,15 +1,26 @@
 #ifndef EML_AST_HPP
 #define EML_AST_HPP
 
+/**
+ * @file ast.hpp
+ * @brief This file contains the definition of the AST
+ */
+
 #include "value.hpp"
 #include <memory>
 
 namespace eml {
 
+/**
+ * @brief contains all the definitions related to the [Abstract
+ * Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) of the
+ * Embedded ML
+ */
 namespace ast {
 
 struct Expr;
 
+/// @brief Provides a wrapper of `std::make_unique` to its derived classes
 template <typename Derived> struct FactoryMixin {
   /**
    * @brief A factory member function that creates a `std::unique_ptr` of itself
@@ -45,19 +56,43 @@ enum class BinaryOpType {
 class ConstExpr;
 
 template <detail::UnaryOpType optype> struct UnaryOpExprTemplate;
+/// @brief AST Node for the unary negate operation (specializes @ref
+/// UnaryOpExprTemplate)
 using UnaryNegateExpr = UnaryOpExprTemplate<detail::UnaryOpType::negate>;
+/// @brief AST Node for the unary not operation (specializes @ref
+/// UnaryOpExprTemplate)
 using UnaryNotExpr = UnaryOpExprTemplate<detail::UnaryOpType::not_op>;
 
 template <detail::BinaryOpType optype> struct BinaryOpExprTemplate;
+/// @brief AST Node for the binary plus operation (specializes @ref
+/// BinaryOpExprTemplate)
 using PlusOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::plus>;
+/// @brief AST Node for the binary minus operation (specializes @ref
+/// BinaryOpExprTemplate
 using MinusOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::minus>;
+/// @brief AST Node for the binary multiply operation (specializes @ref
+/// BinaryOpExprTemplate
 using MultOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::multiply>;
+/// @brief AST Node for the binary divide operation (specializes @ref
+/// BinaryOpExprTemplate
 using DivOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::divide>;
+/// @brief AST Node for the binary equal operation (specializes @ref
+/// BinaryOpExprTemplate
 using EqOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::equal>;
+/// @brief AST Node for the binary not equal operation (specializes @ref
+/// BinaryOpExprTemplate
 using NeqOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::not_equal>;
+/// @brief AST Node for the binary less operation (specializes @ref
+/// BinaryOpExprTemplate
 using LessOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::less>;
+/// @brief AST Node for the binary less than or equal operation (specializes
+/// @ref BinaryOpExprTemplate
 using LeOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::less_equal>;
+/// @brief AST Node for the binary greater operation (specializes @ref
+/// BinaryOpExprTemplate
 using GreaterOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::greater>;
+/// @brief AST Node for the binary greater than or equal operation (specializes
+/// @ref BinaryOpExprTemplate
 using GeExpr = BinaryOpExprTemplate<detail::BinaryOpType::greater_equal>;
 
 /**
@@ -113,7 +148,7 @@ struct ExprVisitor {
 };
 
 /**
- * @brief Expression AST Node
+ * @brief Base class for all the Expression AST Node
  */
 struct Expr {
   Expr() = default;
@@ -130,7 +165,7 @@ struct Expr {
 using Expr_ptr = std::unique_ptr<Expr>;
 
 /**
- * @brief A expr expression node of the AST
+ * @brief A constant expression node of the AST is a Node contains a value
  */
 class ConstExpr final : public Expr, public FactoryMixin<ConstExpr> {
   Value v_;
@@ -154,7 +189,7 @@ public:
 };
 
 /**
- * @brief The Unary_operation struct
+ * @brief Base class of all unary operations
  */
 class UnaryOp : public Expr {
   Expr_ptr operand_;
@@ -168,6 +203,12 @@ public:
   }
 };
 
+/**
+ * @brief The templates for all AST Nodes of unary operations
+ *
+ * Do not use this class directly, instead use one of the specializations
+ * @see UnaryNegateExpr, UnaryNotExpr
+ */
 template <detail::UnaryOpType optype>
 struct UnaryOpExprTemplate final : UnaryOp,
                                    FactoryMixin<UnaryOpExprTemplate<optype>> {
@@ -186,6 +227,9 @@ struct UnaryOpExprTemplate final : UnaryOp,
   }
 };
 
+/**
+ * @brief Base class for all Binary operations
+ */
 class BinaryOpExpr : public Expr {
   Expr_ptr lhs_;
   Expr_ptr rhs_;
@@ -207,6 +251,13 @@ public:
   }
 };
 
+/**
+ * @brief The templates for all AST Nodes of binary operations
+ *
+ * Do not use this class directly, instead use one of the specializations
+ * @see PlusOpExpr, MinusOpExpr, MultOpExpr, DivOpExpr, EqOpExpr, NeqOpExpr,
+ * LessOpExpr, LeOpExpr, GreaterOpExpr, GeExpr,
+ */
 template <detail::BinaryOpType optype>
 struct BinaryOpExprTemplate final : BinaryOpExpr,
                                     FactoryMixin<BinaryOpExprTemplate<optype>> {
