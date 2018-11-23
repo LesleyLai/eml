@@ -9,12 +9,17 @@ namespace eml {
 
 namespace {
 #ifdef EML_VM_DEBUG_TRACE_EXECUTION
-void printStack(const std::vector<Value>& stack)
+void print_stack(const std::vector<Value>& stack)
 {
-  std::cout << "\nStack: [ ";
-  for (const auto& v : stack) {
-    std::cout << v << ' ';
+  std::cout << "Stack: [";
+
+  for (auto i = stack.begin(); i < stack.end(); ++i) {
+    std::cout << to_string(*i, PrintType::no);
+    if (i != stack.end() - 1) {
+      std::cout << ", ";
+    }
   }
+
   std::cout << "]\n";
 }
 #endif
@@ -83,8 +88,8 @@ auto VM::interpret() -> Value
   for (auto ip = code_.instructions.begin(); ip != code_.instructions.end();
        ++ip) {
 #ifdef EML_VM_DEBUG_TRACE_EXECUTION
-    printStack(stack_);
-    std::cout << code_.disassemble_instruction(ip, offset);
+    print_stack(stack_);
+    std::cout << code_.disassemble_instruction(ip, offset) << '\n';
 #endif
     const auto instruction = *ip;
     switch (instruction) {
@@ -183,7 +188,6 @@ std::string chunk::disassemble() const
     switch (instruction) {
     case op_push: {
       ++ip;
-      // value constant = read_constant(ip);
     } break;
     default:; // Nothing special
     }
@@ -200,8 +204,8 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
   std::stringstream ss;
 
   auto print_hex_dump = [&ss](auto current_ip, std::size_t count) {
-    constexpr std::size_t max_byte =
-        5; // Over max byte of hex will cause misalignment in output
+    // Over max byte of hex will cause misalignment in output
+    constexpr std::size_t max_byte = 5;
     for (auto i = std::size_t{0}; i < count; ++i) {
       ss << std::hex << std::setfill('0') << std::setw(2) << *current_ip << ' ';
       ++current_ip;
@@ -223,7 +227,7 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
       [&](auto& current_ip, std::string_view name) {
         print_hex_dump(current_ip, 2);
         const auto v = read_constant(++current_ip);
-        ss << name << ' ' << v << '\n';
+        ss << name << ' ' << to_string(v, PrintType::no) << '\n';
       };
 
   // Dump file in source line

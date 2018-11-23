@@ -3,10 +3,10 @@
 
 #include <catch2/catch.hpp>
 
-namespace ast = eml::ast;
-
-TEST_CASE("AST Printer")
+TEST_CASE("AST visiting and printing")
 {
+  namespace ast = eml::ast;
+
   GIVEN("A Unary negate expression -10")
   {
     WHEN("Invoke the Ast Printer")

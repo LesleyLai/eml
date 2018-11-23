@@ -29,6 +29,7 @@ add_library(lib${PROJECT_NAME}
     "src/scanner.hpp"
     "src/scanner.cpp"
     "src/value.hpp"
+    "src/value.cpp"
     "src/vm.hpp"
     "src/vm.cpp")
 target_include_directories(lib${PROJECT_NAME} PUBLIC "src")

@@ -157,42 +157,13 @@ enum PrintType {
   no,
 };
 
-inline std::string to_string(const Value& v,
-                             PrintType print_type = PrintType::yes)
-{
-  std::stringstream ss;
-  switch (v.type) {
-  case Value::type::Number:
-    ss << v.val.num;
-    if (print_type == PrintType::yes) {
-      ss << ": Number";
-    }
-    break;
-  case Value::type::Boolean:
-    ss << std::boolalpha << v.val.boolean;
-    if (print_type == PrintType::yes) {
-      ss << ": Bool";
-    }
-    break;
-  case Value::type::Unit:
-    ss << "()";
-    if (print_type == PrintType::yes) {
-      ss << ": Unit";
-    }
-    break;
-  }
-
-  return ss.str();
-}
+auto to_string(const Value& v, PrintType print_type = PrintType::yes)
+    -> std::string;
 
 /**
  * @brief Prints value v to the output stream s
  */
-inline auto operator<<(std::ostream& s, const Value& v) -> std::ostream&
-{
-  s << to_string(v);
-  return s;
-}
+auto operator<<(std::ostream& s, const Value& v) -> std::ostream&;
 
 } // namespace eml
 
