@@ -53,7 +53,7 @@ enum class BinaryOpType {
 
 }; // namespace detail
 
-class ConstExpr;
+class LiteralExpr;
 
 template <detail::UnaryOpType optype> struct UnaryOpExprTemplate;
 /// @brief AST Node for the unary negate operation (specializes @ref
@@ -106,7 +106,7 @@ struct ExprConstVisitor {
   ExprConstVisitor(ExprConstVisitor&&) = default;
   ExprConstVisitor& operator=(ExprConstVisitor&&) = default;
 
-  virtual void operator()(const ConstExpr& expr) = 0;
+  virtual void operator()(const LiteralExpr& expr) = 0;
   virtual void operator()(const UnaryNegateExpr& expr) = 0;
   virtual void operator()(const UnaryNotExpr& expr) = 0;
   virtual void operator()(const PlusOpExpr& expr) = 0;
@@ -132,7 +132,7 @@ struct ExprVisitor {
   ExprVisitor(ExprVisitor&&) = default;
   ExprVisitor& operator=(ExprVisitor&&) = default;
 
-  virtual void operator()(ConstExpr& expr) = 0;
+  virtual void operator()(LiteralExpr& expr) = 0;
   virtual void operator()(UnaryNegateExpr& expr) = 0;
   virtual void operator()(UnaryNotExpr& expr) = 0;
   virtual void operator()(PlusOpExpr& expr) = 0;
@@ -165,13 +165,13 @@ struct Expr {
 using Expr_ptr = std::unique_ptr<Expr>;
 
 /**
- * @brief A constant expression node of the AST is a Node contains a value
+ * @brief A literal expression node of the AST is a Node contains a value
  */
-class ConstExpr final : public Expr, public FactoryMixin<ConstExpr> {
+class LiteralExpr final : public Expr, public FactoryMixin<LiteralExpr> {
   Value v_;
 
 public:
-  explicit ConstExpr(Value v) : v_{v} {}
+  explicit LiteralExpr(Value v) : v_{v} {}
   Value v() const
   {
     return v_;

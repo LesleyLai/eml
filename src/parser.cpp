@@ -333,7 +333,7 @@ std::optional<chunk> compile(std::string_view source)
   if (parser.had_error) {
     return {};
   }
-  return std::optional<chunk>{std::in_place, output_chunk};
+  return {std::move(output_chunk)};
 }
 
 } // namespace eml

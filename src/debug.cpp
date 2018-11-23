@@ -8,7 +8,7 @@ namespace eml {
 namespace {
 struct AstPrinter : ast::ExprConstVisitor {
 public:
-  void operator()(const ast::ConstExpr& constant) override
+  void operator()(const ast::LiteralExpr& constant) override
   {
     ss_ << eml::to_string(constant.v(), PrintType::no);
   }

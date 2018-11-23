@@ -2,14 +2,9 @@
 
 #include <catch2/catch.hpp>
 
-using namespace eml;
+#include "util.hpp"
 
-void push_constant(eml::chunk& chunk, eml::Value value, eml::line_num linum)
-{
-  chunk.write(op_push, linum);
-  const auto offset = chunk.add_constant(value);
-  chunk.write(eml::opcode{*offset}, linum);
-}
+using namespace eml;
 
 TEST_CASE("Manually write instructions")
 {
