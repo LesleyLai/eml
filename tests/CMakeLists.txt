@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME}Test
     "expected/issues.cpp"
     "expected/observers.cpp"
     "main.cpp"
+    "ast_test.cpp"
     "parser_test.cpp"
     "scanner_test.cpp"
     "value_test.cpp"

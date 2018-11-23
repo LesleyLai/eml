@@ -1,4 +1,4 @@
-#include "../src/parser.hpp"
+#include "parser.hpp"
 
 #include <catch2/catch.hpp>
 TEST_CASE("Test parsing")

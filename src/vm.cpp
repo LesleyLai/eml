@@ -9,7 +9,7 @@ namespace eml {
 
 namespace {
 #ifdef EML_VM_DEBUG_TRACE_EXECUTION
-void printStack(const std::vector<value>& stack)
+void printStack(const std::vector<Value>& stack)
 {
   std::cout << "\nStack: [ ";
   for (const auto& v : stack) {
@@ -20,16 +20,16 @@ void printStack(const std::vector<value>& stack)
 #endif
 
 // Push value to the stack
-void push(std::vector<value>& stack, value value)
+void push(std::vector<Value>& stack, Value value)
 {
   stack.push_back(value);
 }
 
 // Returns the value to the last
 // Warning: Calling pop on a vm with empty stack is undefined.
-auto pop(std::vector<value>& stack) -> value
+auto pop(std::vector<Value>& stack) -> Value
 {
-  value v = stack.back();
+  Value v = stack.back();
   stack.pop_back();
   return v;
 }
@@ -40,10 +40,10 @@ void runtime_error(std::string_view message)
 }
 
 // Helper for binary operations
-template <typename F> void binary_operation(std::vector<value>& stack, F op)
+template <typename F> void binary_operation(std::vector<Value>& stack, F op)
 {
-  value right = pop(stack);
-  value left = pop(stack);
+  Value right = pop(stack);
+  Value left = pop(stack);
 
   if (!left.is_number()) {
     std::stringstream ss;
@@ -61,24 +61,24 @@ template <typename F> void binary_operation(std::vector<value>& stack, F op)
     return;
   }
 
-  push(stack, value{op(left.unsafe_as_number(), right.unsafe_as_number())});
+  push(stack, Value{op(left.unsafe_as_number(), right.unsafe_as_number())});
 }
 
 // Helper for comparison operations
-template <typename F> void comparison_operation(std::vector<value>& stack, F op)
+template <typename F> void comparison_operation(std::vector<Value>& stack, F op)
 {
-  value right = pop(stack);
-  value left = pop(stack);
+  Value right = pop(stack);
+  Value left = pop(stack);
 
-  push(stack, value{op(left, right)});
+  push(stack, Value{op(left, right)});
 }
 
 } // anonymous namespace
 
-auto VM::interpret() -> value
+auto VM::interpret() -> Value
 {
   size_t offset = 0;
-  value result{};
+  Value result{};
 
   for (auto ip = code_.instructions.begin(); ip != code_.instructions.end();
        ++ip) {
@@ -93,37 +93,37 @@ auto VM::interpret() -> value
       std::exit(-1);
     case op_push: {
       ++ip;
-      value constant = code_.read_constant(ip);
+      Value constant = code_.read_constant(ip);
       push(stack_, constant);
     } break;
     case op_pop:
       result = pop(stack_);
       break;
     case op_unit:
-      push(stack_, value{});
+      push(stack_, Value{});
       break;
     case op_true: {
-      push(stack_, value{true});
+      push(stack_, Value{true});
     } break;
     case op_false: {
-      push(stack_, value{false});
+      push(stack_, Value{false});
     } break;
     case op_negate: {
-      const value v = stack_.back();
+      const Value v = stack_.back();
       if (!v.is_number()) {
         runtime_error("Operand of unary - must be a number.");
-        return value{};
+        return Value{};
       }
-      push(stack_, value{-pop(stack_).unsafe_as_number()});
+      push(stack_, Value{-pop(stack_).unsafe_as_number()});
     } break;
     case op_not: {
-      const value v = stack_.back();
+      const Value v = stack_.back();
       if (!v.is_boolean()) {
         runtime_error("Operand of unary ! must be a boolean.");
-        return value{};
+        return Value{};
       }
 
-      push(stack_, value{!pop(stack_).unsafe_as_boolean()});
+      push(stack_, Value{!pop(stack_).unsafe_as_boolean()});
     } break;
     case op_add:
       binary_operation(stack_, std::plus<double>{});
@@ -138,22 +138,22 @@ auto VM::interpret() -> value
       binary_operation(stack_, std::divides<double>{});
       break;
     case op_equal:
-      comparison_operation(stack_, std::equal_to<value>{});
+      comparison_operation(stack_, std::equal_to<Value>{});
       break;
     case op_not_equal:
-      comparison_operation(stack_, std::not_equal_to<value>{});
+      comparison_operation(stack_, std::not_equal_to<Value>{});
       break;
     case op_less:
-      comparison_operation(stack_, std::less<value>{});
+      comparison_operation(stack_, std::less<Value>{});
       break;
     case op_less_equal:
-      comparison_operation(stack_, std::less_equal<value>{});
+      comparison_operation(stack_, std::less_equal<Value>{});
       break;
     case op_greater:
-      comparison_operation(stack_, std::greater<value>{});
+      comparison_operation(stack_, std::greater<Value>{});
       break;
     case op_greater_equal:
-      comparison_operation(stack_, std::greater_equal<value>{});
+      comparison_operation(stack_, std::greater_equal<Value>{});
       break;
     default:
       std::cerr << "EML Virtual Machine: Unknown instruction " << instruction
@@ -165,7 +165,7 @@ auto VM::interpret() -> value
   }
 
   if (stack_.empty()) {
-    return value{};
+    return Value{};
   } else {
     return pop(stack_);
   }

@@ -177,7 +177,7 @@ Precedence higher(Precedence p)
 void parse_number(parser& parser)
 {
   const double number = strtod(parser.previous.text.data(), nullptr);
-  const auto offset = parser.compiling_chunk->add_constant(eml::value{number});
+  const auto offset = parser.compiling_chunk->add_constant(eml::Value{number});
   if (!offset) {
     parser.error_at_previous("EML: Too many constants in one chunk.");
     return;

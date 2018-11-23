@@ -56,7 +56,7 @@ class VM;
  */
 struct chunk {
   std::vector<opcode> instructions; // Instructions
-  std::vector<value> constants;
+  std::vector<Value> constants;
   std::vector<line_num> lines; // Source line information
 
   /**
@@ -76,7 +76,7 @@ struct chunk {
    * Adds a constant value v to the chunk. Returns the index where it was
    * appended so that we can locate that same constant later.
    */
-  [[nodiscard]] std::optional<opcode_num_type> add_constant(value v)
+  [[nodiscard]] std::optional<opcode_num_type> add_constant(Value v)
   {
     if (constants.size() >= std::numeric_limits<opcode_num_type>::max()) {
       return {};
@@ -90,7 +90,7 @@ struct chunk {
 private:
   friend VM;
   using instruction_iterator = decltype(instructions)::const_iterator;
-  auto read_constant(const instruction_iterator& ip) const -> value
+  auto read_constant(const instruction_iterator& ip) const -> Value
   {
     const auto index = static_cast<std::underlying_type_t<opcode>>(*ip);
     return constants.at(index);
@@ -108,11 +108,11 @@ public:
     stack_.reserve(initial_stack_size);
   }
 
-  auto interpret() -> value;
+  auto interpret() -> Value;
 
 private:
   chunk code_;
-  std::vector<value> stack_{}; // Stack of the vm
+  std::vector<Value> stack_{}; // Stack of the vm
 };
 
 } // namespace eml

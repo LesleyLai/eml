@@ -1,4 +1,4 @@
-#include "../src/value.hpp"
+#include "value.hpp"
 
 #include <catch2/catch.hpp>
 #include <functional>
@@ -8,7 +8,7 @@ TEST_CASE("Values' RTTI 'unsafe_as_xxx' and 'is_xxx' function")
 {
   GIVEN("A unit value")
   {
-    const eml::value v{};
+    const eml::Value v{};
 
     THEN("Is unit value")
     {
@@ -28,7 +28,7 @@ TEST_CASE("Values' RTTI 'unsafe_as_xxx' and 'is_xxx' function")
 
   GIVEN("A double value")
   {
-    const eml::value v{1.25};
+    const eml::Value v{1.25};
 
     THEN("Is not a unit value")
     {
@@ -56,7 +56,7 @@ TEST_CASE("Values' RTTI 'unsafe_as_xxx' and 'is_xxx' function")
 
   GIVEN("A boolean value")
   {
-    const eml::value v{true};
+    const eml::Value v{true};
 
     THEN("Is not a unit value")
     {
@@ -88,7 +88,7 @@ TEST_CASE("Value printing")
   std::stringstream ss;
   GIVEN("A double value")
   {
-    const eml::value v{0.5};
+    const eml::Value v{0.5};
 
     THEN("Print as is")
     {
@@ -99,7 +99,7 @@ TEST_CASE("Value printing")
 
   GIVEN("A unit value")
   {
-    const eml::value v{};
+    const eml::Value v{};
 
     THEN("Print (): Unit")
     {

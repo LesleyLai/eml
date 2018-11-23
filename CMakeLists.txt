@@ -20,6 +20,8 @@ endif()
 
 add_library(lib${PROJECT_NAME}
     "src/ast.hpp"
+    "src/debug.hpp"
+    "src/debug.cpp"
     "src/expected.hpp"
     "src/parser.hpp"
     "src/parser.cpp"

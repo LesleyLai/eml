@@ -1,10 +1,10 @@
-#include "../src/vm.hpp"
+#include "vm.hpp"
 
 #include <catch2/catch.hpp>
 
 using namespace eml;
 
-void push_constant(eml::chunk& chunk, eml::value value, eml::line_num linum)
+void push_constant(eml::chunk& chunk, eml::Value value, eml::line_num linum)
 {
   chunk.write(op_push, linum);
   const auto offset = chunk.add_constant(value);
@@ -17,11 +17,11 @@ TEST_CASE("Manually write instructions")
   {
     GIVEN("(((2 3 +) 4 /) (2 5 *) -)")
     {
-      const auto v1 = value{2.};
-      const auto v2 = value{3.};
-      const auto v3 = value{4.};
-      const auto v4 = value{2.};
-      const auto v5 = value{5.};
+      const auto v1 = Value{2.};
+      const auto v2 = Value{3.};
+      const auto v3 = Value{4.};
+      const auto v4 = Value{2.};
+      const auto v5 = Value{5.};
 
       chunk code;
       push_constant(code, v1, line_num{0});
