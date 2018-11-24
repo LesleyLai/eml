@@ -257,7 +257,7 @@ auto parse_unary(Parser& parser) -> ast::Expr_ptr
   case token_type::bang:
     return ast::UnaryNotExpr::create(std::move(operand_ptr));
   case token_type::minus:
-    return ast::UnaryNotExpr::create(std::move(operand_ptr));
+    return ast::UnaryNegateExpr::create(std::move(operand_ptr));
   default:
     EML_UNREACHABLE();
   }

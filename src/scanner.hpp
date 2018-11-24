@@ -1,7 +1,6 @@
 #ifndef EML_SCANNER_HPP
 #define EML_SCANNER_HPP
 
-#include <cassert>
 #include <cctype>
 #include <cstdlib>
 #include <iostream>
@@ -227,7 +226,7 @@ struct Scanner {
 
     constexpr auto peek_next() const noexcept -> char
     {
-      assert(!at_end());
+      EML_ASSERT(!at_end(), "call peek_next when at the end of a string");
       return current[1];
     }
 

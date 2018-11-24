@@ -44,6 +44,10 @@ target_compile_definitions(lib${PROJECT_NAME} PUBLIC
     EML_MINOR_VERSION=${PROJECT_VERSION_MINOR}
     EML_PATCH_VERSION=${PROJECT_VERSION_PATCH})
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG)
+endif()
+
 if(EML_VM_DEBUG_TRACE_EXECUTION)
     target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_VM_DEBUG_TRACE_EXECUTION)
 endif()

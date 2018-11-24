@@ -1,7 +1,6 @@
 #ifndef EML_VM_HPP
 #define EML_VM_HPP
 
-#include <cassert>
 #include <functional>
 #include <type_traits>
 #include <vector>

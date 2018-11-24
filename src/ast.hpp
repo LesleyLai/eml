@@ -6,6 +6,7 @@
  * @brief This file contains the definition of the AST
  */
 
+#include "common.hpp"
 #include "value.hpp"
 #include <memory>
 
@@ -197,7 +198,11 @@ class UnaryOp : public Expr {
   Expr_ptr operand_;
 
 public:
-  explicit UnaryOp(Expr_ptr operand) : operand_{std::move(operand)} {}
+  explicit UnaryOp(Expr_ptr operand) : operand_{std::move(operand)}
+  {
+    EML_ASSERT(operand_ != nullptr,
+               "Operand of unary operation cannot be nullptr");
+  }
 
   Expr& operand() const
   {
@@ -240,6 +245,8 @@ public:
   explicit BinaryOpExpr(Expr_ptr lhs, Expr_ptr rhs)
       : lhs_{std::move(lhs)}, rhs_{std::move(rhs)}
   {
+    EML_ASSERT(lhs_ != nullptr, "Operand of unary operation cannot be nullptr");
+    EML_ASSERT(rhs_ != nullptr, "Operand of unary operation cannot be nullptr");
   }
 
   Expr& lhs() const

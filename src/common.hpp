@@ -4,10 +4,17 @@
 #include <string_view>
 
 /**
- * @file This header contains macros and defines used across the entire EML
+ * @file common.hpp
+ * @brief Compile time configurations and utilitize macros and functions
+ *
+ * This header contains macros and defines used across the entire EML
  * implementation. In particular, it contains compile time configurations
  * defines that control how EML works.
  */
+
+#define EML_STRINGIFY_DETAIL(x) #x
+#define EML_STRINGIFY(x) EML_STRINGIFY_DETAIL(x)
+#undef EML_STRINGIFY_DETAIL
 
 namespace eml {
 
@@ -32,7 +39,17 @@ struct version {
 
 } // namespace eml
 
-#ifdef DEBUG
+#ifdef EML_DEBUG
+#define EML_ASSERT(condition, message)                                         \
+  do {                                                                         \
+    if (!(condition)) {                                                        \
+      std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                  \
+                << "Assert failed in "                                         \
+                << std::string_view{static_cast<const char*>(__func__)}        \
+                << ": " << (message) << '\n';                                  \
+    }                                                                          \
+  } while (0)
+
 // Indicates that we know execution should never reach this point in the
 // program. In debug mode, we assert this fact because it's a bug to get here.
 //
@@ -42,11 +59,16 @@ struct version {
 // code is never reached.
 #define EML_UNREACHABLE()                                                      \
   do {                                                                         \
-    fprintf(stderr, "[%s:%d] This code should not be reached in %s()\n",       \
-            __FILE__, __LINE__, __func__);                                     \
-    abort();                                                                   \
+    std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                    \
+              << "This code should not be reached in "                         \
+              << std::string_view{static_cast<const char*>(__func__)} << '\n'; \
+    std::abort();                                                              \
   } while (0)
 #else
+#define EML_ASSERT(condition, message)                                         \
+  do {                                                                         \
+  } while (0)
+
 // Tell the compiler that this part of the code will never be reached.
 #if defined(_MSC_VER)
 #define EML_UNREACHABLE() __assume(0)
