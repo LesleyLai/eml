@@ -37,6 +37,29 @@ struct version {
   }
 };
 
+/**
+ * @brief A position in the file contains line number and column number
+ */
+struct FilePos {
+  std::size_t line = 1;
+  std::size_t column = 1;
+};
+
+/// @brief Types of the tokens
+enum class token_type {
+#define TOKEN_TABLE_ENTRY(type, name, prefix, infix, precedence) type,
+#include "token_table.inc"
+#undef TOKEN_TABLE_ENTRY
+};
+
+/// @brief The token is the intermidiate data structure that the scanner and
+/// parser communicate
+struct Token {
+  token_type type = token_type::eof;
+  std::string_view text;
+  FilePos position;
+};
+
 } // namespace eml
 
 #ifdef EML_DEBUG

@@ -21,19 +21,6 @@ constexpr auto isdigit(char c) noexcept -> bool
   return (c >= '0' && c <= '9');
 }
 
-enum class token_type {
-#define TOKEN_TABLE_ENTRY(type, name, prefix, infix, precedence) type,
-#include "token_table.inc"
-#undef TOKEN_TABLE_ENTRY
-};
-
-struct Token {
-  token_type type = token_type::eof;
-  std::string_view text;
-  std::size_t line = 1;
-  std::size_t column = 1;
-};
-
 std::ostream& operator<<(std::ostream& s, token_type t);
 std::ostream& operator<<(std::ostream& s, Token t);
 
@@ -249,13 +236,13 @@ struct Scanner {
     {
       return {type,
               {start, static_cast<std::size_t>(current - start)},
-              current_line,
-              current_column()};
+              FilePos{current_line, current_column()}};
     }
 
     auto error_token(const char* message) const noexcept -> Token
     {
-      return {token_type::error, message, current_line, current_column()};
+      return {token_type::error, message,
+              FilePos{current_line, current_column()}};
     }
 
     void skip_single_line_comment() noexcept

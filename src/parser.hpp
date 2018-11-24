@@ -5,6 +5,7 @@
 #include <optional>
 #include <string_view>
 
+#include "error.hpp"
 #include "expected.hpp"
 
 /**
@@ -15,18 +16,12 @@
 
 namespace eml {
 
-struct SyntaxError {
-  std::string_view msg_;
-
-  explicit SyntaxError(std::string_view msg) : msg_{msg} {}
-};
-
 namespace ast {
 struct Expr;
 } // namespace ast
 
 using ParseResult =
-    expected<std::unique_ptr<ast::Expr>, std::vector<SyntaxError>>;
+    expected<std::unique_ptr<ast::Expr>, std::vector<CompilationError>>;
 
 auto parse(std::string_view source) -> ParseResult;
 

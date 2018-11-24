@@ -1,5 +1,6 @@
 #include "ast.hpp"
 #include "debug.hpp"
+#include "error.hpp"
 #include "parser.hpp"
 
 #include <iostream>
@@ -40,9 +41,9 @@ TEST_CASE("Error handling of the parser")
     THEN("Should produces error")
     {
       REQUIRE(!ast.has_value());
-      for (const auto& e : ast.error()) {
-        std::clog << e.msg_ << '\n';
-      }
+      //      for (const auto& e : ast.error()) {
+      //        eml::report(e);
+      //      }
     }
   }
 }

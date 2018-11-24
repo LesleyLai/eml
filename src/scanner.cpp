@@ -18,8 +18,8 @@ std::ostream& operator<<(std::ostream& s, token_type t)
 
 std::ostream& operator<<(std::ostream& s, Token t)
 {
-  s << "(token: " << t.type << "\n text: \"" << t.text << "\"\n L" << t.line
-    << ':' << t.column << ")\n";
+  s << "(token: " << t.type << "\n text: \"" << t.text << "\"\n L"
+    << t.position.line << ':' << t.position.column << ")\n";
   return s;
 }
 

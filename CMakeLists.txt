@@ -24,6 +24,8 @@ add_library(lib${PROJECT_NAME}
     "src/debug.hpp"
     "src/debug.cpp"
     "src/expected.hpp"
+    "src/error.hpp"
+    "src/error.cpp"
     "src/parser.hpp"
     "src/parser.cpp"
     "src/token_table.inc"

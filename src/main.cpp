@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -22,9 +23,9 @@
         eml::VM vm{bytecode};
         std::cout << vm.interpret() << '\n';
       } else {
-        for (const auto& e : ast.error()) {
-          std::clog << e.msg_ << '\n';
-        }
+        const auto& errors = ast.error();
+        std::for_each(std::begin(errors), std::end(errors),
+                      [](auto e) { std::clog << eml::to_string(e) << '\n'; });
       }
     }
   }

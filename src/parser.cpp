@@ -33,7 +33,7 @@ struct Parser {
   eml::Scanner scanner;
   eml::Scanner::iterator current_itr;
   eml::Token previous;
-  std::vector<SyntaxError> errors;
+  std::vector<CompilationError> errors;
 
   bool had_error = false;
   bool panic_mode = false; // Ignore errors if in panic
@@ -87,31 +87,19 @@ struct Parser {
     error_at(*current_itr, message);
   }
 
-  void error_at(const eml::Token& token, std::string_view message)
+  void error_at(const eml::Token& token, std::string message)
   {
     if (panic_mode) {
       return;
     }
     panic_mode = true;
 
-    std::clog << "L" << token.line << ':' << token.column << " Syntax Error";
-
-    switch (token.type) {
-    case token_type::eof:
-      fputs(" at end", stderr);
-      break;
-    case token_type::error:
-      // Nothing
-      break;
-    default:
-      std::clog << " at \"" << token.text << "\"";
-    }
-
-    errors.emplace_back(message);
+    errors.emplace_back(std::in_place_type<SyntaxError>, std::move(message),
+                        token);
     had_error = true;
   }
 
-  void error_at_previous(std::string_view message)
+  void error_at_previous(const std::string& message)
   {
     error_at(previous, message);
   }
@@ -127,7 +115,8 @@ struct Parser {
         break;
       }
 
-      error_at(current, current.text);
+      // Hits an error token
+      error_at(current, std::string(current.text));
     }
   }
 };
