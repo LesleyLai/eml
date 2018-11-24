@@ -16,7 +16,7 @@ std::ostream& operator<<(std::ostream& s, token_type t)
   return s;
 }
 
-std::ostream& operator<<(std::ostream& s, token t)
+std::ostream& operator<<(std::ostream& s, Token t)
 {
   s << "(token: " << t.type << "\n text: \"" << t.text << "\"\n L" << t.line
     << ':' << t.column << ")\n";

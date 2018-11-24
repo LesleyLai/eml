@@ -7,8 +7,9 @@
 #include "scanner.hpp"
 #include "vm.hpp"
 
-[[noreturn]] void repl()
-{
+[[noreturn]] void repl() {
+  std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
+
   while (true) {
     std::cout << "> ";
     std::string line;

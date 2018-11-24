@@ -8,6 +8,8 @@
 #include <iterator>
 #include <string_view>
 
+#include "common.hpp"
+
 namespace eml {
 
 constexpr auto isalpha(char c) noexcept -> bool
@@ -26,7 +28,7 @@ enum class token_type {
 #undef TOKEN_TABLE_ENTRY
 };
 
-struct token {
+struct Token {
   token_type type = token_type::eof;
   std::string_view text;
   std::size_t line = 1;
@@ -34,14 +36,14 @@ struct token {
 };
 
 std::ostream& operator<<(std::ostream& s, token_type t);
-std::ostream& operator<<(std::ostream& s, token t);
+std::ostream& operator<<(std::ostream& s, Token t);
 
-constexpr bool operator==(token lhs, token rhs)
+constexpr bool operator==(Token lhs, Token rhs)
 {
   return lhs.type == rhs.type && lhs.text == rhs.text;
 }
 
-struct scanner {
+struct Scanner {
   std::string_view text;
 
   struct iterator {
@@ -62,12 +64,12 @@ struct scanner {
      * @return
      * @warning If this iterator is not dereferenceable, operation is undefined
      */
-    auto operator*() const -> const token
+    auto operator*() const -> const Token
     {
       return token_;
     }
 
-    auto operator-> () const -> const token*
+    auto operator-> () const -> const Token*
     {
       return &token_;
     }
@@ -87,12 +89,12 @@ struct scanner {
     const char* current;
     const char* current_line_start;
     std::size_t current_line = 1;
-    token token_; // The token when we direference
+    Token token_; // The token when we direference
 
-    auto next_token() -> token
+    auto next_token() -> Token
     {
       if (at_end()) {
-        return token{};
+        return Token{};
       }
 
       skip_whitespace();
@@ -155,12 +157,12 @@ struct scanner {
       // Literal tokens
       case '"':
         return string();
+      default:
+        return error_token("Unexpected character.");
       }
-
-      return error_token("Unexpected character.");
     }
 
-    auto identifier() noexcept -> token
+    auto identifier() noexcept -> Token
     {
       while (isalpha(peek()) || (isdigit(peek()))) {
         advance();
@@ -169,7 +171,7 @@ struct scanner {
       return make_token(identifier_type());
     }
 
-    auto number() noexcept -> token
+    auto number() noexcept -> Token
     {
       while (std::isdigit(peek()) != 0) {
         advance();
@@ -188,7 +190,7 @@ struct scanner {
       return make_token(token_type::number_literal);
     }
 
-    auto string() noexcept -> token
+    auto string() noexcept -> Token
     {
       while (peek() != '"' && !at_end()) {
         if (peek() == '\n') {
@@ -244,7 +246,7 @@ struct scanner {
       return static_cast<std::size_t>(start - current_line_start + 1);
     }
 
-    auto make_token(token_type type) const noexcept -> token
+    auto make_token(token_type type) const noexcept -> Token
     {
       return {type,
               {start, static_cast<std::size_t>(current - start)},
@@ -252,7 +254,7 @@ struct scanner {
               current_column()};
     }
 
-    auto error_token(const char* message) const noexcept -> token
+    auto error_token(const char* message) const noexcept -> Token
     {
       return {token_type::error, message, current_line, current_column()};
     }

@@ -121,13 +121,6 @@ struct ExprConstVisitor {
   virtual void operator()(const LeOpExpr& expr) = 0;
   virtual void operator()(const GreaterOpExpr& expr) = 0;
   virtual void operator()(const GeExpr& expr) = 0;
-
-  [[noreturn]] void operator()(const ErrorExpr& /*expr*/)
-  {
-    // Unreachable
-    std::clog << "Reach unreachable code\n";
-    std::exit(1);
-  }
 };
 
 /**
@@ -154,13 +147,6 @@ struct ExprVisitor {
   virtual void operator()(LeOpExpr& expr) = 0;
   virtual void operator()(GreaterOpExpr& expr) = 0;
   virtual void operator()(GeExpr& expr) = 0;
-
-  [[noreturn]] void operator()(ErrorExpr& /*expr*/)
-  {
-    // Unreachable
-    std::clog << "Reach unreachable code\n";
-    std::exit(1);
-  }
 };
 
 /**
@@ -179,21 +165,6 @@ struct Expr {
 };
 
 using Expr_ptr = std::unique_ptr<Expr>;
-
-/**
- * @brief A error node that represents with syntax error
- */
-class ErrorExpr final : public Expr, public FactoryMixin<ErrorExpr> {
-  void accept(ExprVisitor& visitor) override
-  {
-    visitor(*this);
-  }
-
-  void accept(ExprConstVisitor& visitor) const override
-  {
-    visitor(*this);
-  }
-};
 
 /**
  * @brief A literal expression node of the AST is a Node contains a value

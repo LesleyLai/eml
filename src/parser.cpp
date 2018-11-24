@@ -1,10 +1,24 @@
 #include "parser.hpp"
 #include "ast.hpp"
+#include "common.hpp"
 #include "scanner.hpp"
 
 #include <cstdint>
 
 namespace eml {
+
+// A error node that represents with syntax error
+class ErrorExpr final : public ast::Expr, public ast::FactoryMixin<ErrorExpr> {
+  void accept(ast::ExprVisitor&) override
+  {
+    EML_UNREACHABLE();
+  }
+
+  void accept(ast::ExprConstVisitor&) const override
+  {
+    EML_UNREACHABLE();
+  }
+};
 
 struct Parser;
 auto parse_expression(Parser& parser) -> ast::Expr_ptr;
@@ -16,15 +30,15 @@ struct Parser {
     check_unsupported_token_type(*current_itr);
   }
 
-  eml::scanner scanner;
-  eml::scanner::iterator current_itr;
-  eml::token previous;
+  eml::Scanner scanner;
+  eml::Scanner::iterator current_itr;
+  eml::Token previous;
   std::vector<SyntaxError> errors;
 
   bool had_error = false;
   bool panic_mode = false; // Ignore errors if in panic
 
-  void check_unsupported_token_type(const eml::token& token)
+  void check_unsupported_token_type(const eml::Token& token)
   {
     const auto type = token.type;
     switch (type) {
@@ -73,7 +87,7 @@ struct Parser {
     error_at(*current_itr, message);
   }
 
-  void error_at(const eml::token& token, std::string_view message)
+  void error_at(const eml::Token& token, std::string_view message)
   {
     if (panic_mode) {
       return;
@@ -187,7 +201,7 @@ auto parse_literal(Parser& parser) -> ast::Expr_ptr
     return ast::LiteralExpr::create(Value{false});
 
   default:
-    return ast::ErrorExpr::create(); // Unreachable.
+    EML_UNREACHABLE();
   }
 }
 
@@ -199,7 +213,7 @@ auto parse_precedence(Parser& parser, Precedence precedence) -> ast::Expr_ptr
   const auto prefix_rule = get_rule(parser.previous.type).prefix;
   if (prefix_rule == nullptr) {
     parser.error_at_previous("expect a prefix operator");
-    return ast::ErrorExpr::create();
+    return ErrorExpr::create();
   }
 
   auto left_ptr = prefix_rule(parser);
@@ -209,7 +223,7 @@ auto parse_precedence(Parser& parser, Precedence precedence) -> ast::Expr_ptr
     const auto infix_rule = get_rule(parser.previous.type).infix;
     if (infix_rule == nullptr) {
       parser.error_at_previous("expect a infix operator");
-      return ast::ErrorExpr::create();
+      return ErrorExpr::create();
     }
     left_ptr = infix_rule(parser, std::move(left_ptr));
   }
@@ -245,8 +259,7 @@ auto parse_unary(Parser& parser) -> ast::Expr_ptr
   case token_type::minus:
     return ast::UnaryNotExpr::create(std::move(operand_ptr));
   default:
-    std::clog << "Unsupported token " << parser.previous << '\n';
-    std::exit(1);
+    EML_UNREACHABLE();
   }
 }
 
@@ -292,9 +305,7 @@ auto parse_binary(Parser& parser, ast::Expr_ptr left_ptr) -> ast::Expr_ptr
     return ast::GeExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   default:
-    std::clog << "Unsupported token type " << operator_type
-              << " in binary expression.\n";
-    return ast::ErrorExpr::create();
+    EML_UNREACHABLE();
   }
 }
 
@@ -310,8 +321,7 @@ constexpr auto get_rule(token_type type) -> ParseRule
 #undef TOKEN_TABLE_ENTRY
   }
 
-  // Unreachable
-  return ParseRule{};
+  EML_UNREACHABLE();
 }
 
 auto parse(std::string_view source) -> ParseResult

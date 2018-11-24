@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(EmbeddedML)
+project(EmbeddedML
+    VERSION 0.0.0
+    )
 
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,12 +16,9 @@ option(EML_VM_DEBUG_TRACE_EXECUTION
     "The CM will disassemble all the instruction when running with this option"
     OFF)
 
-if(EML_VM_DEBUG_TRACE_EXECUTION)
-add_definitions(-DEML_VM_DEBUG_TRACE_EXECUTION)
-endif()
-
 add_library(lib${PROJECT_NAME}
     "src/ast.hpp"
+    "src/common.hpp"
     "src/compiler.hpp"
     "src/compiler.cpp"
     "src/debug.hpp"
@@ -38,6 +37,16 @@ target_include_directories(lib${PROJECT_NAME} PUBLIC "src")
 
 add_executable(${PROJECT_NAME} "src/main.cpp")
 target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})
+
+target_compile_definitions(lib${PROJECT_NAME} PUBLIC
+    EML_VERSION="${PROJECT_VERSION}"
+    EML_MAJOR_VERSION=${PROJECT_VERSION_MAJOR}
+    EML_MINOR_VERSION=${PROJECT_VERSION_MINOR}
+    EML_PATCH_VERSION=${PROJECT_VERSION_PATCH})
+
+if(EML_VM_DEBUG_TRACE_EXECUTION)
+    target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_VM_DEBUG_TRACE_EXECUTION)
+endif()
 
 # Conan package manager
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")

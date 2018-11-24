@@ -1,5 +1,6 @@
-#ifndef UTIL_HPP
-#define UTIL_HPP
+
+#ifndef EML_TEST_UTIL_HPP
+#define EML_TEST_UTIL_HPP
 
 // Test Utility functions
 
@@ -14,4 +15,4 @@ inline void push_constant(eml::chunk& chunk, eml::Value value,
   chunk.write(eml::opcode{*offset}, linum);
 }
 
-#endif // UTIL_HPP
+#endif // EML_TEST_UTIL_HPP

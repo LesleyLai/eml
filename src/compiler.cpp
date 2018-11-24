@@ -27,10 +27,6 @@ struct Compiler : ast::ExprConstVisitor {
     case Value::type::Number:
       const double number = constant.v().unsafe_as_number();
       const auto offset = chunk_->add_constant(eml::Value{number});
-      //      if (!offset) {
-      //        parser.error_at_previous("EML: Too many constants in one
-      //        chunk."); return;
-      //      }
 
       emit_code(eml::op_push);
       emit_code(eml::opcode{*offset});

@@ -76,13 +76,12 @@ struct chunk {
    * Adds a constant value v to the chunk. Returns the index where it was
    * appended so that we can locate that same constant later.
    */
-  [[nodiscard]] std::optional<opcode_num_type> add_constant(Value v)
-  {
+  [[nodiscard]] std::optional<opcode_num_type> add_constant(Value v) {
     if (constants.size() >= std::numeric_limits<opcode_num_type>::max()) {
       return {};
     }
     constants.push_back(v);
-    return constants.size() - 1;
+    return static_cast<opcode_num_type>(constants.size() - 1);
   }
 
   auto disassemble() const -> std::string;

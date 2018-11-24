@@ -3,26 +3,12 @@
 #include <sstream>
 #include <string_view>
 
+#include "common.hpp"
 #include "vm.hpp"
 
 namespace eml {
 
 namespace {
-#ifdef EML_VM_DEBUG_TRACE_EXECUTION
-void print_stack(const std::vector<Value>& stack)
-{
-  std::cout << "Stack: [";
-
-  for (auto i = stack.begin(); i < stack.end(); ++i) {
-    std::cout << to_string(*i, PrintType::no);
-    if (i != stack.end() - 1) {
-      std::cout << ", ";
-    }
-  }
-
-  std::cout << "]\n";
-}
-#endif
 
 // Push value to the stack
 void push(std::vector<Value>& stack, Value value)
@@ -87,10 +73,20 @@ auto VM::interpret() -> Value
 
   for (auto ip = code_.instructions.begin(); ip != code_.instructions.end();
        ++ip) {
-#ifdef EML_VM_DEBUG_TRACE_EXECUTION
-    print_stack(stack_);
-    std::cout << code_.disassemble_instruction(ip, offset) << '\n';
-#endif
+    if constexpr (build_options.vm_debug_trace_execution) {
+      std::cout << "Stack: [";
+
+      for (auto i = stack_.begin(); i < stack_.end(); ++i) {
+        std::cout << to_string(*i, PrintType::no);
+        if (i != stack_.end() - 1) {
+          std::cout << ", ";
+        }
+      }
+
+      std::cout << "]\n";
+      std::cout << code_.disassemble_instruction(ip, offset) << '\n';
+    }
+
     const auto instruction = *ip;
     switch (instruction) {
     case op_return:

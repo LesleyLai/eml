@@ -4,7 +4,7 @@
 
 #include "scanner.hpp"
 
-TEST_CASE("Scanner")
+TEST_CASE("scanner")
 {
   using namespace eml;
 
@@ -14,34 +14,34 @@ TEST_CASE("Scanner")
         R"(and async await case class def else extern false for if let not
         or print return this true () unsafe variant)";
 
-    scanner s{keywords};
+    Scanner s{keywords};
 
     WHEN("Scan the string")
     {
       THEN("Should get corerect keywords tokens")
       {
         std::array expected{
-            token{token_type::keyword_and, "and"},
-            token{token_type::keyword_async, "async"},
-            token{token_type::keyword_await, "await"},
-            token{token_type::keyword_case, "case"},
-            token{token_type::keyword_class, "class"},
-            token{token_type::keyword_def, "def"},
-            token{token_type::keyword_else, "else"},
-            token{token_type::keyword_extern, "extern"},
-            token{token_type::keyword_false, "false"},
-            token{token_type::keyword_for, "for"},
-            token{token_type::keyword_if, "if"},
-            token{token_type::keyword_let, "let"},
-            token{token_type::keyword_not, "not"},
-            token{token_type::keyword_or, "or"},
-            token{token_type::keyword_print, "print"},
-            token{token_type::keyword_return, "return"},
-            token{token_type::keyword_this, "this"},
-            token{token_type::keyword_true, "true"},
-            token{token_type::keyword_unit, "()"},
-            token{token_type::keyword_unsafe, "unsafe"},
-            token{token_type::keyword_variant, "variant"},
+            Token{token_type::keyword_and, "and"},
+            Token{token_type::keyword_async, "async"},
+            Token{token_type::keyword_await, "await"},
+            Token{token_type::keyword_case, "case"},
+            Token{token_type::keyword_class, "class"},
+            Token{token_type::keyword_def, "def"},
+            Token{token_type::keyword_else, "else"},
+            Token{token_type::keyword_extern, "extern"},
+            Token{token_type::keyword_false, "false"},
+            Token{token_type::keyword_for, "for"},
+            Token{token_type::keyword_if, "if"},
+            Token{token_type::keyword_let, "let"},
+            Token{token_type::keyword_not, "not"},
+            Token{token_type::keyword_or, "or"},
+            Token{token_type::keyword_print, "print"},
+            Token{token_type::keyword_return, "return"},
+            Token{token_type::keyword_this, "this"},
+            Token{token_type::keyword_true, "true"},
+            Token{token_type::keyword_unit, "()"},
+            Token{token_type::keyword_unsafe, "unsafe"},
+            Token{token_type::keyword_variant, "variant"},
         };
 
         auto expected_itr = std::begin(expected);
@@ -60,16 +60,16 @@ TEST_CASE("Error handling of the scanner")
 
   GIVEN("A string contains unknown characters")
   {
-    scanner s{R"(let # = 3)"};
+    Scanner s{R"(let # = 3)"};
     WHEN("Scan the string")
     {
       THEN("Correct identify the error, but scan the remaining part correctly")
       {
         std::array expected{
-            token{token_type::keyword_let, "let"},
-            token{token_type::error, "Unexpected character."},
-            token{token_type::equal, "="},
-            token{token_type::number_literal, "3"},
+            Token{token_type::keyword_let, "let"},
+            Token{token_type::error, "Unexpected character."},
+            Token{token_type::equal, "="},
+            Token{token_type::number_literal, "3"},
         };
 
         auto expected_itr = std::begin(expected);
@@ -83,10 +83,10 @@ TEST_CASE("Error handling of the scanner")
 
   GIVEN("None-terminate string")
   {
-    scanner s{R"("Hello world)"};
+    Scanner s{R"("Hello world)"};
     THEN("Should detect the problem")
     {
-      token expected{token_type::error, "Unterminated string."};
+      Token expected{token_type::error, "Unterminated string."};
       REQUIRE(*s.begin() == expected);
     }
   }

@@ -2,15 +2,9 @@
 #include "compiler.hpp"
 #include "debug.hpp"
 
-#include <catch2/catch.hpp>
+#include "util.hpp"
 
-void push_constant(eml::chunk& chunk, eml::Value value,
-                   eml::line_num linum = eml::line_num{0})
-{
-  chunk.write(eml::op_push, linum);
-  const auto offset = chunk.add_constant(value);
-  chunk.write(eml::opcode{*offset}, linum);
-}
+#include <catch2/catch.hpp>
 
 TEST_CASE("AST visiting and printing")
 {

@@ -1,5 +1,7 @@
 #include "value.hpp"
 
+#include <sstream>
+
 namespace eml {
 
 auto to_string(const eml::Value& v, eml::PrintType print_type) -> std::string
