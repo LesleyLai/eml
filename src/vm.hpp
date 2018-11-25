@@ -13,31 +13,8 @@ namespace eml {
  * @brief The instruction set of the Embedded ML vm
  */
 enum opcode : std::uint8_t {
-  op_return,
-  op_push, // Pushes a constant to the stack
-  op_pop,  // Pop a constant from the stack
-
-  op_true,  // Pushes true to the stack
-  op_false, // Pushes false to the stack
-  op_unit,  // Pushes unit to the stack
-
-  // Unary Arithmatics
-  op_negate,
-  op_not,
-
-  // Binary Arithmatics
-  op_add,
-  op_subtract,
-  op_multiply,
-  op_divide,
-
-  // Comparisons
-  op_equal,
-  op_not_equal,
-  op_less,
-  op_less_equal,
-  op_greater,
-  op_greater_equal,
+#define OPCODE(type, stack_impact) op_##type,
+#include "opcode.inc"
 };
 
 /// @brief The underlying numerical type of the @ref opcode enum

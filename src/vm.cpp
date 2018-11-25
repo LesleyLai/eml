@@ -157,9 +157,7 @@ auto VM::interpret() -> Value
       comparison_operation(stack_, std::greater_equal<Value>{});
       break;
     default:
-      std::cerr << "EML Virtual Machine: Unknown instruction " << instruction
-                << "!\n";
-      std::exit(1);
+      EML_UNREACHABLE();
     }
 
     ++offset;

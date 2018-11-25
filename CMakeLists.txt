@@ -46,6 +46,7 @@ add_library(lib${PROJECT_NAME}
     "src/error.cpp"
     "src/parser.hpp"
     "src/parser.cpp"
+    "src/opcode.inc"
     "src/token_table.inc"
     "src/type.hpp"
     "src/type.cpp"

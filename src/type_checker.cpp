@@ -88,7 +88,7 @@ struct TypeChecker : ast::ExprVisitor {
     } else {
       if (!panic_mode) {
         std::stringstream ss;
-        ss << "Unmatched types around binary operator" << op << '\n';
+        ss << "Unmatched types around binary operator " << op << '\n';
         ss << std::left << "Requires " << std::setw(8) << allowed_type.arg1_type
            << std::setw(3) << op << std::setw(8) << allowed_type.arg2_type
            << '\n';
@@ -108,7 +108,7 @@ struct TypeChecker : ast::ExprVisitor {
     } else {
       if (!panic_mode) {
         std::stringstream ss;
-        ss << "Unmatched types around comparison operator" << op << '\n';
+        ss << "Unmatched types around comparison operator " << op << '\n';
         ss << "Requires "
            << "T " << op << " T\n";
         ss << "where T: EqualityComparable\n";
