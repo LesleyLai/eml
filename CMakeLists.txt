@@ -10,7 +10,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 include("cmake/compiler.cmake")
 #include("cmake/clang-tidy.cmake")
 #include("cmake/cppcheck.cmake")
-include("cmake/doxygen.cmake")
+#
 
 option(EML_DEBUG_PRINT_AST
     "The Parser will print the generated ast"
@@ -19,6 +19,18 @@ option(EML_DEBUG_PRINT_AST
 option(EML_DEBUG_VM_TRACE_EXECUTION
     "The VM will disassemble all the instruction when running with this option"
     OFF)
+
+option(EML_BUILD_DOCUMENTS
+    "Builds the documents for EML"
+    OFF)
+
+option(EML_BUILD_TESTS
+    "Builds the tests for EML"
+    OFF)
+
+if(EML_BUILD_DOCUMENTS)
+    include("cmake/doxygen.cmake")
+endif()
 
 add_library(lib${PROJECT_NAME}
     "src/ast.hpp"
@@ -68,17 +80,20 @@ if(EML_DEBUG_PRINT_AST)
     target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG_PRINT_AST)
 endif()
 
-# Conan package manager
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-   file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
-                 "${CMAKE_BINARY_DIR}/conan.cmake")
+if(EML_BUILD_TESTS)
+    # Conan package manager
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+       message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+       file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
+                     "${CMAKE_BINARY_DIR}/conan.cmake")
+    endif()
+
+    include(${CMAKE_BINARY_DIR}/conan.cmake)
+    conan_cmake_run(REQUIRES catch2/2.4.0@bincrafters/stable
+                    BASIC_SETUP CMAKE_TARGETS
+                    BUILD missing)
+
+    add_subdirectory(tests)
 endif()
 
-include(${CMAKE_BINARY_DIR}/conan.cmake)
-conan_cmake_run(REQUIRES catch2/2.4.0@bincrafters/stable
-                BASIC_SETUP CMAKE_TARGETS
-                BUILD missing)
-
-add_subdirectory(tests)
 

@@ -61,12 +61,31 @@ struct TypeChecker : ast::ExprVisitor {
         expr.rhs().type() == allowed_type.arg2_type) {
       expr.set_type(allowed_type.result_type);
     } else {
-      if (expr.lhs().type() && expr.rhs().type()) {
+      if (!panic_mode) {
         std::stringstream ss;
         ss << "Unmatched types around binary operators\n";
         ss << std::left << "Requires " << std::setw(8) << allowed_type.arg1_type
            << std::setw(3) << op << std::setw(8) << allowed_type.arg2_type
            << '\n';
+        ss << "Has      " << std::setw(8) << *expr.lhs().type() << std::setw(3)
+           << op << std::setw(8) << *expr.rhs().type() << '\n';
+        error(ss.str());
+      }
+    }
+  }
+
+  void equality_common(ast::BinaryOpExpr& expr, std::string_view op)
+  {
+    expr.lhs().accept(*this);
+    expr.rhs().accept(*this);
+    if (expr.lhs().type() == expr.rhs().type()) {
+      expr.set_type(BoolType{});
+    } else {
+      if (!panic_mode) {
+        std::stringstream ss;
+        ss << "Unmatched types around binary operators\n";
+        ss << std::left << "Requires " << std::setw(8) << "EquallyComparable"
+           << std::setw(3) << op << std::setw(8) << "EquallyComparable\n";
         ss << "Has      " << std::setw(8) << *expr.lhs().type() << std::setw(3)
            << op << std::setw(8) << *expr.rhs().type() << '\n';
         error(ss.str());
@@ -96,13 +115,11 @@ struct TypeChecker : ast::ExprVisitor {
   }
   void operator()(ast::EqOpExpr& expr) override
   {
-    binary_common(expr,
-                  "==", Func2Type{NumberType{}, NumberType{}, BoolType{}});
+    equality_common(expr, "==");
   }
   void operator()(ast::NeqOpExpr& expr) override
   {
-    binary_common(expr,
-                  "!=", Func2Type{NumberType{}, NumberType{}, BoolType{}});
+    equality_common(expr, "!=");
   }
   void operator()(ast::LessOpExpr& expr) override
   {
