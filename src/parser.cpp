@@ -311,7 +311,8 @@ constexpr auto get_rule(token_type type) -> ParseRule
 #undef TOKEN_TABLE_ENTRY
   }
 
-  EML_UNREACHABLE();
+  // Unreachable
+  return ParseRule{};
 }
 
 auto parse(std::string_view source) -> ParseResult

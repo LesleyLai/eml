@@ -31,7 +31,7 @@ struct BuildOptions {
   constexpr static bool debug_print_ast = false;
 #endif
 };
-inline constexpr BuildOptions build_options;
+static constexpr BuildOptions build_options;
 
 struct version {
   static constexpr int major = EML_MAJOR_VERSION;
@@ -63,7 +63,7 @@ enum class token_type {
 struct Token {
   token_type type = token_type::eof;
   std::string_view text;
-  FilePos position;
+  FilePos position = {};
 };
 
 } // namespace eml
