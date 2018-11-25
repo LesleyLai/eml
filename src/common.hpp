@@ -19,10 +19,16 @@
 namespace eml {
 
 struct BuildOptions {
-#ifdef EML_VM_DEBUG_TRACE_EXECUTION
-  constexpr static bool vm_debug_trace_execution = true;
+#ifdef EML_DEBUG_VM_TRACE_EXECUTION
+  constexpr static bool debug_vm_trace_execution = true;
 #else
-  constexpr static bool vm_debug_trace_execution = false;
+  constexpr static bool debug_vm_trace_execution = false;
+#endif
+
+#ifdef EML_DEBUG_PRINT_AST
+  constexpr static bool debug_print_ast = true;
+#else
+  constexpr static bool debug_print_ast = false;
 #endif
 };
 inline constexpr BuildOptions build_options;

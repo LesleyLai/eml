@@ -5,22 +5,6 @@
 
 namespace eml {
 
-// void report(const CompilationError& error)
-//{
-//  std::clog << "L" << error.pos_.line << ':' << error.pos_.column;
-
-//  switch (error.type_) {
-//  case CompilationError::type::syntax_error:
-//    std::clog << " Syntax Error: ";
-//    break;
-
-//  case CompilationError::type::type_error:
-//    return;
-//  }
-
-//  std::clog << error.msg_ << '\n';
-//}
-
 struct ErrorPrinter {
   std::ostream& os_;
 

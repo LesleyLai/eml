@@ -1,4 +1,5 @@
 #include "compiler.hpp"
+#include "parser.hpp"
 
 namespace eml {
 

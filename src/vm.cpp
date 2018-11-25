@@ -73,7 +73,7 @@ auto VM::interpret() -> Value
 
   for (auto ip = code_.instructions.begin(); ip != code_.instructions.end();
        ++ip) {
-    if constexpr (build_options.vm_debug_trace_execution) {
+    if constexpr (build_options.debug_vm_trace_execution) {
       std::cout << "Stack: [";
 
       for (auto i = stack_.begin(); i < stack_.end(); ++i) {

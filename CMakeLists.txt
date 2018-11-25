@@ -12,8 +12,12 @@ include("cmake/compiler.cmake")
 #include("cmake/cppcheck.cmake")
 include("cmake/doxygen.cmake")
 
-option(EML_VM_DEBUG_TRACE_EXECUTION
-    "The CM will disassemble all the instruction when running with this option"
+option(EML_DEBUG_PRINT_AST
+    "The Parser will print the generated ast"
+    OFF)
+
+option(EML_DEBUG_VM_TRACE_EXECUTION
+    "The VM will disassemble all the instruction when running with this option"
     OFF)
 
 add_library(lib${PROJECT_NAME}
@@ -23,6 +27,8 @@ add_library(lib${PROJECT_NAME}
     "src/compiler.cpp"
     "src/debug.hpp"
     "src/debug.cpp"
+    "src/eml.hpp"
+    "src/eml.cpp"
     "src/expected.hpp"
     "src/error.hpp"
     "src/error.cpp"
@@ -50,8 +56,12 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG)
 endif()
 
-if(EML_VM_DEBUG_TRACE_EXECUTION)
-    target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_VM_DEBUG_TRACE_EXECUTION)
+if(EML_DEBUG_VM_TRACE_EXECUTION)
+    target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG_VM_TRACE_EXECUTION)
+endif()
+
+if(EML_DEBUG_PRINT_AST)
+    target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG_PRINT_AST)
 endif()
 
 # Conan package manager

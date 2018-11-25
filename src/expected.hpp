@@ -665,12 +665,10 @@ struct expected_operations_base : expected_storage_base<T, E> {
   {
     return std::move(this->m_val);
   }
-#ifndef EML_EXPECTED_NO_CONSTRR
   constexpr const T&& get() const&&
   {
     return std::move(this->m_val);
   }
-#endif
 
   constexpr unexpected<E>& geterr() &
   {
@@ -684,12 +682,10 @@ struct expected_operations_base : expected_storage_base<T, E> {
   {
     return std::move(this->m_unexpect);
   }
-#ifndef EML_EXPECTED_NO_CONSTRR
   constexpr const unexpected<E>&& geterr() const&&
   {
     return std::move(this->m_unexpect);
   }
-#endif
 
   constexpr void destroy_val()
   {
@@ -755,12 +751,10 @@ struct expected_operations_base<void, E> : expected_storage_base<void, E> {
   {
     return std::move(this->m_unexpect);
   }
-#ifndef EML_EXPECTED_NO_CONSTRR
   constexpr const unexpected<E>&& geterr() const&&
   {
     return std::move(this->m_unexpect);
   }
-#endif
 
   constexpr void destroy_val()
   {
@@ -1175,13 +1169,11 @@ public:
     return and_then_impl(*this, std::forward<F>(f));
   }
 
-#ifndef EML_EXPECTED_NO_CONSTRR
   /// @overload
   template <class F> constexpr auto and_then(F&& f) const&&
   {
     return and_then_impl(std::move(*this), std::forward<F>(f));
   }
-#endif
 
   /// @brief Carries out some operation on the stored object if there is one.
   ///

@@ -2,10 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "compiler.hpp"
-#include "debug.hpp"
-#include "parser.hpp"
-#include "scanner.hpp"
+#include "eml.hpp"
 #include "vm.hpp"
 
 [[noreturn]] void repl() {
@@ -16,14 +13,12 @@
     std::string line;
     std::getline(std::cin, line);
     if (!line.empty()) {
-      const auto ast = eml::parse(line);
-      if (ast) {
-        std::cout << eml::string_from_ast(**ast) << "\n\n";
-        const auto bytecode = eml::bytecode_from_ast(**ast);
-        eml::VM vm{bytecode};
+      auto bytecode = eml::compile(line);
+      if (bytecode) {
+        eml::VM vm{std::move(*bytecode)};
         std::cout << vm.interpret() << '\n';
       } else {
-        const auto& errors = ast.error();
+        const auto& errors = bytecode.error();
         std::for_each(std::begin(errors), std::end(errors),
                       [](auto e) { std::clog << eml::to_string(e) << '\n'; });
       }

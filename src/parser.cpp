@@ -1,6 +1,7 @@
 #include "parser.hpp"
 #include "ast.hpp"
 #include "common.hpp"
+#include "debug.hpp"
 #include "scanner.hpp"
 
 #include <cstdint>
@@ -321,6 +322,9 @@ auto parse(std::string_view source) -> ParseResult
   if (parser.had_error) {
     return unexpected{std::move(parser.errors)};
   } else {
+    if constexpr (build_options.debug_print_ast) {
+      std::cout << eml::string_from_ast(*expr) << '\n';
+    }
     return std::move(expr);
   }
 }
