@@ -12,7 +12,7 @@ namespace eml {
 /**
  * @brief The instruction set of the Embedded ML vm
  */
-enum opcode : std::uint8_t {
+enum opcode : std::underlying_type_t<std::byte> {
 #define OPCODE(type, stack_impact) op_##type,
 #include "opcode.inc"
 };
@@ -31,18 +31,29 @@ class VM;
  * @brief A chunk of eml bytecode
  */
 struct chunk {
-  std::vector<opcode> instructions; // Instructions
+  std::vector<std::byte> instructions; // Instructions
   std::vector<Value> constants;
   std::vector<line_num> lines; // Source line information
 
   /**
-   * @brief Write an instruction to the chunk
+   * @brief Write an instruction to the instructions
    * @param code The instruction
    * @param line The line this instruction in source
    */
   void write(opcode code, line_num line)
   {
-    instructions.push_back(code);
+    instructions.push_back(static_cast<std::byte>(code));
+    lines.push_back(line);
+  }
+
+  /**
+   * @brief Write a byte to the instructions
+   * @param data The byte
+   * @param line The line this instruction in source
+   */
+  void write(std::byte code, line_num line)
+  {
+    instructions.push_back(static_cast<std::byte>(code));
     lines.push_back(line);
   }
 

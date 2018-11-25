@@ -88,7 +88,7 @@ auto VM::interpret() -> Value
     }
 
     const auto instruction = *ip;
-    switch (instruction) {
+    switch (static_cast<opcode>(instruction)) {
     case op_return:
       std::fputs("EML: Do not know how to handle return yet\n", stderr);
       std::exit(-1);
@@ -179,7 +179,7 @@ std::string chunk::disassemble() const
   for (auto ip = instructions.begin(); ip != instructions.end(); ++ip) {
     result += disassemble_instruction(ip, offset);
     const auto instruction = *ip;
-    switch (instruction) {
+    switch (static_cast<opcode>(instruction)) {
     case op_push: {
       ++ip;
     } break;
@@ -201,7 +201,8 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
     // Over max byte of hex will cause misalignment in output
     constexpr std::size_t max_byte = 5;
     for (auto i = std::size_t{0}; i < count; ++i) {
-      ss << std::hex << std::setfill('0') << std::setw(2) << *current_ip << ' ';
+      const auto code = std::to_integer<unsigned>(*current_ip);
+      ss << std::hex << std::setfill('0') << std::setw(2) << code << ' ';
       ++current_ip;
     }
     for (auto i = count; i < max_byte; ++i) {
@@ -233,7 +234,7 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
   }
   ss << "    ";
 
-  switch (*ip) {
+  switch (static_cast<opcode>(*ip)) {
   case op_return:
     disassemble_simple_instruction(ip, "return");
     break;

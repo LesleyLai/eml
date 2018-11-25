@@ -42,3 +42,14 @@ TEST_CASE("Arithmatic instructions", "[eml.vm]")
     }
   }
 }
+
+TEST_CASE("Write and read global values", "[eml.vm]")
+{
+  GIVEN("let x = 2; x")
+  {
+    chunk code;
+    const auto v1 = Value{2.};
+    push_constant(code, v1, line_num{0});
+    // push_constant(code, v1, line_num{0});
+  }
+}

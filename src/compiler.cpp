@@ -12,6 +12,11 @@ struct Compiler : ast::ExprConstVisitor {
     chunk_->write(code, eml::line_num{0});
   }
 
+  void emit_code(std::byte byte)
+  {
+    chunk_->write(byte, eml::line_num{0});
+  }
+
   void operator()(const ast::LiteralExpr& constant) override
   {
     switch (constant.v().type) {
@@ -30,7 +35,7 @@ struct Compiler : ast::ExprConstVisitor {
       const auto offset = chunk_->add_constant(eml::Value{number});
 
       emit_code(eml::op_push);
-      emit_code(eml::opcode{*offset});
+      emit_code(std::byte{*offset});
       break;
     }
   }
