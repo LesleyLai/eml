@@ -42,7 +42,7 @@ struct TypeChecker : ast::ExprVisitor {
     } else {
       if (!panic_mode) {
         std::stringstream ss;
-        ss << "Unmatched types around of unary operators\n";
+        ss << "Unmatched types around of unary operator " << op << '\n';
         ss << std::left << "Requires " << op << " " << std::setw(8)
            << allowed_type.arg_type << '\n';
         ss << std::left << "Has      " << op << " " << std::setw(8)
@@ -88,7 +88,7 @@ struct TypeChecker : ast::ExprVisitor {
     } else {
       if (!panic_mode) {
         std::stringstream ss;
-        ss << "Unmatched types around binary operators\n";
+        ss << "Unmatched types around binary operator" << op << '\n';
         ss << std::left << "Requires " << std::setw(8) << allowed_type.arg1_type
            << std::setw(3) << op << std::setw(8) << allowed_type.arg2_type
            << '\n';
@@ -108,11 +108,12 @@ struct TypeChecker : ast::ExprVisitor {
     } else {
       if (!panic_mode) {
         std::stringstream ss;
-        ss << "Unmatched types around binary operators\n";
-        ss << std::left << "Requires " << std::setw(8) << "EquallyComparable"
-           << std::setw(3) << op << std::setw(8) << "EquallyComparable\n";
-        ss << "Has      " << std::setw(8) << *expr.lhs().type() << std::setw(3)
-           << op << std::setw(8) << *expr.rhs().type() << '\n';
+        ss << "Unmatched types around comparison operator" << op << '\n';
+        ss << "Requires "
+           << "T " << op << " T\n";
+        ss << "where T: EqualityComparable\n";
+        ss << "Has " << *expr.lhs().type() << " " << op << " "
+           << *expr.rhs().type() << '\n';
         error(ss.str());
       }
     }
