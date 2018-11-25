@@ -9,6 +9,11 @@
 
 #include "common.hpp"
 
+/**
+ * @file scanner.hpp
+ * @brief This file contains the scanner for the EML compiler
+ */
+
 namespace eml {
 
 constexpr auto isalpha(char c) noexcept -> bool
@@ -29,6 +34,7 @@ constexpr bool operator==(Token lhs, Token rhs)
   return lhs.type == rhs.type && lhs.text == rhs.text;
 }
 
+/// @brief The scanner scan the input string and output tokens
 struct Scanner {
   std::string_view text;
 

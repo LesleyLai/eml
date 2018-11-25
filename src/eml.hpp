@@ -2,6 +2,10 @@
 #define EML_HPP
 
 /**
+ * @dir src All the source files of eml
+ */
+
+/**
  * @file eml.hpp
  * @brief This file provides the public api of EML
  */
@@ -11,6 +15,10 @@
 #include "expected.hpp"
 #include "vm.hpp"
 
+/**
+ * @namespace eml
+ * @brief The Embedded ML Library
+ */
 namespace eml {
 
 using CompileResult = expected<chunk, std::vector<CompilationError>>;
