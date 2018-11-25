@@ -4,6 +4,42 @@
 
 namespace ast = eml::ast;
 
+TEST_CASE("Type check on unary expressions")
+{
+  GIVEN("(- 2)")
+  {
+    ast::Expr_ptr ast =
+        ast::UnaryNegateExpr::create(ast::LiteralExpr::create(eml::Value{2.}));
+    WHEN("Type check")
+    {
+      const auto checked_ast = eml::type_check(ast);
+      THEN("Passes the type check")
+      {
+        REQUIRE(checked_ast.has_value());
+
+        THEN("Gets `Number` as its type")
+        {
+          REQUIRE((*checked_ast)->type() == eml::NumberType{});
+        }
+      }
+    }
+  }
+
+  GIVEN("(! 2)")
+  {
+    ast::Expr_ptr ast =
+        ast::UnaryNotExpr::create(ast::LiteralExpr::create(eml::Value{2.}));
+    WHEN("Type check")
+    {
+      const auto checked_ast = eml::type_check(ast);
+      THEN("Failed the type check")
+      {
+        REQUIRE(!checked_ast.has_value());
+      }
+    }
+  }
+}
+
 TEST_CASE("Type check on binary arithmatic expressions")
 {
   GIVEN("(+ 1 1)")

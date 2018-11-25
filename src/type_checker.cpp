@@ -5,6 +5,11 @@
 
 namespace eml {
 
+struct Func1Type {
+  Type arg_type;
+  Type result_type;
+};
+
 struct Func2Type {
   Type arg1_type;
   Type arg2_type;
@@ -24,22 +29,38 @@ struct TypeChecker : ast::ExprVisitor {
                "All literal should have a type assigned from the parser");
   }
 
-  void unary_common(ast::UnaryOpExpr& expr)
+  void unary_common(ast::UnaryOpExpr& expr, std::string_view op,
+                    const Func1Type& allowed_type)
   {
     if (expr.type()) {
       return;
     }
 
     expr.operand().accept(*this);
-
-    // expr.lhs().accept(*this);
-    // expr.rhs().accept(*this);
-    // emit_code(op);
+    if (expr.operand().type() == allowed_type.arg_type) {
+      expr.set_type(allowed_type.result_type);
+    } else {
+      if (!panic_mode) {
+        std::stringstream ss;
+        ss << "Unmatched types around of unary operators\n";
+        ss << std::left << "Requires " << op << " " << std::setw(8)
+           << allowed_type.arg_type << '\n';
+        ss << std::left << "Has      " << op << " " << std::setw(8)
+           << *expr.operand().type() << '\n';
+        error(ss.str());
+      }
+    }
   }
 
-  void operator()(ast::UnaryNegateExpr& expr) override {}
+  void operator()(ast::UnaryNegateExpr& expr) override
+  {
+    unary_common(expr, "-", Func1Type{NumberType{}, NumberType{}});
+  }
 
-  void operator()(ast::UnaryNotExpr& expr) override {}
+  void operator()(ast::UnaryNotExpr& expr) override
+  {
+    unary_common(expr, "!", Func1Type{BoolType{}, BoolType{}});
+  }
 
   void error(std::string message)
   {
@@ -55,6 +76,10 @@ struct TypeChecker : ast::ExprVisitor {
   void binary_common(ast::BinaryOpExpr& expr, std::string_view op,
                      const Func2Type& allowed_type)
   {
+    if (expr.type()) {
+      return;
+    }
+
     expr.lhs().accept(*this);
     expr.rhs().accept(*this);
     if (expr.lhs().type() == allowed_type.arg1_type &&
