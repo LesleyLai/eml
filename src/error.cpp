@@ -26,6 +26,11 @@ struct ErrorPrinter {
 
     os_ << ": " << e.msg;
   }
+
+  void operator()(const TypeError& e)
+  {
+    os_ << "Type Error: " << e.msg;
+  }
 };
 
 std::string to_string(const CompilationError& error)

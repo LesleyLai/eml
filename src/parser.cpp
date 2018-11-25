@@ -3,6 +3,7 @@
 #include "common.hpp"
 #include "debug.hpp"
 #include "scanner.hpp"
+#include "type.hpp"
 
 #include <cstdint>
 
@@ -175,20 +176,20 @@ Precedence higher(Precedence p)
 auto parse_number(Parser& parser) -> ast::Expr_ptr
 {
   const double number = strtod(parser.previous.text.data(), nullptr);
-  return ast::LiteralExpr::create(Value{number});
+  return ast::LiteralExpr::create(Value{number}, NumberType{});
 }
 
 auto parse_literal(Parser& parser) -> ast::Expr_ptr
 {
   switch (parser.previous.type) {
   case token_type::keyword_unit:
-    return ast::LiteralExpr::create(Value{});
+    return ast::LiteralExpr::create(Value{}, UnitType{});
 
   case token_type::keyword_true:
-    return ast::LiteralExpr::create(Value{true});
+    return ast::LiteralExpr::create(Value{true}, BoolType{});
 
   case token_type::keyword_false:
-    return ast::LiteralExpr::create(Value{false});
+    return ast::LiteralExpr::create(Value{false}, BoolType{});
 
   default:
     EML_UNREACHABLE();

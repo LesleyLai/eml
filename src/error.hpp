@@ -26,7 +26,13 @@ struct SyntaxError {
   }
 };
 
-using CompilationError = std::variant<SyntaxError>;
+struct TypeError {
+  std::string msg;
+
+  explicit TypeError(std::string msg_in) : msg{std::move(msg_in)} {}
+};
+
+using CompilationError = std::variant<SyntaxError, TypeError>;
 
 std::string to_string(const CompilationError& error);
 

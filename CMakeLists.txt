@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 project(EmbeddedML
-    VERSION 0.0.0
+    VERSION 0.0.1
     )
 
 set (CMAKE_CXX_STANDARD 17)
@@ -35,6 +35,10 @@ add_library(lib${PROJECT_NAME}
     "src/parser.hpp"
     "src/parser.cpp"
     "src/token_table.inc"
+    "src/type.hpp"
+    "src/type.cpp"
+    "src/type_checker.hpp"
+    "src/type_checker.cpp"
     "src/scanner.hpp"
     "src/scanner.cpp"
     "src/value.hpp"

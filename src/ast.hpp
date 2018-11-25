@@ -7,8 +7,11 @@
  */
 
 #include "common.hpp"
+#include "type.hpp"
 #include "value.hpp"
+
 #include <memory>
+#include <optional>
 
 namespace eml {
 
@@ -155,6 +158,7 @@ struct ExprVisitor {
  */
 struct Expr {
   Expr() = default;
+  explicit Expr(Type type) : type_{std::move(type)} {}
   virtual ~Expr() = default;
   Expr(const Expr&) = delete;
   Expr& operator=(const Expr&) = delete;
@@ -163,6 +167,27 @@ struct Expr {
 
   virtual void accept(ExprConstVisitor& visitor) const = 0;
   virtual void accept(ExprVisitor& visitor) = 0;
+
+public:
+  /**
+   * @brief Gets the type of the AST node, or std::nullopt if the node don't
+   * have a type yet
+   */
+  auto type() const -> std::optional<Type>
+  {
+    return type_;
+  }
+
+  /**
+   * @brief Sets the type of the AST node
+   */
+  void set_type(Type type)
+  {
+    type_ = std::move(type);
+  }
+
+private:
+  std::optional<Type> type_ = std::nullopt;
 };
 
 using Expr_ptr = std::unique_ptr<Expr>;
@@ -173,9 +198,26 @@ using Expr_ptr = std::unique_ptr<Expr>;
 class LiteralExpr final : public Expr, public FactoryMixin<LiteralExpr> {
   Value v_;
 
+  auto deduce_literal_type(const Value& v) -> Type
+  {
+    if (v.is_boolean()) {
+      return BoolType{};
+    } else if (v.is_number()) {
+      return NumberType{};
+    } else if (v.is_unit()) {
+      return UnitType{};
+    }
+
+    EML_UNREACHABLE();
+  }
+
 public:
-  explicit LiteralExpr(Value v) : v_{v} {}
-  Value v() const
+  explicit LiteralExpr(Value v) : Expr{deduce_literal_type(v)}, v_{std::move(v)}
+  {
+  }
+
+  LiteralExpr(Value v, Type t) : Expr{std::move(t)}, v_{std::move(v)} {}
+  auto v() const -> Value
   {
     return v_;
   }
@@ -194,11 +236,11 @@ public:
 /**
  * @brief Base class of all unary operations
  */
-class UnaryOp : public Expr {
+class UnaryOpExpr : public Expr {
   Expr_ptr operand_;
 
 public:
-  explicit UnaryOp(Expr_ptr operand) : operand_{std::move(operand)}
+  explicit UnaryOpExpr(Expr_ptr operand) : operand_{std::move(operand)}
   {
     EML_ASSERT(operand_ != nullptr,
                "Operand of unary operation cannot be nullptr");
@@ -217,9 +259,10 @@ public:
  * @see UnaryNegateExpr, UnaryNotExpr
  */
 template <detail::UnaryOpType optype>
-struct UnaryOpExprTemplate final : UnaryOp,
+struct UnaryOpExprTemplate final : UnaryOpExpr,
                                    FactoryMixin<UnaryOpExprTemplate<optype>> {
-  explicit UnaryOpExprTemplate(Expr_ptr operand) : UnaryOp{std::move(operand)}
+  explicit UnaryOpExprTemplate(Expr_ptr operand)
+      : UnaryOpExpr{std::move(operand)}
   {
   }
 

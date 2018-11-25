@@ -14,5 +14,6 @@ add_executable(${PROJECT_NAME}Test
     "util.hpp"
     "value_test.cpp"
     "vm_test.cpp"
+    "type_check_test.cpp"
     )
 target_link_libraries(${PROJECT_NAME}Test lib${PROJECT_NAME} CONAN_PKG::catch2)

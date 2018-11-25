@@ -14,7 +14,7 @@ public:
     ss_ << eml::to_string(constant.v(), PrintType::no);
   }
 
-  void unary_common(const ast::UnaryOp& expr, char op)
+  void unary_common(const ast::UnaryOpExpr& expr, char op)
   {
     ss_ << '(' << op << ' ';
     expr.operand().accept(*this);

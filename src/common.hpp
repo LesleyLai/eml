@@ -75,7 +75,10 @@ struct Token {
       std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                  \
                 << "Assert failed in "                                         \
                 << std::string_view{static_cast<const char*>(__func__)}        \
-                << ": " << (message) << '\n';                                  \
+                << ": " << std::string_view{static_cast<const char*>(message)} \
+                << '\n'                                                        \
+                << "This is probabaly an internal bug of the Embedded ML "     \
+                   "Implementation, please fill a bug report.\n";              \
     }                                                                          \
   } while (0)
 
@@ -90,7 +93,9 @@ struct Token {
   do {                                                                         \
     std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                    \
               << "This code should not be reached in "                         \
-              << std::string_view{static_cast<const char*>(__func__)} << '\n'; \
+              << std::string_view{static_cast<const char*>(__func__)} << '\n'  \
+              << "This is probabaly an internal bug of the Embedded ML "       \
+                 "Implementation, please fill a bug report.\n";                \
     std::abort();                                                              \
   } while (0)
 #else

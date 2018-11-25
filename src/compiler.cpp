@@ -35,7 +35,7 @@ struct Compiler : ast::ExprConstVisitor {
     }
   }
 
-  void unary_common(const ast::UnaryOp& expr, opcode op)
+  void unary_common(const ast::UnaryOpExpr& expr, opcode op)
   {
     expr.operand().accept(*this);
     emit_code(op);
