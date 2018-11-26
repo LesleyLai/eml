@@ -39,13 +39,13 @@ struct Scanner {
   std::string_view text;
 
   struct iterator {
-    explicit iterator(std::string_view source) noexcept
+    constexpr explicit iterator(std::string_view source) noexcept
         : start{source.data()}, current{start}, current_line_start{start}
     {
       ++(*this);
     }
 
-    auto operator++() -> iterator&
+    constexpr auto operator++() -> iterator&
     {
       token_ = next_token();
       return *this;
@@ -56,22 +56,22 @@ struct Scanner {
      * @return
      * @warning If this iterator is not dereferenceable, operation is undefined
      */
-    auto operator*() const -> const Token
+    constexpr auto operator*() const -> const Token
     {
       return token_;
     }
 
-    auto operator-> () const -> const Token*
+    constexpr auto operator-> () const -> const Token*
     {
       return &token_;
     }
 
-    auto operator==(const iterator rhs) const -> bool
+    constexpr auto operator==(const iterator rhs) const -> bool
     {
       return (**this == *rhs);
     }
 
-    auto operator!=(const iterator rhs) const -> bool
+    constexpr auto operator!=(const iterator rhs) const -> bool
     {
       return !(*this == rhs);
     }
@@ -83,7 +83,7 @@ struct Scanner {
     std::size_t current_line = 1;
     Token token_; // The token when we direference
 
-    auto next_token() -> Token
+    constexpr auto next_token() -> Token
     {
       if (at_end()) {
         return Token{};
@@ -93,10 +93,10 @@ struct Scanner {
       start = current;
 
       char c = advance();
-      if (isalpha(c)) {
+      if (eml::isalpha(c)) {
         return identifier();
       }
-      if (std::isdigit(c) != 0) {
+      if (eml::isdigit(c)) {
         return number();
       }
 
@@ -154,7 +154,7 @@ struct Scanner {
       }
     }
 
-    auto identifier() noexcept -> Token
+    constexpr auto identifier() noexcept -> Token
     {
       while (isalpha(peek()) || (isdigit(peek()))) {
         advance();
@@ -163,9 +163,9 @@ struct Scanner {
       return make_token(identifier_type());
     }
 
-    auto number() noexcept -> Token
+    constexpr auto number() noexcept -> Token
     {
-      while (std::isdigit(peek()) != 0) {
+      while (eml::isdigit(peek())) {
         advance();
       }
 
@@ -174,7 +174,7 @@ struct Scanner {
         // Consume the "."
         advance();
 
-        while (std::isdigit(peek()) != 0) {
+        while (eml::isdigit(peek())) {
           advance();
         }
       }
@@ -182,7 +182,7 @@ struct Scanner {
       return make_token(token_type::number_literal);
     }
 
-    auto string() noexcept -> Token
+    constexpr auto string() noexcept -> Token
     {
       while (peek() != '"' && !at_end()) {
         if (peek() == '\n') {
@@ -206,7 +206,7 @@ struct Scanner {
       return *current == '\0';
     }
 
-    auto advance() noexcept -> char
+    constexpr auto advance() noexcept -> char
     {
       ++current;
       return current[-1];
@@ -233,32 +233,32 @@ struct Scanner {
       return true;
     }
 
-    auto current_column() const noexcept -> std::size_t
+    constexpr auto current_column() const noexcept -> std::size_t
     {
       return static_cast<std::size_t>(start - current_line_start + 1);
     }
 
-    auto make_token(token_type type) const noexcept -> Token
+    constexpr auto make_token(token_type type) const noexcept -> Token
     {
       return {type,
               {start, static_cast<std::size_t>(current - start)},
               FilePos{current_line, current_column()}};
     }
 
-    auto error_token(const char* message) const noexcept -> Token
+    constexpr auto error_token(const char* message) const noexcept -> Token
     {
       return {token_type::error, message,
               FilePos{current_line, current_column()}};
     }
 
-    void skip_single_line_comment() noexcept
+    constexpr void skip_single_line_comment() noexcept
     {
       while (peek() != '\n' && !at_end()) {
         advance();
       }
     }
 
-    void skip_whitespace() noexcept
+    constexpr void skip_whitespace() noexcept
     {
       while (true) {
         char c = peek();
@@ -289,8 +289,9 @@ struct Scanner {
       }
     }
 
-    auto check_keyword(std::size_t start_offset, std::string_view rest,
-                       token_type type) const noexcept -> token_type
+    constexpr auto check_keyword(std::size_t start_offset,
+                                 std::string_view rest, token_type type) const
+        noexcept -> token_type
     {
       if (std::string_view{start + start_offset, rest.length()} == rest) {
         return type;
@@ -299,7 +300,7 @@ struct Scanner {
       return token_type::identifier;
     }
 
-    auto identifier_type() const noexcept -> token_type
+    constexpr auto identifier_type() const noexcept -> token_type
     {
       switch (start[0]) {
       case 'a':
@@ -378,11 +379,11 @@ struct Scanner {
     }
   };
 
-  auto begin() const -> iterator
+  constexpr auto begin() const -> iterator
   {
     return iterator{text};
   }
-  auto end() const -> iterator
+  constexpr auto end() const -> iterator
   {
     return iterator{"\0"};
   }
