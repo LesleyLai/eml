@@ -1,3 +1,5 @@
+include(CTest)
+
 add_executable(${PROJECT_NAME}Test
     "expected/assignment.cpp"
     "expected/bases.cpp"
@@ -17,3 +19,8 @@ add_executable(${PROJECT_NAME}Test
     "type_check_test.cpp"
     )
 target_link_libraries(${PROJECT_NAME}Test lib${PROJECT_NAME} CONAN_PKG::catch2)
+
+
+enable_testing()
+
+add_test(UnitTest "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}Test")
