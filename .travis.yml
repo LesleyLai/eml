@@ -58,4 +58,7 @@ script:
   - cmake .. $CMAKE_OPTIONS
   - make
   - if [ "${BUILD_ONLY}" != "1" ]; then ctest --verbose; fi
-  - if [ "${COVERAGE}" = "1" ]; then bash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov) -x $GCOV -a "-s `pwd`" ; fi
+  - if [ "${COVERAGE}" = "1" ];
+    then make coverage;
+         bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports";
+    fi
