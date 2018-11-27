@@ -16,18 +16,18 @@ addons:
       - clang-6.0
 
 install:
-  - export CC=/usr/bin/gcc-7
-  - export CXX=/usr/bin/g++-7
+  - export CC=/usr/bin/gcc-8
+  - export CXX=/usr/bin/g++-8
 
 matrix:
   include:
   - os: linux
     compiler: gcc
     before_script:
-      - sudo ln -s /usr/bin/gcc-7 /usr/local/bin/gcc
-      - sudo ln -s /usr/bin/g++-7 /usr/local/bin/g++
-      - export CC=/usr/bin/gcc-7
-      - export CXX=/usr/bin/g++-7
+      - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
+      - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
+      - export CC=/usr/bin/gcc-8
+      - export CXX=/usr/bin/g++-8
 
   - os: linux
     compiler: clang
