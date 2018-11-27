@@ -24,7 +24,7 @@ matrix:
   - os: linux
     compiler: gcc
     name: GCC 8 with Unit Test
-    env: COVERAGE=1 CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=RELEASE"
+    env: COVERAGE=1 CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
     before_script:
       - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
       - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
@@ -34,7 +34,7 @@ matrix:
   - os: linux
     compiler: clang
     name: Clang 6 with Unit Test
-    env: COVERAGE=1 CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=RELEASE"
+    env: COVERAGE=1 CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
     before_script:
       - sudo ln -s /usr/bin/clang-6.0 /usr/local/bin/clang
       - sudo ln -s /usr/bin/clang++-6.0 /usr/local/bin/clang++
@@ -45,7 +45,7 @@ matrix:
   - os: linux
     compiler: gcc
     name: Coverage
-    env: COVERAGE=1 BUILD_ONLY=1 CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DEML_BUILD_TESTS_COVERAGE=ON -DCMAKE_BUILD_TYPE=DEBUG"  CODECOV_TOKEN="eef635f5-3847-42ce-a61f-d248b7a3604f"
+    env: COVERAGE=1 BUILD_ONLY=1 CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DEML_BUILD_TESTS_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug"  CODECOV_TOKEN="eef635f5-3847-42ce-a61f-d248b7a3604f"
     before_script:
       - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
       - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
