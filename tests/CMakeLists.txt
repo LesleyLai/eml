@@ -1,6 +1,6 @@
 include(CTest)
-
-add_executable(${PROJECT_NAME}Test
+set(EML_TEST_TARGET ${PROJECT_NAME}Test)
+add_executable(${EML_TEST_TARGET}
     "expected/assignment.cpp"
     "expected/bases.cpp"
     "expected/constructors.cpp"
@@ -18,7 +18,21 @@ add_executable(${PROJECT_NAME}Test
     "vm_test.cpp"
     "type_check_test.cpp"
     )
-target_link_libraries(${PROJECT_NAME}Test lib${PROJECT_NAME} CONAN_PKG::catch2)
+target_link_libraries(${EML_TEST_TARGET} lib${PROJECT_NAME} CONAN_PKG::catch2)
+
+if(${EML_BUILD_TESTS_COVERAGE})
+    include(ProcessorCount)
+    ProcessorCount(PROCESSOR_COUNT)
+
+    include("../cmake/CodeCoverage.cmake")
+    APPEND_COVERAGE_COMPILER_FLAGS("-g -O0 -fprofile-arcs -ftest-coverage")
+    set(COVERAGE_LCOV_EXCLUDES '/usr/*' '*/.conan/*')
+    SETUP_TARGET_FOR_COVERAGE_LCOV(
+        NAME coverage                    # New target name
+        EXECUTABLE ${EML_TEST_TARGET}
+        DEPENDENCIES ${EML_TEST_TARGET}  # Dependencies to build first
+    )
+endif()
 
 
 enable_testing()

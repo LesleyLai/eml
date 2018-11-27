@@ -7,10 +7,12 @@ project(EmbeddedML
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include("CMakeDependentOption")
+
 include("cmake/compiler.cmake")
 #include("cmake/clang-tidy.cmake")
 #include("cmake/cppcheck.cmake")
-#
+
 
 option(EML_DEBUG_PRINT_AST
     "The Parser will print the generated ast"
@@ -27,6 +29,10 @@ option(EML_BUILD_DOCUMENTS
 option(EML_BUILD_TESTS
     "Builds the tests for EML"
     OFF)
+
+CMAKE_DEPENDENT_OPTION(EML_BUILD_TESTS_COVERAGE
+    "Build the project with code coverage support for tests" OFF
+                       "EML_BUILD_TESTS" OFF)
 
 if(EML_BUILD_DOCUMENTS)
     include("cmake/doxygen.cmake")
