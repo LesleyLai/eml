@@ -95,6 +95,7 @@ if(EML_BUILD_TESTS)
                     BUILD missing)
 
     add_subdirectory(tests)
+    enable_testing()
 endif()
 
 
