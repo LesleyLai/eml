@@ -43,6 +43,7 @@ matrix:
     before_script:
       - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
       - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
+      - sudo ln -s /usr/bin/gcov-8 /usr/local/bin/gcov
        # Install lcov 1.13
       - wget http://downloads.sourceforge.net/ltp/lcov-1.13.tar.gz
       - tar -xvf lcov-1.13.tar.gz
