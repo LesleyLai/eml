@@ -41,6 +41,6 @@ script:
   - sudo pip install conan
   - mkdir build && cd build
   - conan install ..
-  - cmake ..
+  - cmake .. -DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
   - make
   - if [ "${BUILD_ONLY}" != "1" ]; then ctest --verbose; fi
