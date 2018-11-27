@@ -23,6 +23,8 @@ matrix:
   include:
   - os: linux
     compiler: gcc
+    name: GCC 8 with Unit Test
+    env: COVERAGE=1 CMAKE_OPTIONS="-D -DEML_BUILD_TESTS=ON -DEML_BUILD_TESTS_COVERAGE=ON -DCMAKE_BUILD_TYPE=RELEASE"
     before_script:
       - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
       - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
@@ -31,15 +33,29 @@ matrix:
 
   - os: linux
     compiler: clang
+    name: Clang 6 with Unit Test
+    env: COVERAGE=1 CMAKE_OPTIONS="-D -DEML_BUILD_TESTS=ON -DEML_BUILD_TESTS_COVERAGE=ON -DCMAKE_BUILD_TYPE=RELEASE"
     before_script:
       - sudo ln -s /usr/bin/clang-6.0 /usr/local/bin/clang
       - sudo ln -s /usr/bin/clang++-6.0 /usr/local/bin/clang++
       - export CC=/usr/bin/clang-6.0
       - export CXX=/usr/bin/clang++-6.0
 
+  # Coverage
+  - os: linux
+    compiler: gcc
+    name: Coverage
+    env: COVERAGE=1 BUILD_ONLY=1 CMAKE_OPTIONS="-D -DEML_BUILD_TESTS=ON -DEML_BUILD_TESTS_COVERAGE=ON -DCMAKE_BUILD_TYPE=DEBUG CODECOV_TOKEN="eef635f5-3847-42ce-a61f-d248b7a3604f""
+    before_script:
+      - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
+      - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
+      - export CC=/usr/bin/gcc-8
+      - export CXX=/usr/bin/g++-8
+
 script:
   - sudo pip install conan
   - mkdir build && cd build
-  - cmake .. -DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+  - cmake .. $CMAKE_OPTIONS
   - make
   - if [ "${BUILD_ONLY}" != "1" ]; then ctest --verbose; fi
+  - if [ "${COVERAGE}" = "1" ]; then bash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov) -x $GCOV -a "-s `pwd`" ; fi
