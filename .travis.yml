@@ -39,7 +39,7 @@ matrix:
   - os: linux
     compiler: gcc
     name: Coverage
-    env: COVERAGE=1 BUILD_ONLY=1 CC="/usr/bin/gcc-8" CXX="/usr/bin/g++-8" GCOV="gcov-8" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DEML_BUILD_TESTS_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug"  CODECOV_TOKEN="eef635f5-3847-42ce-a61f-d248b7a3604f"
+    env: COVERAGE=1 BUILD_ONLY=1 CC="/usr/bin/gcc-8" CXX="/usr/bin/g++-8" GCOV="/usr/bin/gcov-8" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DEML_BUILD_TESTS_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug"  CODECOV_TOKEN="eef635f5-3847-42ce-a61f-d248b7a3604f"
     before_script:
       - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
       - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
