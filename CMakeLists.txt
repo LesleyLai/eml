@@ -66,7 +66,7 @@ add_library(lib${PROJECT_NAME}
     "src/vm.cpp")
 target_include_directories(lib${PROJECT_NAME} PUBLIC "src")
 if(${EML_BUILD_TESTS_COVERAGE})
-    target_compile_options(lib${PROJECT_NAME} PRIVATE -g -Wall -fprofile-arcs -ftest-coverage -O0)
+    target_compile_options(lib${PROJECT_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
     target_link_libraries(lib${PROJECT_NAME} gcov)
 endif()
 
