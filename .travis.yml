@@ -20,8 +20,8 @@ matrix:
   include:
   - os: linux
     compiler: gcc
-    name: GCC 7 with Unit Test
-    env: COVERAGE=1 CC="/usr/bin/gcc-8" CXX="/usr/bin/g++-8" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+    name: GCC 8 with Unit Test
+    env: CC="/usr/bin/gcc-8" CXX="/usr/bin/g++-8" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
     before_script:
       - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
       - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
@@ -30,7 +30,7 @@ matrix:
   - os: linux
     compiler: clang
     name: Clang 6 with Unit Test
-    env: COVERAGE=1 CC="/usr/bin/clang-6.0" CXX="/usr/bin/clang++-6.0" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+    env: CC="/usr/bin/clang-6.0" CXX="/usr/bin/clang++-6.0" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
     before_script:
       - sudo ln -s /usr/bin/clang-6.0 /usr/local/bin/clang
       - sudo ln -s /usr/bin/clang++-6.0 /usr/local/bin/clang++
