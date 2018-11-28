@@ -30,7 +30,7 @@ eml::expected<int, int> operation1()
   return 42;
 }
 
-eml::expected<std::string, int> operation2(int const  /*val*/)
+eml::expected<std::string, int> operation2(int const /*val*/)
 {
   return "Bananas";
 }
@@ -76,19 +76,6 @@ std::string maperror(const std::string& s)
 TEST_CASE("Issue 30", "[expected.issues.30]")
 {
   error().map_error(maperror);
-}
-
-struct i31 {
-  int i;
-};
-TEST_CASE("Issue 31", "[expected.issues.31]")
-{
-  const eml::expected<i31, int> a = i31{42};
-  a->i;
-
-  eml::expected<void, std::string> result;
-  eml::expected<void, std::string> result2 = result;
-  result2 = result;
 }
 
 TEST_CASE("Issue 33", "[expected.issues.33]")

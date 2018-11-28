@@ -384,6 +384,7 @@ TEST_CASE("or_else", "[expected.or_else]")
   auto failvoid = [](int) {};
   auto failvoidptr = [](const eptr&) { /* don't consume */ };
   auto consumeptr = [](eptr) {};
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
   auto make_u_int = [](int n) { return std::make_unique<int>(n); };
 
   {

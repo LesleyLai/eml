@@ -4,9 +4,12 @@
 
 #include "scanner.hpp"
 
+using eml::Scanner;
+using eml::Token;
+using eml::token_type;
+
 TEST_CASE("scanner")
 {
-  using namespace eml;
 
   GIVEN("A string of keywords")
   {
@@ -44,11 +47,13 @@ TEST_CASE("scanner")
             Token{token_type::keyword_variant, "variant"},
         };
 
-        auto expected_itr = std::begin(expected);
-        for (auto token : s) {
-          CHECK(token == *expected_itr);
-          ++expected_itr;
+        auto scanner_itr = std::begin(s);
+
+        for (auto expected_token : expected) {
+          REQUIRE(*scanner_itr == expected_token);
+          ++scanner_itr;
         }
+        REQUIRE(scanner_itr == std::end(s));
       }
     }
   }
@@ -56,8 +61,6 @@ TEST_CASE("scanner")
 
 TEST_CASE("Error handling of the scanner")
 {
-  using namespace eml;
-
   GIVEN("A string contains unknown characters")
   {
     Scanner s{R"(let # = 3)"};
@@ -72,11 +75,12 @@ TEST_CASE("Error handling of the scanner")
             Token{token_type::number_literal, "3"},
         };
 
-        auto expected_itr = std::begin(expected);
-        for (auto token : s) {
-          CHECK(token == *expected_itr);
-          ++expected_itr;
+        auto scanner_itr = std::begin(s);
+        for (auto expected_token : expected) {
+          REQUIRE(*scanner_itr == expected_token);
+          ++scanner_itr;
         }
+        REQUIRE(scanner_itr == std::end(s));
       }
     }
   }

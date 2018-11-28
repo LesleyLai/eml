@@ -11,12 +11,12 @@ namespace eml {
 
 // A error node that represents with syntax error
 class ErrorExpr final : public ast::Expr, public ast::FactoryMixin<ErrorExpr> {
-  void accept(ast::ExprVisitor&) override
+  void accept(ast::ExprVisitor& /*visitor*/) override
   {
     EML_UNREACHABLE();
   }
 
-  void accept(ast::ExprConstVisitor&) const override
+  void accept(ast::ExprConstVisitor& /*visitor*/) const override
   {
     EML_UNREACHABLE();
   }
@@ -323,12 +323,11 @@ auto parse(std::string_view source) -> ParseResult
   parser.consume(token_type::eof, "Expect end of expression");
   if (parser.had_error) {
     return unexpected{std::move(parser.errors)};
-  } else {
-    if constexpr (build_options.debug_print_ast) {
-      std::cout << eml::string_from_ast(*expr) << '\n';
-    }
-    return std::move(expr);
   }
+  if constexpr (eml::BuildOptions::debug_print_ast) {
+    std::cout << eml::string_from_ast(*expr) << '\n';
+  }
+    return std::move(expr);
 }
 
 } // namespace eml

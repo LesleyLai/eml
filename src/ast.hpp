@@ -99,8 +99,6 @@ using GreaterOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::greater>;
 /// @ref BinaryOpExprTemplate
 using GeExpr = BinaryOpExprTemplate<detail::BinaryOpType::greater_equal>;
 
-class ErrorExpr;
-
 /**
  * @brief Expression visitor, const version
  */

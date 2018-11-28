@@ -29,8 +29,8 @@ TEST_CASE("Observers", "[observers]")
       std::is_same<decltype(std::move(o1).value()), int&&>::value; // NOLINT
   REQUIRE(success);
 
-  success = std::is_same<decltype(std::move(o3).value()),
-                         const int&&>::value; // NOLINT
+  success = std::is_same<decltype(std::move(o3).value()), // NOLINT
+                         const int&&>::value;             // NOLINT
   REQUIRE(success);
 
   eml::expected<move_detector, int> o4{eml::in_place};

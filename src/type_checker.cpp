@@ -22,7 +22,7 @@ struct TypeChecker : ast::ExprVisitor {
   bool panic_mode = false;
   std::vector<CompilationError> errors;
 
-  void operator()(ast::LiteralExpr& constant) override
+  void operator()([[maybe_unused]] ast::LiteralExpr& constant) override
   {
     // no-op
     EML_ASSERT(constant.type() != std::nullopt,
@@ -42,10 +42,11 @@ struct TypeChecker : ast::ExprVisitor {
     } else {
       if (!panic_mode) {
         std::stringstream ss;
+        const auto align = 8;
         ss << "Unmatched types around of unary operator " << op << '\n';
-        ss << std::left << "Requires " << op << " " << std::setw(8)
+        ss << std::left << "Requires " << op << " " << std::setw(align)
            << allowed_type.arg_type << '\n';
-        ss << std::left << "Has      " << op << " " << std::setw(8)
+        ss << std::left << "Has      " << op << " " << std::setw(align)
            << *expr.operand().type() << '\n';
         error(ss.str());
       }
@@ -62,7 +63,7 @@ struct TypeChecker : ast::ExprVisitor {
     unary_common(expr, "!", Func1Type{BoolType{}, BoolType{}});
   }
 
-  void error(std::string message)
+  void error(const std::string& message)
   {
     if (panic_mode) {
       return;
@@ -87,13 +88,15 @@ struct TypeChecker : ast::ExprVisitor {
       expr.set_type(allowed_type.result_type);
     } else {
       if (!panic_mode) {
+        const auto align = 8;
         std::stringstream ss;
         ss << "Unmatched types around binary operator " << op << '\n';
-        ss << std::left << "Requires " << std::setw(8) << allowed_type.arg1_type
-           << std::setw(3) << op << std::setw(8) << allowed_type.arg2_type
+        ss << std::left << "Requires " << std::setw(align)
+           << allowed_type.arg1_type << std::setw(3) << op << std::setw(align)
+           << allowed_type.arg2_type << '\n';
+        ss << "Has      " << std::setw(align) << *expr.lhs().type()
+           << std::setw(3) << op << std::setw(align) << *expr.rhs().type()
            << '\n';
-        ss << "Has      " << std::setw(8) << *expr.lhs().type() << std::setw(3)
-           << op << std::setw(8) << *expr.rhs().type() << '\n';
         error(ss.str());
       }
     }

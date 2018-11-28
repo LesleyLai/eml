@@ -73,7 +73,7 @@ auto VM::interpret() -> Value
 
   for (auto ip = code_.instructions.begin(); ip != code_.instructions.end();
        ++ip) {
-    if constexpr (build_options.debug_vm_trace_execution) {
+    if constexpr (eml::build_options.debug_vm_trace_execution) {
       std::cout << "Stack: [";
 
       for (auto i = stack_.begin(); i < stack_.end(); ++i) {
@@ -165,9 +165,8 @@ auto VM::interpret() -> Value
 
   if (stack_.empty()) {
     return Value{};
-  } else {
-    return pop(stack_);
   }
+  return pop(stack_);
 }
 
 std::string chunk::disassemble() const

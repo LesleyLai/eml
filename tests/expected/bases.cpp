@@ -34,17 +34,20 @@ TEST_CASE("Triviality", "[bases.triviality]")
 
   {
     struct T {
+      // NOLINTNEXTLINE(hicpp-use-equals-default, modernize-use-equals-default)
       T(const T&) {}
-      T(T&&) {}
+      T(T&&) {} //  // NOLINT(hicpp-noexcept-move)
+      // NOLINTNEXTLINE(hicpp-use-equals-default, modernize-use-equals-default)
       T& operator=(const T&)
       {
         return *this;
       }
-      T& operator=(T&&)
+      T& operator=(T&&) // NOLINT(hicpp-use-equals-default, hicpp-noexcept-move)
       {
         return *this;
       }
-      ~T() {}
+
+      ~T() {} // NOLINT
     };
     REQUIRE(
         !std::is_trivially_copy_constructible<eml::expected<T, int>>::value);
@@ -73,7 +76,7 @@ TEST_CASE("Deletion", "[bases.deletion]")
 
   {
     struct T {
-      T(int) {}
+      T(int) {} // NOLINT
     };
     REQUIRE(!std::is_default_constructible<eml::expected<T, int>>::value);
   }

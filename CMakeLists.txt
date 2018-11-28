@@ -10,8 +10,15 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 include("CMakeDependentOption")
 
 include("cmake/compiler.cmake")
-#include("cmake/clang-tidy.cmake")
 #include("cmake/cppcheck.cmake")
+
+option(EML_ENABLE_CLANG_TIDY
+    "Enable clang tidy checks"
+    OFF)
+
+if(EML_ENABLE_CLANG_TIDY)
+    include("cmake/clang-tidy.cmake")
+endif()
 
 
 option(EML_DEBUG_PRINT_AST
