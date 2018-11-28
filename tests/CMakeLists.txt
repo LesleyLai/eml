@@ -25,9 +25,12 @@ if(${EML_BUILD_TESTS_COVERAGE})
     include(ProcessorCount)
     ProcessorCount(PROCESSOR_COUNT)
 
+    set(CMAKE_STATIC_LINKER_FLAGS "--whole-archive")
+    set(CMAKE_SHARED_LINKER_FLAGS "--whole-archive")
+
     include("../cmake/CodeCoverage.cmake")
     APPEND_COVERAGE_COMPILER_FLAGS("-g -O0 -fprofile-arcs -ftest-coverage")
-    set(COVERAGE_LCOV_EXCLUDES '/usr/*' '*/.conan/*')
+    set(COVERAGE_LCOV_EXCLUDES '/usr/*' '*/.conan/*' '*/tests/*')
     SETUP_TARGET_FOR_COVERAGE_LCOV(
         NAME coverage                    # New target name
         EXECUTABLE ${EML_TEST_TARGET}

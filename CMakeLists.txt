@@ -65,6 +65,10 @@ add_library(lib${PROJECT_NAME}
     "src/vm.hpp"
     "src/vm.cpp")
 target_include_directories(lib${PROJECT_NAME} PUBLIC "src")
+if(${EML_BUILD_TESTS_COVERAGE})
+    target_compile_options(lib${PROJECT_NAME} PRIVATE -g -Wall -fprofile-arcs -ftest-coverage -O0)
+    target_link_libraries(lib${PROJECT_NAME} gcov)
+endif()
 
 add_executable(${PROJECT_NAME} "src/main.cpp")
 target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})
