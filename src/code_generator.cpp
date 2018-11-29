@@ -1,11 +1,11 @@
-#include "compiler.hpp"
+#include "code_generator.hpp"
 #include "parser.hpp"
 
 namespace eml {
 
 namespace {
-struct Compiler : ast::AstConstVisitor {
-  explicit Compiler(chunk& chunk) : chunk_{&chunk} {}
+struct CodeGenerator : ast::AstConstVisitor {
+  explicit CodeGenerator(chunk& chunk) : chunk_{&chunk} {}
 
   void emit_code(eml::opcode code)
   {
@@ -106,7 +106,7 @@ struct Compiler : ast::AstConstVisitor {
 
   void operator()(const ast::Definition& /*def*/) override
   {
-    // TODO: Implement this
+    // TODO(Lesley Lai): Implement this
   }
 
 private:
@@ -117,7 +117,7 @@ private:
 auto bytecode_from_ast(const ast::AstNode& expr) -> chunk
 {
   chunk code;
-  Compiler compiler{code};
+  CodeGenerator compiler{code};
   expr.accept(compiler);
   return code;
 }

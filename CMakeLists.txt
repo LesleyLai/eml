@@ -48,8 +48,8 @@ endif()
 add_library(lib${PROJECT_NAME}
     "src/ast.hpp"
     "src/common.hpp"
-    "src/compiler.hpp"
-    "src/compiler.cpp"
+    "src/code_generator.hpp"
+    "src/code_generator.cpp"
     "src/debug.hpp"
     "src/debug.cpp"
     "src/eml.hpp"

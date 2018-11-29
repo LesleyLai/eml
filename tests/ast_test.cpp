@@ -1,5 +1,5 @@
 #include "ast.hpp"
-#include "compiler.hpp"
+#include "code_generator.hpp"
 #include "debug.hpp"
 
 #include "util.hpp"

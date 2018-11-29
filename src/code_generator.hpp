@@ -1,6 +1,12 @@
 #ifndef EML_COMPILER_HPP
 #define EML_COMPILER_HPP
 
+/**
+ * @file code_generator.hpp
+ * @brief This file defines the functionality to generate bytecode from
+ * [AST](@ref eml::ast::AstNode)
+ */
+
 #include "ast.hpp"
 #include "error.hpp"
 #include "expected.hpp"
