@@ -3,7 +3,6 @@
 #include <string>
 
 #include "eml.hpp"
-#include "vm.hpp"
 
 [[noreturn]] void repl()
 {
@@ -14,10 +13,11 @@
     std::string line;
     std::getline(std::cin, line);
     if (!line.empty()) {
-      auto bytecode = eml::compile(line);
+      eml::Compiler compiler{};
+      eml::VM vm{};
+      auto bytecode = compiler.compile(line);
       if (bytecode) {
-        eml::VM vm{std::move(*bytecode)};
-        const auto result = vm.interpret();
+        const auto result = vm.interpret(*bytecode);
         if (result) {
           std::cout << *result << '\n';
         }

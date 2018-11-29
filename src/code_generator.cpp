@@ -1,5 +1,4 @@
-#include "code_generator.hpp"
-#include "parser.hpp"
+#include "compiler.hpp"
 
 namespace eml {
 
@@ -107,6 +106,8 @@ struct CodeGenerator : ast::AstConstVisitor {
   void operator()(const ast::Definition& /*def*/) override
   {
     // TODO(Lesley Lai): Implement this
+    std::clog
+        << "Code generation of global definition is not implemented yet\n";
   }
 
 private:
@@ -114,11 +115,11 @@ private:
 };
 } // anonymous namespace
 
-auto bytecode_from_ast(const ast::AstNode& expr) -> chunk
+auto Compiler::bytecode_from_ast(const ast::AstNode& expr) -> chunk
 {
   chunk code;
-  CodeGenerator compiler{code};
-  expr.accept(compiler);
+  CodeGenerator code_generator{code};
+  expr.accept(code_generator);
   return code;
 }
 

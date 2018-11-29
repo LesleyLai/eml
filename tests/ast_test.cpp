@@ -1,5 +1,5 @@
 #include "ast.hpp"
-#include "code_generator.hpp"
+#include "compiler.hpp"
 #include "debug.hpp"
 
 #include "util.hpp"
@@ -44,7 +44,9 @@ TEST_CASE("AST visiting and printing")
 
     WHEN("Compile into Bytecode")
     {
-      const auto c = eml::bytecode_from_ast(*expr);
+      eml::VM vm{};
+      eml::Compiler compiler{};
+      const auto c = compiler.bytecode_from_ast(*expr);
       THEN("Should produces the expected instruction sets")
       {
         eml::chunk expected;
@@ -64,8 +66,7 @@ TEST_CASE("AST visiting and printing")
 
       THEN("Evaluate to -6.75")
       {
-        eml::VM vm{c};
-        const auto result = vm.interpret();
+        const auto result = vm.interpret(c);
         REQUIRE(result);
         REQUIRE(result->is_number());
         REQUIRE(result->unsafe_as_number() == Approx(-6.75));

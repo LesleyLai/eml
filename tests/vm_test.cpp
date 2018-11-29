@@ -34,12 +34,12 @@ TEST_CASE("Arithmatic instructions", "[eml.vm]")
     code.write(eml::op_multiply, line_num{0});
     code.write(eml::op_subtract, line_num{0});
 
-    eml::VM machine{code};
+    eml::VM machine{};
 
     THEN("Evaluate to -8.75")
     {
       const double expected = -8.75;
-      const auto result = machine.interpret();
+      const auto result = machine.interpret(code);
       REQUIRE(result);
       REQUIRE(result->unsafe_as_number() == Approx(expected));
     }
