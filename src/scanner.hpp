@@ -85,11 +85,12 @@ struct Scanner {
 
     constexpr auto next_token() -> Token
     {
+      skip_whitespace();
+
       if (at_end()) {
         return Token{};
       }
 
-      skip_whitespace();
       start = current;
 
       char c = advance();

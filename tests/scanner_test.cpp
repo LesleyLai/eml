@@ -8,7 +8,7 @@ using eml::Scanner;
 using eml::Token;
 using eml::token_type;
 
-TEST_CASE("scanner")
+TEST_CASE("scanner", "[scanner]")
 {
 
   GIVEN("A string of keywords")
@@ -57,9 +57,15 @@ TEST_CASE("scanner")
       }
     }
   }
+
+  SECTION("Ignore single line comments")
+  {
+    Scanner s{R"(// Hello world)"};
+    REQUIRE(s.begin() == s.end());
+  }
 }
 
-TEST_CASE("Error handling of the scanner")
+TEST_CASE("Error handling of the scanner", "[scanner]")
 {
   GIVEN("A string contains unknown characters")
   {
