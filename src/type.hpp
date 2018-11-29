@@ -27,6 +27,11 @@ constexpr auto operator==(const Type& lhs, const Type& rhs) -> bool
   return lhs.index() == rhs.index();
 }
 
+constexpr auto operator!=(const Type& lhs, const Type& rhs) -> bool
+{
+  return !(lhs == rhs);
+}
+
 } // namespace eml
 
 #endif // EML_TYPE_HPP

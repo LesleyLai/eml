@@ -4,7 +4,7 @@
 namespace eml {
 
 namespace {
-struct Compiler : ast::ExprConstVisitor {
+struct Compiler : ast::AstConstVisitor {
   explicit Compiler(chunk& chunk) : chunk_{&chunk} {}
 
   void emit_code(eml::opcode code)
@@ -104,12 +104,17 @@ struct Compiler : ast::ExprConstVisitor {
     binary_common(expr, op_greater_equal);
   }
 
+  void operator()(const ast::Definition& /*def*/) override
+  {
+    // TODO: Implement this
+  }
+
 private:
   chunk* chunk_; // Not null
 };
 } // anonymous namespace
 
-auto bytecode_from_ast(const ast::Expr& expr) -> chunk
+auto bytecode_from_ast(const ast::AstNode& expr) -> chunk
 {
   chunk code;
   Compiler compiler{code};

@@ -11,7 +11,7 @@ namespace eml {
 /**
  * @brief Compiles the AST Expr node expr into bytecode
  */
-auto bytecode_from_ast(const ast::Expr& expr) -> chunk;
+auto bytecode_from_ast(const ast::AstNode& expr) -> chunk;
 
 } // namespace eml
 

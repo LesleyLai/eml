@@ -8,7 +8,7 @@ TEST_CASE("Type check on unary expressions")
 {
   GIVEN("(- 2)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::UnaryNegateExpr::create(ast::LiteralExpr::create(eml::Value{2.}));
     WHEN("Type check")
     {
@@ -19,7 +19,8 @@ TEST_CASE("Type check on unary expressions")
 
         THEN("Gets `Number` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::NumberType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::NumberType{});
         }
       }
     }
@@ -27,7 +28,7 @@ TEST_CASE("Type check on unary expressions")
 
   GIVEN("(! 2)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::UnaryNotExpr::create(ast::LiteralExpr::create(eml::Value{2.}));
     WHEN("Type check")
     {
@@ -44,7 +45,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
 {
   GIVEN("(+ 1 1)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::PlusOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                                 ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
@@ -56,7 +57,8 @@ TEST_CASE("Type check on binary arithmatic expressions")
 
         THEN("Gets `Number` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::NumberType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::NumberType{});
         }
       }
     }
@@ -64,7 +66,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
 
   GIVEN("(+ 1 true)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::PlusOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                                 ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
@@ -79,7 +81,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
 
   GIVEN("(* 1 1)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::MultOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                                 ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
@@ -91,7 +93,8 @@ TEST_CASE("Type check on binary arithmatic expressions")
 
         THEN("Gets `Number` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::NumberType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::NumberType{});
         }
       }
     }
@@ -99,7 +102,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
 
   GIVEN("(/ true 3)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::DivOpExpr::create(ast::LiteralExpr::create(eml::Value{true}),
                                ast::LiteralExpr::create(eml::Value{3.}));
     WHEN("Type check")
@@ -117,7 +120,7 @@ TEST_CASE("Type check on binary comparison expressions")
 {
   GIVEN("(== 1 1)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::EqOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                               ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
@@ -129,7 +132,8 @@ TEST_CASE("Type check on binary comparison expressions")
 
         THEN("Gets `Bool` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::BoolType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::BoolType{});
         }
       }
     }
@@ -137,7 +141,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(== true false)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::EqOpExpr::create(ast::LiteralExpr::create(eml::Value{true}),
                               ast::LiteralExpr::create(eml::Value{false}));
     WHEN("Type check")
@@ -149,7 +153,8 @@ TEST_CASE("Type check on binary comparison expressions")
 
         THEN("Gets `Bool` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::BoolType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::BoolType{});
         }
       }
     }
@@ -157,7 +162,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(== 1 true)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::PlusOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                                 ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
@@ -172,7 +177,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(!= 1 1)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::NeqOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                                ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
@@ -184,7 +189,8 @@ TEST_CASE("Type check on binary comparison expressions")
 
         THEN("Gets `Bool` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::BoolType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::BoolType{});
         }
       }
     }
@@ -192,7 +198,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(!= 1 true)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::PlusOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                                 ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
@@ -207,7 +213,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(< 1 1)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::LessOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                                 ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
@@ -219,7 +225,8 @@ TEST_CASE("Type check on binary comparison expressions")
 
         THEN("Gets `Bool` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::BoolType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::BoolType{});
         }
       }
     }
@@ -227,7 +234,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(< true true)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::LessOpExpr::create(ast::LiteralExpr::create(eml::Value{true}),
                                 ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
@@ -242,7 +249,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(<= 1 1)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::LeOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                               ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
@@ -254,7 +261,8 @@ TEST_CASE("Type check on binary comparison expressions")
 
         THEN("Gets `Bool` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::BoolType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::BoolType{});
         }
       }
     }
@@ -262,7 +270,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(<= true true)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::LeOpExpr::create(ast::LiteralExpr::create(eml::Value{true}),
                               ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
@@ -277,7 +285,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(> 1 1)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::GreaterOpExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                                    ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
@@ -289,7 +297,8 @@ TEST_CASE("Type check on binary comparison expressions")
 
         THEN("Gets `Bool` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::BoolType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::BoolType{});
         }
       }
     }
@@ -297,7 +306,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(>= 1 1)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::GeExpr::create(ast::LiteralExpr::create(eml::Value{1.}),
                             ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
@@ -309,7 +318,8 @@ TEST_CASE("Type check on binary comparison expressions")
 
         THEN("Gets `Bool` as its type")
         {
-          REQUIRE((*checked_ast)->type() == eml::BoolType{});
+          const auto& expr = dynamic_cast<ast::Expr&>(**checked_ast);
+          REQUIRE(expr.type() == eml::BoolType{});
         }
       }
     }
@@ -317,7 +327,7 @@ TEST_CASE("Type check on binary comparison expressions")
 
   GIVEN("(>= true true)")
   {
-    ast::Expr_ptr ast =
+    std::unique_ptr<ast::AstNode> ast =
         ast::GeExpr::create(ast::LiteralExpr::create(eml::Value{true}),
                             ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")

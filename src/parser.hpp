@@ -17,11 +17,11 @@
 namespace eml {
 
 namespace ast {
-struct Expr;
+struct AstNode;
 } // namespace ast
 
 using ParseResult =
-    expected<std::unique_ptr<ast::Expr>, std::vector<CompilationError>>;
+    expected<std::unique_ptr<ast::AstNode>, std::vector<CompilationError>>;
 
 auto parse(std::string_view source) -> ParseResult;
 

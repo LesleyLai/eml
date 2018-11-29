@@ -6,13 +6,13 @@
 namespace eml {
 
 namespace ast {
-struct Expr;
+struct AstNode;
 } // namespace ast
 
 /**
  * @brief Converts AST node into a string with lisp-like prefix notation
  */
-std::string string_from_ast(const ast::Expr& expr);
+std::string string_from_ast(const ast::AstNode& node);
 
 } // namespace eml
 

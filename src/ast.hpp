@@ -22,6 +22,7 @@ namespace eml {
  */
 namespace ast {
 
+struct AstNode;
 struct Expr;
 
 /// @brief Provides a wrapper of `std::make_unique` to its derived classes
@@ -56,6 +57,8 @@ enum class BinaryOpType {
 };
 
 }; // namespace detail
+
+class Definition;
 
 class LiteralExpr;
 
@@ -100,15 +103,15 @@ using GreaterOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::greater>;
 using GeExpr = BinaryOpExprTemplate<detail::BinaryOpType::greater_equal>;
 
 /**
- * @brief Expression visitor, const version
+ * @brief Abstract syntax tree visitor, const version
  */
-struct ExprConstVisitor {
-  ExprConstVisitor() = default;
-  virtual ~ExprConstVisitor() = default;
-  ExprConstVisitor(const ExprConstVisitor&) = default;
-  ExprConstVisitor& operator=(const ExprConstVisitor&) = default;
-  ExprConstVisitor(ExprConstVisitor&&) = default;
-  ExprConstVisitor& operator=(ExprConstVisitor&&) = default;
+struct AstConstVisitor {
+  AstConstVisitor() = default;
+  virtual ~AstConstVisitor() = default;
+  AstConstVisitor(const AstConstVisitor&) = default;
+  AstConstVisitor& operator=(const AstConstVisitor&) = default;
+  AstConstVisitor(AstConstVisitor&&) = default;
+  AstConstVisitor& operator=(AstConstVisitor&&) = default;
 
   virtual void operator()(const LiteralExpr& expr) = 0;
   virtual void operator()(const UnaryNegateExpr& expr) = 0;
@@ -123,18 +126,20 @@ struct ExprConstVisitor {
   virtual void operator()(const LeOpExpr& expr) = 0;
   virtual void operator()(const GreaterOpExpr& expr) = 0;
   virtual void operator()(const GeExpr& expr) = 0;
+
+  virtual void operator()(const Definition& def) = 0;
 };
 
 /**
- * @brief Expression visitor, none-const version
+ * @brief Abstract syntax tree visitor, none-const version
  */
-struct ExprVisitor {
-  ExprVisitor() = default;
-  virtual ~ExprVisitor() = default;
-  ExprVisitor(const ExprVisitor&) = default;
-  ExprVisitor& operator=(const ExprVisitor&) = default;
-  ExprVisitor(ExprVisitor&&) = default;
-  ExprVisitor& operator=(ExprVisitor&&) = default;
+struct AstVisitor {
+  AstVisitor() = default;
+  virtual ~AstVisitor() = default;
+  AstVisitor(const AstVisitor&) = default;
+  AstVisitor& operator=(const AstVisitor&) = default;
+  AstVisitor(AstVisitor&&) = default;
+  AstVisitor& operator=(AstVisitor&&) = default;
 
   virtual void operator()(LiteralExpr& expr) = 0;
   virtual void operator()(UnaryNegateExpr& expr) = 0;
@@ -149,24 +154,78 @@ struct ExprVisitor {
   virtual void operator()(LeOpExpr& expr) = 0;
   virtual void operator()(GreaterOpExpr& expr) = 0;
   virtual void operator()(GeExpr& expr) = 0;
+
+  virtual void operator()(Definition& def) = 0;
+};
+
+struct AstNode {
+  AstNode() = default;
+  virtual ~AstNode() = default;
+  AstNode(const AstNode&) = delete;
+  AstNode& operator=(const AstNode&) = delete;
+  AstNode(AstNode&&) = default;
+  AstNode& operator=(AstNode&&) = default;
+
+  virtual void accept(AstConstVisitor& visitor) const = 0;
+  virtual void accept(AstVisitor& visitor) = 0;
+};
+
+namespace detail {
+struct Let {
+  std::string_view identifier;
+  std::unique_ptr<Expr> to;
+  std::optional<Type> type;
+};
+}; // namespace detail
+
+/**
+ * @brief A definition is a top-level construct `let x <: T> = e`
+ */
+class Definition : public AstNode, public FactoryMixin<Definition> {
+public:
+  Definition(std::string_view identifier, std::unique_ptr<Expr> to,
+             std::optional<Type> type = {})
+      : binding_{identifier, std::move(to), std::move(type)}
+  {
+  }
+
+  auto identifier() const -> std::string_view
+  {
+    return binding_.identifier;
+  }
+
+  auto type() const -> std::optional<Type>
+  {
+    return binding_.type;
+  }
+
+  auto to() const -> Expr&
+  {
+    return *binding_.to;
+  }
+
+  void accept(AstVisitor& visitor) override
+  {
+    visitor(*this);
+  }
+
+  void accept(AstConstVisitor& visitor) const override
+  {
+    visitor(*this);
+  }
+
+private:
+  detail::Let binding_;
 };
 
 /**
  * @brief Base class for all the Expression AST Node
  */
-struct Expr {
+struct Expr : AstNode {
+public:
   Expr() = default;
   explicit Expr(Type type) : type_{std::move(type)} {}
-  virtual ~Expr() = default;
-  Expr(const Expr&) = delete;
-  Expr& operator=(const Expr&) = delete;
-  Expr(Expr&&) = default;
-  Expr& operator=(Expr&&) = default;
 
-  virtual void accept(ExprConstVisitor& visitor) const = 0;
-  virtual void accept(ExprVisitor& visitor) = 0;
-
-public:
   /**
    * @brief Gets the type of the AST node, or std::nullopt if the node don't
    * have a type yet
@@ -220,12 +279,12 @@ public:
     return v_;
   }
 
-  void accept(ExprVisitor& visitor) override
+  void accept(AstVisitor& visitor) override
   {
     visitor(*this);
   }
 
-  void accept(ExprConstVisitor& visitor) const override
+  void accept(AstConstVisitor& visitor) const override
   {
     visitor(*this);
   }
@@ -264,12 +323,12 @@ struct UnaryOpExprTemplate final : UnaryOpExpr,
   {
   }
 
-  void accept(ExprVisitor& visitor) override
+  void accept(AstVisitor& visitor) override
   {
     visitor(*this);
   }
 
-  void accept(ExprConstVisitor& visitor) const override
+  void accept(AstConstVisitor& visitor) const override
   {
     visitor(*this);
   }
@@ -316,12 +375,12 @@ struct BinaryOpExprTemplate final : BinaryOpExpr,
   {
   }
 
-  void accept(ExprVisitor& visitor) final
+  void accept(AstVisitor& visitor) final
   {
     visitor(*this);
   }
 
-  void accept(ExprConstVisitor& visitor) const override
+  void accept(AstConstVisitor& visitor) const override
   {
     visitor(*this);
   }

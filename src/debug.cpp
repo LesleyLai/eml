@@ -7,7 +7,7 @@
 namespace eml {
 
 namespace {
-struct AstPrinter : ast::ExprConstVisitor {
+struct AstPrinter : ast::AstConstVisitor {
 public:
   void operator()(const ast::LiteralExpr& constant) override
   {
@@ -81,6 +81,13 @@ public:
     binary_common(expr, ">=");
   }
 
+  void operator()(const ast::Definition& def) override
+  {
+    ss_ << "(let " << def.identifier() << ' ';
+    def.to().accept(*this);
+    ss_ << ')';
+  }
+
   std::string to_string()
   {
     return ss_.str();
@@ -91,10 +98,10 @@ private:
 };
 } // anonymous namespace
 
-std::string string_from_ast(const eml::ast::Expr& expr)
+std::string string_from_ast(const eml::ast::AstNode& node)
 {
   AstPrinter printer;
-  expr.accept(printer);
+  node.accept(printer);
   return printer.to_string();
 }
 

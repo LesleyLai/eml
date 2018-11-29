@@ -49,7 +49,7 @@ struct chunk {
 
   /**
    * @brief Write a byte to the instructions
-   * @param data The byte
+   * @param code The byte
    * @param line The line this instruction in source
    */
   void write(std::byte code, line_num line)

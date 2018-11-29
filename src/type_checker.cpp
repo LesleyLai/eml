@@ -17,7 +17,7 @@ struct Func2Type {
 };
 
 namespace {
-struct TypeChecker : ast::ExprVisitor {
+struct TypeChecker : ast::AstVisitor {
   bool has_error = false;
   bool panic_mode = false;
   std::vector<CompilationError> errors;
@@ -168,10 +168,25 @@ struct TypeChecker : ast::ExprVisitor {
     binary_common(expr,
                   ">=", Func2Type{NumberType{}, NumberType{}, BoolType{}});
   }
+
+  void operator()(ast::Definition& def) override
+  {
+    def.to().accept(*this);
+    if (def.type()) {
+      if (def.to().type() && def.type() != def.to().type()) {
+        std::stringstream ss;
+        ss << "Type mismatch in value definition\n";
+        ss << "Got let" << *def.type() << " = " << *def.to().type();
+        error(ss.str());
+      }
+    } else {
+      def.type() = def.to().type();
+    }
+  }
 }; // namespace
 } // namespace
 
-TypeCheckResult type_check(ast::Expr_ptr& ptr)
+TypeCheckResult type_check(std::unique_ptr<ast::AstNode>& ptr)
 {
   TypeChecker type_checker{};
   ptr->accept(type_checker);

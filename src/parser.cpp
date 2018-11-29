@@ -11,18 +11,19 @@ namespace eml {
 
 // A error node that represents with syntax error
 class ErrorExpr final : public ast::Expr, public ast::FactoryMixin<ErrorExpr> {
-  void accept(ast::ExprVisitor& /*visitor*/) override
+  void accept(ast::AstVisitor& /*visitor*/) override
   {
     EML_UNREACHABLE();
   }
 
-  void accept(ast::ExprConstVisitor& /*visitor*/) const override
+  void accept(ast::AstConstVisitor& /*visitor*/) const override
   {
     EML_UNREACHABLE();
   }
 };
 
 struct Parser;
+auto parse_toplevel(Parser& parser) -> std::unique_ptr<ast::AstNode>;
 auto parse_expression(Parser& parser) -> ast::Expr_ptr;
 
 struct Parser {
@@ -63,7 +64,6 @@ struct Parser {
     case token_type::keyword_extern:
     case token_type::keyword_for:
     case token_type::keyword_if:
-    case token_type::keyword_let:
     case token_type::keyword_not:
     case token_type::keyword_or:
     case token_type::keyword_return:
@@ -179,6 +179,20 @@ auto parse_number(Parser& parser) -> ast::Expr_ptr
   return ast::LiteralExpr::create(Value{number}, NumberType{});
 }
 
+auto parse_definition(Parser& parser) -> std::unique_ptr<ast::AstNode>
+{
+  parser.advance();
+
+  const auto id = parser.current_itr->text;
+  parser.advance();
+  parser.consume(token_type::equal, "Missing equal sign in let");
+  auto expr = parse_expression(parser);
+
+  parser.advance();
+
+  return ast::Definition::create(id, std::move(expr));
+}
+
 auto parse_literal(Parser& parser) -> ast::Expr_ptr
 {
   switch (parser.previous.type) {
@@ -220,6 +234,16 @@ auto parse_precedence(Parser& parser, Precedence precedence) -> ast::Expr_ptr
   }
 
   return left_ptr;
+}
+
+auto parse_toplevel(Parser& parser) -> std::unique_ptr<ast::AstNode>
+{
+  switch (parser.current_itr->type) {
+  case token_type::keyword_let:
+    return parse_definition(parser);
+  default:
+    return parse_expression(parser);
+  }
 }
 
 auto parse_expression(Parser& parser) -> ast::Expr_ptr
@@ -319,7 +343,7 @@ constexpr auto get_rule(token_type type) -> ParseRule
 auto parse(std::string_view source) -> ParseResult
 {
   Parser parser{source};
-  auto expr = parse_expression(parser);
+  auto expr = parse_toplevel(parser);
   parser.consume(token_type::eof, "Expect end of expression");
   if (parser.had_error) {
     return unexpected{std::move(parser.errors)};
@@ -327,7 +351,7 @@ auto parse(std::string_view source) -> ParseResult
   if constexpr (eml::BuildOptions::debug_print_ast) {
     std::cout << eml::string_from_ast(*expr) << '\n';
   }
-    return std::move(expr);
+  return std::move(expr);
 }
 
 } // namespace eml
