@@ -5,7 +5,7 @@
 
 #define OPCODE_TABLE                                                  \
   OPCODE(return, -1)                                                  \
-  OPCODE(push, 1) /*Pushes a constant to the stack*/                  \
+  OPCODE(push_f64, 1) /*Pushes a float_64 to the stack*/              \
   OPCODE(pop, -1)  /*Pops the top value of the stack*/                \
                                                                       \
   OPCODE(true, 1)  /*Pushes true to the stack*/                       \

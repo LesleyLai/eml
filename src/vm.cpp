@@ -66,7 +66,7 @@ template <typename F> void comparison_operation(std::vector<Value>& stack, F op)
 
 } // anonymous namespace
 
-auto VM::interpret() -> Value
+auto VM::interpret() -> std::optional<Value>
 {
   size_t offset = 0;
   Value result{};
@@ -92,7 +92,7 @@ auto VM::interpret() -> Value
     case op_return:
       std::fputs("EML: Do not know how to handle return yet\n", stderr);
       std::exit(-1);
-    case op_push: {
+    case op_push_f64: {
       ++ip;
       Value constant = code_.read_constant(ip);
       push(stack_, constant);
@@ -164,7 +164,7 @@ auto VM::interpret() -> Value
   }
 
   if (stack_.empty()) {
-    return Value{};
+    return {};
   }
   return pop(stack_);
 }
@@ -179,7 +179,7 @@ std::string chunk::disassemble() const
     result += disassemble_instruction(ip, offset);
     const auto instruction = *ip;
     switch (static_cast<opcode>(instruction)) {
-    case op_push: {
+    case op_push_f64: {
       ++ip;
     } break;
     default:; // Nothing special
@@ -237,7 +237,7 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
   case op_return:
     disassemble_simple_instruction(ip, "return");
     break;
-  case op_push: {
+  case op_push_f64: {
     disassemble_instruction_with_one_const_parem(ip, "push");
   } break;
   case op_pop:

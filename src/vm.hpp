@@ -96,7 +96,7 @@ public:
     stack_.reserve(initial_stack_size);
   }
 
-  auto interpret() -> Value;
+  auto interpret() -> std::optional<Value>;
 
 private:
   chunk code_;

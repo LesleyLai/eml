@@ -34,7 +34,7 @@ struct CodeGenerator : ast::AstConstVisitor {
       const double number = constant.v().unsafe_as_number();
       const auto offset = chunk_->add_constant(eml::Value{number});
 
-      emit_code(eml::op_push);
+      emit_code(eml::op_push_f64);
       emit_code(std::byte{*offset});
       break;
     }

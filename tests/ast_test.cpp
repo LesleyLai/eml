@@ -48,14 +48,14 @@ TEST_CASE("AST visiting and printing")
       THEN("Should produces the expected instruction sets")
       {
         eml::chunk expected;
-        push_constant(expected, eml::Value{3.});
-        push_constant(expected, eml::Value{4.});
-        push_constant(expected, eml::Value{5.});
+        push_number(expected, 3.);
+        push_number(expected, 4.);
+        push_number(expected, 5.);
         expected.write(eml::op_add, eml::line_num{0});
         expected.write(eml::op_multiply, eml::line_num{0});
-        push_constant(expected, eml::Value{3.});
+        push_number(expected, 3.);
         expected.write(eml::op_negate, eml::line_num{0});
-        push_constant(expected, eml::Value{1.});
+        push_number(expected, 1.);
         expected.write(eml::op_subtract, eml::line_num{0});
         expected.write(eml::op_divide, eml::line_num{0});
 
@@ -65,9 +65,10 @@ TEST_CASE("AST visiting and printing")
       THEN("Evaluate to -6.75")
       {
         eml::VM vm{c};
-        eml::Value value = vm.interpret();
-        REQUIRE(value.is_number());
-        REQUIRE(value.unsafe_as_number() == Approx(-6.75));
+        const auto result = vm.interpret();
+        REQUIRE(result);
+        REQUIRE(result->is_number());
+        REQUIRE(result->unsafe_as_number() == Approx(-6.75));
       }
     }
   }

@@ -5,7 +5,8 @@
 #include "eml.hpp"
 #include "vm.hpp"
 
-[[noreturn]] void repl() {
+[[noreturn]] void repl()
+{
   std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
 
   while (true) {
@@ -16,7 +17,10 @@
       auto bytecode = eml::compile(line);
       if (bytecode) {
         eml::VM vm{std::move(*bytecode)};
-        std::cout << vm.interpret() << '\n';
+        const auto result = vm.interpret();
+        if (result) {
+          std::cout << *result << '\n';
+        }
       } else {
         const auto& errors = bytecode.error();
         std::for_each(std::begin(errors), std::end(errors),

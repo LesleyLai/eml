@@ -12,24 +12,24 @@ TEST_CASE("Arithmatic instructions", "[eml.vm]")
 
   GIVEN("(((2 3 +) 4 /) (2 5 *) -)")
   {
-    const auto v1 = Value{2.};
-    const auto v2 = Value{3.};
-    const auto v3 = Value{4.};
-    const auto v4 = Value{2.};
-    const auto v5 = Value{5.};
+    const auto v1 = 2.;
+    const auto v2 = 3.;
+    const auto v3 = 4.;
+    const auto v4 = 2.;
+    const auto v5 = 5.;
 
     chunk code;
-    push_constant(code, v1, line_num{0});
-    push_constant(code, v2, line_num{0});
+    push_number(code, v1, line_num{0});
+    push_number(code, v2, line_num{0});
 
     code.write(eml::op_add, line_num{0});
 
-    push_constant(code, v3, line_num{0});
+    push_number(code, v3, line_num{0});
 
     code.write(eml::op_divide, line_num{0});
 
-    push_constant(code, v4, line_num{0});
-    push_constant(code, v5, line_num{0});
+    push_number(code, v4, line_num{0});
+    push_number(code, v5, line_num{0});
 
     code.write(eml::op_multiply, line_num{0});
     code.write(eml::op_subtract, line_num{0});
@@ -39,19 +39,9 @@ TEST_CASE("Arithmatic instructions", "[eml.vm]")
     THEN("Evaluate to -8.75")
     {
       const double expected = -8.75;
-      const double result = machine.interpret().unsafe_as_number();
-      REQUIRE(result == Approx(expected));
+      const auto result = machine.interpret();
+      REQUIRE(result);
+      REQUIRE(result->unsafe_as_number() == Approx(expected));
     }
-  }
-}
-
-TEST_CASE("Write and read global values", "[eml.vm]")
-{
-  GIVEN("let x = 2; x")
-  {
-    eml::chunk code;
-    const auto v1 = eml::Value{2.};
-    push_constant(code, v1, eml::line_num{0});
-    // push_constant(code, v1, line_num{0});
   }
 }
