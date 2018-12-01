@@ -1,4 +1,4 @@
-#include "type_checker.hpp"
+#include "compiler.hpp"
 
 #include <catch2/catch.hpp>
 
@@ -12,7 +12,7 @@ TEST_CASE("Type check on unary expressions")
         ast::UnaryNegateExpr::create(ast::LiteralExpr::create(eml::Value{2.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -32,7 +32,7 @@ TEST_CASE("Type check on unary expressions")
         ast::UnaryNotExpr::create(ast::LiteralExpr::create(eml::Value{2.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Failed the type check")
       {
         REQUIRE(!checked_ast.has_value());
@@ -50,7 +50,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
                                 ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -71,7 +71,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
                                 ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Failed the type check")
       {
         REQUIRE(!checked_ast.has_value());
@@ -86,7 +86,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
                                 ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -107,7 +107,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
                                ast::LiteralExpr::create(eml::Value{3.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Failed the type check")
       {
         REQUIRE(!checked_ast.has_value());
@@ -125,7 +125,7 @@ TEST_CASE("Type check on binary comparison expressions")
                               ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -146,7 +146,7 @@ TEST_CASE("Type check on binary comparison expressions")
                               ast::LiteralExpr::create(eml::Value{false}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -167,7 +167,7 @@ TEST_CASE("Type check on binary comparison expressions")
                                 ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Failed the type check")
       {
         REQUIRE(!checked_ast.has_value());
@@ -182,7 +182,7 @@ TEST_CASE("Type check on binary comparison expressions")
                                ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -203,7 +203,7 @@ TEST_CASE("Type check on binary comparison expressions")
                                 ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Failed the type check")
       {
         REQUIRE(!checked_ast.has_value());
@@ -218,7 +218,7 @@ TEST_CASE("Type check on binary comparison expressions")
                                 ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -239,7 +239,7 @@ TEST_CASE("Type check on binary comparison expressions")
                                 ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Failed the type check")
       {
         REQUIRE(!checked_ast.has_value());
@@ -254,7 +254,7 @@ TEST_CASE("Type check on binary comparison expressions")
                               ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -275,7 +275,7 @@ TEST_CASE("Type check on binary comparison expressions")
                               ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Failed the type check")
       {
         REQUIRE(!checked_ast.has_value());
@@ -290,7 +290,7 @@ TEST_CASE("Type check on binary comparison expressions")
                                    ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -311,7 +311,7 @@ TEST_CASE("Type check on binary comparison expressions")
                             ast::LiteralExpr::create(eml::Value{1.}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Passes the type check")
       {
         REQUIRE(checked_ast.has_value());
@@ -332,7 +332,7 @@ TEST_CASE("Type check on binary comparison expressions")
                             ast::LiteralExpr::create(eml::Value{true}));
     WHEN("Type check")
     {
-      const auto checked_ast = eml::type_check(ast);
+      const auto checked_ast = eml::Compiler{}.type_check(ast);
       THEN("Failed the type check")
       {
         REQUIRE(!checked_ast.has_value());

@@ -193,6 +193,11 @@ auto parse_definition(Parser& parser) -> std::unique_ptr<ast::AstNode>
   return ast::Definition::create(id, std::move(expr));
 }
 
+auto parse_identifier(Parser& parser) -> std::unique_ptr<ast::Expr>
+{
+  return ast::IdentifierExpr::create(std::string{parser.previous.text});
+}
+
 auto parse_literal(Parser& parser) -> ast::Expr_ptr
 {
   switch (parser.previous.type) {

@@ -24,7 +24,7 @@
   TOKEN_TABLE_ENTRY(less, "<", nullptr, parse_binary, comparison)       \
   TOKEN_TABLE_ENTRY(less_less, "<<", nullptr, nullptr, none)            \
   TOKEN_TABLE_ENTRY(less_equal, "<=", nullptr, parse_binary, comparison) \
-  TOKEN_TABLE_ENTRY(identifier, "identifier", nullptr, nullptr, none)   \
+  TOKEN_TABLE_ENTRY(identifier, "identifier", parse_identifier, nullptr, none)   \
   TOKEN_TABLE_ENTRY(string_literal, "string", nullptr, nullptr, none)   \
   TOKEN_TABLE_ENTRY(number_literal, "number", parse_number, nullptr, none) \
   TOKEN_TABLE_ENTRY(keyword_and, "and", nullptr, nullptr, and)          \

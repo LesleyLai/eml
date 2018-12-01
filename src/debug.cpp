@@ -14,6 +14,11 @@ public:
     ss_ << eml::to_string(constant.value(), PrintType::no);
   }
 
+  void operator()(const ast::IdentifierExpr& id) override
+  {
+    ss_ << id.name();
+  }
+
   void unary_common(const ast::UnaryOpExpr& expr, char op)
   {
     ss_ << '(' << op << ' ';

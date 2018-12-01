@@ -43,6 +43,8 @@ struct CompilerConfig {
  */
 class Compiler {
 public:
+  using TypeCheckResult =
+      expected<std::unique_ptr<ast::AstNode>, std::vector<CompilationError>>;
   using CompileResult = expected<Bytecode, std::vector<CompilationError>>;
 
   /**
@@ -62,7 +64,7 @@ public:
   {
     auto expect_ast = eml::parse(src);
     if (expect_ast) {
-      expect_ast = eml::type_check(*expect_ast);
+      expect_ast = this->type_check(*expect_ast);
     }
     return expect_ast.map(
         [this](const auto& ast) { return this->bytecode_from_ast(*ast); });
@@ -71,29 +73,54 @@ public:
   /**
    * @brief Compiles the AST Expr node expr into bytecode
    */
-  auto bytecode_from_ast(const eml::ast::AstNode& expr) -> Bytecode;
+  auto bytecode_from_ast(const eml::ast::AstNode& expr) const -> Bytecode;
 
   /**
    * @brief  Adds a global constants to a byte code chunk
    */
-  void add_global(std::string_view identifier, Type t, Value v)
+  void add_global(const std::string& identifier, Type t, Value v)
   {
-    if (globals_.count(std::string{identifier}) > 0) { // Shadowing
+    auto query_result = global_env_.find(identifier);
+    if (query_result != global_env_.end()) { // Shadowing
 
       if (options_.shadowing_policy == Shadowing::warning_on_same_scope) {
         std::clog << "Warning: Global value definition of " << identifier
                   << " shadows earlier binding "
                      "in the global scope\n";
       }
-    }
 
-    globals_.emplace(identifier, std::pair{std::move(t), std::move(v)});
+      global_env_[identifier] = std::pair{std::move(t), std::move(v)};
+    } else {
+      global_env_.emplace(identifier, std::pair{std::move(t), std::move(v)});
+    }
   }
+
+  /**
+   * @brief Gets the global value from the envirnment if it exist
+   */
+  [[nodiscard]] auto get_global(std::string_view identifier) const
+      -> std::optional<const std::pair<Type, Value>>
+  {
+    const auto pos = global_env_.find(std::string{identifier});
+    if (pos != global_env_.end()) {
+      return {pos->second};
+    } else {
+      return {};
+    }
+  }
+
+  /**
+   * @brief Check the type of the ast
+   *
+   * This function returns an ast that all nodes have types if successful, or a
+   * vector of error if it find type errors
+   */
+  auto type_check(std::unique_ptr<ast::AstNode>& ptr) -> TypeCheckResult;
 
 private:
   CompilerConfig options_;
-  std::unordered_map<std::string, const std::pair<Type, Value>>
-      globals_; // Identifier to (type, value index) mapping for globals
+  std::unordered_map<std::string, std::pair<Type, Value>>
+      global_env_; // Identifier to (type, value index) mapping for globals
 };
 
 } // namespace eml

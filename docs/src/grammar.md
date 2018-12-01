@@ -41,6 +41,7 @@ The language run-time will interprets and computes an expression to produce a va
 
 ```.ebnf
 Expr = constant
+     | identifier
      | prefix_op expr
      | expr infix_op expr
      | "let" identifier "=" expr
