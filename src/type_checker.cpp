@@ -1,4 +1,5 @@
 #include "type_checker.hpp"
+#include "compiler.hpp"
 
 #include <iomanip>
 #include <sstream>
@@ -18,15 +19,31 @@ struct Func2Type {
 
 namespace {
 struct TypeChecker : ast::AstVisitor {
+  Compiler& compiler;
   bool has_error = false;
   bool panic_mode = false;
   std::vector<CompilationError> errors;
+
+  explicit TypeChecker(Compiler& c) : compiler(c) {}
 
   void operator()([[maybe_unused]] ast::LiteralExpr& constant) override
   {
     // no-op
     EML_ASSERT(constant.type() != std::nullopt,
                "All literal should have a type assigned from the parser");
+  }
+
+  void operator()(ast::IdentifierExpr& id) override
+  {
+    const auto query_result = compiler.get_global(id.name());
+    if (query_result) {
+      id.set_type(query_result->first);
+      id.set_value(query_result->second);
+    } else {
+      std::stringstream ss;
+      ss << "Undefined value " << id.name() << '\n';
+      error(ss.str());
+    }
   }
 
   void unary_common(ast::UnaryOpExpr& expr, std::string_view op,
@@ -172,23 +189,34 @@ struct TypeChecker : ast::AstVisitor {
   void operator()(ast::Definition& def) override
   {
     def.to().accept(*this);
-    if (def.type()) {
-      if (def.to().type() && def.type() != def.to().type()) {
+    if (def.binding_type()) {
+      if (def.to().type() && def.binding_type() != def.to().type()) {
         std::stringstream ss;
         ss << "Type mismatch in value definition\n";
-        ss << "Got let" << *def.type() << " = " << *def.to().type();
+        ss << "Got let" << *def.binding_type() << " = " << *def.to().type();
         error(ss.str());
       }
     } else {
-      def.type() = def.to().type();
+      def.binding_type() = def.to().type();
+    }
+
+    // TODO(Lesley Lai): implement constant folding
+    try {
+      const auto& v = dynamic_cast<const ast::LiteralExpr&>(def.to());
+      compiler.add_global(std::string{def.identifier()}, *def.binding_type(),
+                          v.value());
+    } catch (std::exception& e) {
+      std::clog << e.what() << '\n';
+      std::clog << "Constant folding is not implemented yet!!!\n";
     }
   }
 }; // namespace
 } // namespace
 
-TypeCheckResult type_check(std::unique_ptr<ast::AstNode>& ptr)
+Compiler::TypeCheckResult
+Compiler::type_check(std::unique_ptr<ast::AstNode>& ptr)
 {
-  TypeChecker type_checker{};
+  TypeChecker type_checker{*this};
   ptr->accept(type_checker);
   if (!type_checker.has_error) {
     return std::move(ptr);

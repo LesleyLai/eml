@@ -7,7 +7,7 @@
 #include "vm.hpp"
 
 // Push a constant value to vm
-inline void push_number(eml::chunk& chunk, double value,
+inline void push_number(eml::Bytecode& chunk, double value,
                         eml::line_num linum = eml::line_num{0})
 {
   chunk.write(eml::op_push_f64, linum);

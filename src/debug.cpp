@@ -11,7 +11,12 @@ struct AstPrinter : ast::AstConstVisitor {
 public:
   void operator()(const ast::LiteralExpr& constant) override
   {
-    ss_ << eml::to_string(constant.v(), PrintType::no);
+    ss_ << eml::to_string(constant.value(), PrintType::no);
+  }
+
+  void operator()(const ast::IdentifierExpr& id) override
+  {
+    ss_ << id.name();
   }
 
   void unary_common(const ast::UnaryOpExpr& expr, char op)

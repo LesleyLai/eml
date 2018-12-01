@@ -1,3 +1,5 @@
+#include <utility>
+
 #ifndef EML_AST_HPP
 #define EML_AST_HPP
 
@@ -61,6 +63,7 @@ enum class BinaryOpType {
 class Definition;
 
 class LiteralExpr;
+class IdentifierExpr;
 
 template <detail::UnaryOpType optype> struct UnaryOpExprTemplate;
 /// @brief AST Node for the unary negate operation (specializes @ref
@@ -114,6 +117,7 @@ struct AstConstVisitor {
   AstConstVisitor& operator=(AstConstVisitor&&) = default;
 
   virtual void operator()(const LiteralExpr& expr) = 0;
+  virtual void operator()(const IdentifierExpr& expr) = 0;
   virtual void operator()(const UnaryNegateExpr& expr) = 0;
   virtual void operator()(const UnaryNotExpr& expr) = 0;
   virtual void operator()(const PlusOpExpr& expr) = 0;
@@ -142,6 +146,7 @@ struct AstVisitor {
   AstVisitor& operator=(AstVisitor&&) = default;
 
   virtual void operator()(LiteralExpr& expr) = 0;
+  virtual void operator()(IdentifierExpr& expr) = 0;
   virtual void operator()(UnaryNegateExpr& expr) = 0;
   virtual void operator()(UnaryNotExpr& expr) = 0;
   virtual void operator()(PlusOpExpr& expr) = 0;
@@ -194,7 +199,7 @@ public:
     return binding_.identifier;
   }
 
-  auto type() const -> std::optional<Type>
+  auto binding_type() const -> std::optional<Type>
   {
     return binding_.type;
   }
@@ -274,7 +279,7 @@ public:
   }
 
   LiteralExpr(Value v, Type t) : Expr{std::move(t)}, v_{std::move(v)} {}
-  auto v() const -> Value
+  auto value() const -> Value
   {
     return v_;
   }
@@ -288,6 +293,49 @@ public:
   {
     visitor(*this);
   }
+};
+
+/**
+ * @brief The IdentifierExpr is a wrapper for an identifier of an value.
+ */
+struct IdentifierExpr final : public Expr, public FactoryMixin<IdentifierExpr> {
+public:
+  explicit IdentifierExpr(std::string name) : name_{std::move(name)} {}
+
+  void accept(AstVisitor& visitor) override
+  {
+    visitor(*this);
+  }
+
+  void accept(AstConstVisitor& visitor) const override
+  {
+    visitor(*this);
+  }
+
+  std::string name() const
+  {
+    return name_;
+  }
+
+  /**
+   * @brief Gets a value if it is already setted
+   */
+  std::optional<Value> value() const
+  {
+    return value_;
+  }
+
+  /**
+   * @brief Sets the value of the Identifier bind to
+   */
+  void set_value(const std::optional<Value>& value)
+  {
+    value_ = value;
+  }
+
+private:
+  std::string name_;
+  std::optional<Value> value_;
 };
 
 /**

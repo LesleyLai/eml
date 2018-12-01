@@ -47,7 +47,10 @@ endif()
 
 add_library(lib${PROJECT_NAME}
     "src/ast.hpp"
+    "src/bytecode.hpp"
+    "src/bytecode.cpp"
     "src/common.hpp"
+    "src/compiler.hpp"
     "src/code_generator.hpp"
     "src/code_generator.cpp"
     "src/debug.hpp"
@@ -86,12 +89,7 @@ target_compile_definitions(lib${PROJECT_NAME} PUBLIC
     EML_MINOR_VERSION=${PROJECT_VERSION_MINOR}
     EML_PATCH_VERSION=${PROJECT_VERSION_PATCH})
 
-
-if(NOT DEFINED ${CMAKE_BUILD_TYPE})
-  set(CMAKE_BUILD_TYPE "Release")
-endif()
-
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
     target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG)
 endif()
 

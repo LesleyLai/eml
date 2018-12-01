@@ -1,43 +1,55 @@
-#include "code_generator.hpp"
-#include "parser.hpp"
+#include "compiler.hpp"
 
 namespace eml {
 
 namespace {
+
+struct CodeGenerator;
+
+// Emit different push instructions depends on they of an expression
+struct TypeDispatcher {
+  CodeGenerator& generator;
+  Value v;
+
+  void operator()(const NumberType& /*t*/);
+
+  void operator()(const BoolType& /*t*/);
+
+  void operator()(const UnitType& /*t*/);
+};
+
 struct CodeGenerator : ast::AstConstVisitor {
-  explicit CodeGenerator(chunk& chunk) : chunk_{&chunk} {}
+  explicit CodeGenerator(Bytecode& chunk, const Compiler& compiler)
+      : chunk_{chunk}, compiler_{compiler}
+  {
+  }
 
   void emit_code(eml::opcode code)
   {
-    chunk_->write(code, eml::line_num{0});
+    chunk_.write(code, eml::line_num{0});
   }
 
   void emit_code(std::byte byte)
   {
-    chunk_->write(byte, eml::line_num{0});
+    chunk_.write(byte, eml::line_num{0});
   }
 
   void operator()(const ast::LiteralExpr& constant) override
   {
-    switch (constant.v().type) {
-    case Value::type::Unit:
-      emit_code(eml::op_unit);
-      break;
-    case Value::type::Boolean:
-      if (constant.v().unsafe_as_boolean()) {
-        emit_code(eml::op_true);
-      } else {
-        emit_code(eml::op_false);
-      }
-      break;
-    case Value::type::Number:
-      const double number = constant.v().unsafe_as_number();
-      const auto offset = chunk_->add_constant(eml::Value{number});
+    TypeDispatcher visitor{*this, constant.value()};
+    std::visit(visitor, *constant.type());
+  }
 
-      emit_code(eml::op_push_f64);
-      emit_code(std::byte{*offset});
-      break;
-    }
+  void operator()([[maybe_unused]] const ast::IdentifierExpr& id) override
+  {
+    EML_ASSERT(id.type() != std::nullopt,
+               "Identifier expression passed to the code generator are "
+               "garanteed to have a type");
+    EML_ASSERT(id.value() != std::nullopt,
+               "Identifier expression passed to the code generator are "
+               "garanteed to have a value");
+    TypeDispatcher visitor{*this, *id.value()};
+    std::visit(visitor, *id.type());
   }
 
   void unary_common(const ast::UnaryOpExpr& expr, opcode op)
@@ -106,19 +118,43 @@ struct CodeGenerator : ast::AstConstVisitor {
 
   void operator()(const ast::Definition& /*def*/) override
   {
-    // TODO(Lesley Lai): Implement this
+    // no-op
   }
 
-private:
-  chunk* chunk_; // Not null
+  Bytecode& chunk_; // Not null
+  const Compiler& compiler_;
 };
+
+void TypeDispatcher::operator()(const NumberType&)
+{
+  const double number = v.unsafe_as_number();
+  const auto offset = generator.chunk_.add_constant(eml::Value{number});
+
+  generator.emit_code(eml::op_push_f64);
+  generator.emit_code(std::byte{*offset});
+}
+
+void TypeDispatcher::operator()(const BoolType&)
+{
+  if (v.unsafe_as_boolean()) {
+    generator.emit_code(eml::op_true);
+  } else {
+    generator.emit_code(eml::op_false);
+  }
+}
+
+void TypeDispatcher::operator()(const UnitType&)
+{
+  generator.emit_code(eml::op_unit);
+}
+
 } // anonymous namespace
 
-auto bytecode_from_ast(const ast::AstNode& expr) -> chunk
+auto Compiler::bytecode_from_ast(const ast::AstNode& expr) const -> Bytecode
 {
-  chunk code;
-  CodeGenerator compiler{code};
-  expr.accept(compiler);
+  Bytecode code;
+  CodeGenerator code_generator{code, *this};
+  expr.accept(code_generator);
   return code;
 }
 
