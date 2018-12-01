@@ -172,15 +172,15 @@ struct TypeChecker : ast::AstVisitor {
   void operator()(ast::Definition& def) override
   {
     def.to().accept(*this);
-    if (def.type()) {
-      if (def.to().type() && def.type() != def.to().type()) {
+    if (def.binding_type()) {
+      if (def.to().type() && def.binding_type() != def.to().type()) {
         std::stringstream ss;
         ss << "Type mismatch in value definition\n";
-        ss << "Got let" << *def.type() << " = " << *def.to().type();
+        ss << "Got let" << *def.binding_type() << " = " << *def.to().type();
         error(ss.str());
       }
     } else {
-      def.type() = def.to().type();
+      def.binding_type() = def.to().type();
     }
   }
 }; // namespace

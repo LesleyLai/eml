@@ -71,7 +71,7 @@ template <typename F> void comparison_operation(std::vector<Value>& stack, F op)
 
 } // anonymous namespace
 
-auto VM::interpret(const chunk& code) -> std::optional<Value>
+auto VM::interpret(const Bytecode& code) -> std::optional<Value>
 {
   size_t offset = 0;
   Value result{};

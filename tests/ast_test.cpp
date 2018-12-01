@@ -49,7 +49,7 @@ TEST_CASE("AST visiting and printing")
       const auto c = compiler.bytecode_from_ast(*expr);
       THEN("Should produces the expected instruction sets")
       {
-        eml::chunk expected;
+        eml::Bytecode expected;
         push_number(expected, 3.);
         push_number(expected, 4.);
         push_number(expected, 5.);

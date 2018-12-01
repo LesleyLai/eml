@@ -2,7 +2,7 @@
 
 namespace eml {
 
-std::string chunk::disassemble() const
+std::string Bytecode::disassemble() const
 {
   size_t offset = 0;
 
@@ -24,8 +24,8 @@ std::string chunk::disassemble() const
   return result;
 }
 
-auto chunk::disassemble_instruction(instruction_iterator ip,
-                                    std::size_t offset) const -> std::string
+auto Bytecode::disassemble_instruction(instruction_iterator ip,
+                                       std::size_t offset) const -> std::string
 {
   std::stringstream ss;
 
@@ -128,4 +128,4 @@ auto chunk::disassemble_instruction(instruction_iterator ip,
   return ss.str();
 }
 
-}  // namespace eml
+} // namespace eml

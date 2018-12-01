@@ -19,7 +19,7 @@ public:
   /**
    * @brief Interpret the current code in the vm
    */
-  [[nodiscard]] auto interpret(const chunk& code) -> std::optional<Value>;
+  [[nodiscard]] auto interpret(const Bytecode& code) -> std::optional<Value>;
 
 private:
   std::vector<Value> stack_{}; // Stack of the vm

@@ -4,34 +4,37 @@ namespace eml {
 
 namespace {
 struct CodeGenerator : ast::AstConstVisitor {
-  explicit CodeGenerator(chunk& chunk) : chunk_{&chunk} {}
+  explicit CodeGenerator(Bytecode& chunk, Compiler& compiler)
+      : chunk_{chunk}, compiler_{compiler}
+  {
+  }
 
   void emit_code(eml::opcode code)
   {
-    chunk_->write(code, eml::line_num{0});
+    chunk_.write(code, eml::line_num{0});
   }
 
   void emit_code(std::byte byte)
   {
-    chunk_->write(byte, eml::line_num{0});
+    chunk_.write(byte, eml::line_num{0});
   }
 
   void operator()(const ast::LiteralExpr& constant) override
   {
-    switch (constant.v().type) {
+    switch (constant.value().type) {
     case Value::type::Unit:
       emit_code(eml::op_unit);
       break;
     case Value::type::Boolean:
-      if (constant.v().unsafe_as_boolean()) {
+      if (constant.value().unsafe_as_boolean()) {
         emit_code(eml::op_true);
       } else {
         emit_code(eml::op_false);
       }
       break;
     case Value::type::Number:
-      const double number = constant.v().unsafe_as_number();
-      const auto offset = chunk_->add_constant(eml::Value{number});
+      const double number = constant.value().unsafe_as_number();
+      const auto offset = chunk_.add_constant(eml::Value{number});
 
       emit_code(eml::op_push_f64);
       emit_code(std::byte{*offset});
@@ -103,22 +106,32 @@ struct CodeGenerator : ast::AstConstVisitor {
     binary_common(expr, op_greater_equal);
   }
 
-  void operator()(const ast::Definition& /*def*/) override
+  void operator()(const ast::Definition& def) override
   {
-    // TODO(Lesley Lai): Implement this
-    std::clog
-        << "Code generation of global definition is not implemented yet\n";
+    const auto identifier = def.identifier();
+    const auto& to = def.to();
+
+    // TODO(Lesley Lai): implement constant folding
+    try {
+      const auto& v = dynamic_cast<const ast::LiteralExpr&>(to);
+
+      compiler_.add_global(identifier, *def.binding_type(), v.value());
+    } catch (std::exception& e) {
+      std::clog << e.what() << '\n';
+      std::clog << "Constant folding is not implemented yet!!!\n";
+    }
   }
 
 private:
-  chunk* chunk_; // Not null
+  Bytecode& chunk_; // Not null
+  Compiler& compiler_;
 };
 } // anonymous namespace
 
-auto Compiler::bytecode_from_ast(const ast::AstNode& expr) -> chunk
+auto Compiler::bytecode_from_ast(const ast::AstNode& expr) -> Bytecode
 {
-  chunk code;
-  CodeGenerator code_generator{code};
+  Bytecode code;
+  CodeGenerator code_generator{code, *this};
   expr.accept(code_generator);
   return code;
 }

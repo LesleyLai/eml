@@ -194,7 +194,7 @@ public:
     return binding_.identifier;
   }
 
-  auto type() const -> std::optional<Type>
+  auto binding_type() const -> std::optional<Type>
   {
     return binding_.type;
   }
@@ -274,7 +274,7 @@ public:
   }
 
   LiteralExpr(Value v, Type t) : Expr{std::move(t)}, v_{std::move(v)} {}
-  auto v() const -> Value
+  auto value() const -> Value
   {
     return v_;
   }

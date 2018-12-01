@@ -14,17 +14,43 @@
 #include "parser.hpp"
 #include "type_checker.hpp"
 
+/**
+ * @file compiler.hpp
+ * @brief This file contains the main compiler class of EML
+ */
+
 namespace eml {
 
-using SymbolTable =
-    std::unordered_map<std::string, const std::pair<Type, std::size_t>>;
+/**
+ * @brief The compiler policy about shadowing
+ *
+ * This runtime policy enum decides whether the compiler will silently allow
+ * name shadowing, or provides a warning message
+ */
+enum class Shadowing {
+  allow,                 ///< @brief Allow shadowing without any warning
+  warning_on_same_scope, ///< @brief Warn on shadowing in the same scope
+};
+
+struct CompilerConfig {
+  Shadowing shadowing_policy = Shadowing::warning_on_same_scope;
+};
 
 /**
  * @brief The compiler for the EML
+ *
+ * This class provides the API for the EML frontend.
  */
 class Compiler {
 public:
-  using CompileResult = expected<chunk, std::vector<CompilationError>>;
+  using CompileResult = expected<Bytecode, std::vector<CompilationError>>;
+
+  /**
+   * @brief
+   * @arg options Runtime configuration of the compiler. If unprovided, have
+   * sensible defaults
+   */
+  explicit Compiler(CompilerConfig options = {}) : options_{options} {}
 
   /**
    * @brief compiles the source into bytecode
@@ -43,25 +69,31 @@ public:
   }
 
   /**
-   * @brief Adds a global constants and returns its index
-   */
-  std::size_t add_global(std::string_view identifier, Type t, Value v)
-  {
-    globals_.push_back(std::move(v));
-    const auto index = globals_.size();
-    symbols_.emplace(identifier, std::pair{t, index});
-    return index;
-  }
-
-  /**
    * @brief Compiles the AST Expr node expr into bytecode
    */
-  auto bytecode_from_ast(const eml::ast::AstNode& expr) -> chunk;
+  auto bytecode_from_ast(const eml::ast::AstNode& expr) -> Bytecode;
+
+  /**
+   * @brief  Adds a global constants to a byte code chunk
+   */
+  void add_global(std::string_view identifier, Type t, Value v)
+  {
+    if (globals_.count(std::string{identifier}) > 0) { // Shadowing
+
+      if (options_.shadowing_policy == Shadowing::warning_on_same_scope) {
+        std::clog << "Warning: Global value definition of " << identifier
+                  << " shadows earlier binding "
+                     "in the global scope\n";
+      }
+    }
+
+    globals_.emplace(identifier, std::pair{std::move(t), std::move(v)});
+  }
 
 private:
-  SymbolTable symbols_; // Identifier to (type, value index) mapping for global
-  // values
-  std::vector<Value> globals_; // Global constant
+  CompilerConfig options_;
+  std::unordered_map<std::string, const std::pair<Type, Value>>
+      globals_; // Identifier to (type, value index) mapping for globals
 };
 
 } // namespace eml

@@ -6,7 +6,7 @@
 
 TEST_CASE("Arithmatic instructions", "[eml.vm]")
 {
-  using eml::chunk;
+  using eml::Bytecode;
   using eml::line_num;
   using eml::Value;
 
@@ -18,7 +18,7 @@ TEST_CASE("Arithmatic instructions", "[eml.vm]")
     const auto v4 = 2.;
     const auto v5 = 5.;
 
-    chunk code;
+    Bytecode code;
     push_number(code, v1, line_num{0});
     push_number(code, v2, line_num{0});
 

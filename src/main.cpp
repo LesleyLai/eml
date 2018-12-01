@@ -8,13 +8,16 @@
 {
   std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
 
+  eml::CompilerConfig config{eml::Shadowing::allow};
+  eml::Compiler compiler(config);
+  eml::VM vm;
+
   while (true) {
     std::cout << "> ";
     std::string line;
     std::getline(std::cin, line);
+
     if (!line.empty()) {
-      eml::Compiler compiler{};
-      eml::VM vm{};
       auto bytecode = compiler.compile(line);
       if (bytecode) {
         const auto result = vm.interpret(*bytecode);

@@ -34,7 +34,7 @@ class VM;
 /**
  * @brief A chunk of eml bytecode
  */
-struct chunk {
+struct Bytecode {
   std::vector<std::byte> instructions; // Instructions
   std::vector<Value> constants;
   std::vector<line_num> lines; // Source line information
