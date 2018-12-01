@@ -6,6 +6,7 @@
 #include "type.hpp"
 
 #include <cstdint>
+#include <vector>
 
 namespace eml {
 
