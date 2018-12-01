@@ -52,7 +52,7 @@ public:
    * @arg options Runtime configuration of the compiler. If unprovided, have
    * sensible defaults
    */
-  explicit Compiler(CompilerConfig options = {}) : options_{options} {}
+  explicit Compiler(CompilerConfig options = {}) noexcept : options_{options} {}
 
   /**
    * @brief compiles the source into bytecode

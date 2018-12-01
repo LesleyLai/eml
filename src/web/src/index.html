@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Try Embedded ML</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+    <!-- see http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/quick-tip-dont-forget-the-viewport-meta-tag -->
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1">
+    
+    <style>
+     /* following two viewport lines are equivalent to meta viewport statement above, needed for Windows */
+     /* see http://www.quirksmode.org/blog/archives/2014/05/html5_dev_conf.html and http://dev.w3.org/csswg/css-device-adapt/ */
+     @-ms-viewport { width: 100vw ; min-zoom: 100% ; zoom: 100% ; }  @viewport { width: 100vw ; min-zoom: 100% zoom: 100% ; }
+     @-ms-viewport { user-zoom: fixed ; min-zoom: 100% ; }           @viewport { user-zoom: fixed ; min-zoom: 100% ; }
+    </style>
+  </head>
+  <body>
+    <article id="results"></article>
+    <input id="command" data-input="data-input"/>
+    
+    <script>
+     let interpret;
+     
+     var Module = {
+       onRuntimeInitialized: () => {
+         interpret = cwrap('interpret', // name of C function
+                           'null', // return type
+                           ['string']);
+       }
+     };
+
+     const input = document.getElementById("command");
+     const results = document.getElementById("results");
+
+     input.focus();
+
+     input.addEventListener("keyup", function(event) {
+       // Cancel the default action, if needed
+       event.preventDefault();
+       // Number 13 is the "Enter" key on the keyboard
+       if (event.keyCode === 13) {
+         // Trigger the button element with a click
+         const para = document.createElement("p");
+         const node = document.createTextNode("> " + input.value);
+         para.appendChild(node);
+         results.appendChild(para);
+
+         const ret = Pointer_stringify(interpret(input.value));
+         
+         const para2 = document.createElement("p");
+         const node2 = document.createTextNode(ret);
+         para2.appendChild(node2);
+         
+         results.appendChild(para2);
+       }
+     });
+    </script>
+
+    <script src="EmbeddedML.js">
+    </script>
+
+  </body>
+</html>

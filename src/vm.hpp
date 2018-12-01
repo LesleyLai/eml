@@ -10,7 +10,7 @@ namespace eml {
 
 class VM {
 public:
-  VM()
+  VM() noexcept
   {
     constexpr size_t initial_stack_size = 256;
     stack_.reserve(initial_stack_size);

@@ -85,7 +85,7 @@ if(${EML_BUILD_TESTS_COVERAGE})
 endif()
 
 if(EML_BUILD_WEBASM)
-    add_subdirectory("src/web")
+    add_subdirectory("src/web/cpp")
 else()
     add_executable(${PROJECT_NAME} "src/Interpreter/main.cpp")
     target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})
