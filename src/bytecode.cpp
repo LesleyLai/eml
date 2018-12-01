@@ -1,3 +1,6 @@
+#include <sstream>
+#include <string_view>
+
 #include "bytecode.hpp"
 
 namespace eml {

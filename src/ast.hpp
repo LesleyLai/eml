@@ -298,7 +298,7 @@ public:
 /**
  * @brief The IdentifierExpr is a wrapper for an identifier of an value.
  */
-struct IdentifierExpr final : public Expr, public FactoryMixin<IdentifierExpr> {
+class IdentifierExpr final : public Expr, public FactoryMixin<IdentifierExpr> {
 public:
   explicit IdentifierExpr(std::string name) : name_{std::move(name)} {}
 
