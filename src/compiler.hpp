@@ -62,12 +62,9 @@ public:
    */
   auto compile(std::string_view src) -> CompileResult
   {
-    auto expect_ast = eml::parse(src);
-    if (expect_ast) {
-      expect_ast = this->type_check(*expect_ast);
-    }
-    return expect_ast.map(
-        [this](const auto& ast) { return this->bytecode_from_ast(*ast); });
+    return eml::parse(src)
+        .and_then([this](auto ast) { return type_check(ast); })
+        .map([this](const auto& ast) { return bytecode_from_ast(*ast); });
   }
 
   /**
