@@ -27,8 +27,9 @@ function make(_children) {
           /* render */(function (self) {
               return React.createElement("div", undefined, $$Array.of_list(List.rev(List.map(record_to_elem, self[/* state */1][/* history */0]))), React.createElement("span", undefined, "> "), React.createElement("input", {
                               style: {
+                                background: "#222",
                                 border: "none",
-                                color: "#444444",
+                                color: "#FFFFFF",
                                 width: "90%"
                               },
                               value: self[/* state */1][/* inputTest */1],
