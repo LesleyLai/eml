@@ -59,6 +59,7 @@ matrix:
       - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
       - sudo apt-get install -y nodejs
       - git clone https://github.com/juj/emsdk.git
+      - sudo apt-get install libstdc++6
       - cd emsdk
       - git pull
       - ./emsdk install latest 1>/dev/null
