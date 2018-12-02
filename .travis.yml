@@ -78,11 +78,17 @@ matrix:
   - os: linux
     compiler: emcc
     name: Web
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-trusty-6.0
+          - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
+        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+        packages:
+          - clang-6.0
+          - libstdc++6
     before_script:
-      - sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-      - sudo apt-get update
-      - sudo apt-get upgrade
-      - sudo apt-get install libstdc++6
       - git clone https://github.com/juj/emsdk.git
       - cd emsdk
       - git pull
