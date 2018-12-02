@@ -92,7 +92,8 @@ matrix:
       - tar xf data.tar.gz
       - cd usr/lib/
       - export LD_LIBRARY_PATH=${PWD}
-      - cd ../../src/web
+      - pwd
+      - cd ../../../../src/web
     script:
       - yarn install
       - yarn run build
