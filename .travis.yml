@@ -77,12 +77,6 @@ matrix:
   # Web
   - os: linux
     name: Web
-    addons:
-      apt:
-        sources:
-          - ubuntu-toolchain-r-test
-        packages:
-          - g++-8
     before_script:
       - git clone https://github.com/juj/emsdk.git
       - cd emsdk
@@ -91,9 +85,17 @@ matrix:
       - ./emsdk activate latest
       - npm install yarn
       - source ./emsdk_env.sh --build=Release
+      - wget "http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu/pool/main/g/gcc-5/libstdc++6_
+5.1.0-0ubuntu11~10.04.2_amd64.deb"
+      - mkdir libstdc++
+      - cd libstdc++/
+      - ar xv libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb
+      - tar xf data.tar.gz
+      - cd usr/lib/
+      - export LD_LIBRARY_PATH=${PWD}
       - $EMSCRIPTEN/emcc --version
       - echo $?
-      - cd ../src/web
+      - cd ../../../src/web
     script:
       - yarn install
       - yarn run build
