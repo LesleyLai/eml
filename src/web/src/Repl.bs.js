@@ -8,7 +8,9 @@ var React = require("react");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 
 function record_to_elem(record) {
-  return React.createElement("div", undefined, React.createElement("p", undefined, "> " + record[/* command */0]), record[/* response */1].length !== 0 ? React.createElement("p", undefined, "  " + record[/* response */1]) : "");
+  return React.createElement("div", undefined, React.createElement("p", undefined, "> " + record[/* command */0]), $$Array.map((function (line) {
+                    return React.createElement("p", undefined, "  " + line);
+                  }), record[/* response */1].split("\n")));
 }
 
 var component = ReasonReact.reducerComponent("Example");

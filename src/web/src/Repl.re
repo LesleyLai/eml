@@ -6,11 +6,10 @@ type record = {
 let record_to_elem(record: record) = {
   <div>
   <p> {ReasonReact.string("> " ++ record.command)} </p>
-  {if (String.length(record.response) != 0) {
-    <p> {ReasonReact.string("  " ++ record.response)} </p>
-  } else {
-    ReasonReact.string("")
-  } }
+  {
+    Array.map(line => <p> {ReasonReact.string("  " ++ line)} </p>, Js.String.split("\n", record.response))
+    -> ReasonReact.array
+  }
   </div>
 }
 
