@@ -34,6 +34,7 @@ function make(_children) {
                                 color: "#FFFFFF",
                                 width: "90%"
                               },
+                              autoFocus: true,
                               value: self[/* state */1][/* inputTest */1],
                               onKeyDown: (function ($$event) {
                                   var match = $$event.which;

@@ -68,6 +68,7 @@ let make = (_children) => {
       </span>
         
       <input
+      autoFocus=true
       value=self.state.inputTest
       style=(ReactDOMRe.Style.make(~color="#FFFFFF", ~background="#222", ~width="90%", ~border="none", ()))
       onKeyDown=(event => switch(ReactEvent.Keyboard.which(event)) {
