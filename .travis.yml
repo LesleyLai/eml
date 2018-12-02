@@ -77,6 +77,10 @@ matrix:
   # Web
   - os: linux
     name: Web
+    addons:
+      apt:
+        packages:
+          - gcc-5-base
     before_script:
       - git clone https://github.com/juj/emsdk.git
       - cd emsdk
