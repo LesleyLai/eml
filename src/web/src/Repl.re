@@ -68,7 +68,8 @@ let make = (_children) => {
           {ReasonReact.string("> ")}
       </span>
         
-      <input 
+      <input
+      value=self.state.inputTest
       style=(ReactDOMRe.Style.make(~color="#444444", ~width="90%", ~border="none", ()))
       onKeyDown=(event => switch(ReactEvent.Keyboard.which(event)) {
         | 13 => self.send(Enter)

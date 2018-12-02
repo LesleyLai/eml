@@ -31,6 +31,7 @@ function make(_children) {
                                 color: "#444444",
                                 width: "90%"
                               },
+                              value: self[/* state */1][/* inputTest */1],
                               onKeyDown: (function ($$event) {
                                   var match = $$event.which;
                                   if (match !== 13) {
