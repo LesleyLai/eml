@@ -56,12 +56,16 @@ let make = (_children) => {
 
   render: self => {
     <div>
-    (
+      <p>
+        {ReasonReact.string("Embedded ML v0.0.0, copyright Lesley Lai")}
+      </p>
+
+      (
           List.map(record_to_elem, self.state.history)
           -> List.rev
           -> Array.of_list
           -> ReasonReact.array
-    )
+      )
 
       <span>
           {ReasonReact.string("> ")}
