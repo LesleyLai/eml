@@ -86,7 +86,6 @@ matrix:
           - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
         key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
         packages:
-          - clang-6.0
           - libstdc++6
     before_script:
       - git clone https://github.com/juj/emsdk.git
@@ -95,8 +94,9 @@ matrix:
       - ./emsdk install latest
       - ./emsdk activate latest
       - npm install yarn
-      - source ./emsdk_env.sh
+      - source ./emsdk_env.sh --build=Release
       - $EMSCRIPTEN/emcc --version
+      - echo $?
       - cd ../src/web
     script:
       - yarn install
