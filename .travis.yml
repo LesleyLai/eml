@@ -4,17 +4,7 @@ sudo: require
 os: linux
 dist: trusty
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-trusty-6.0
-      - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
-    key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-    packages:
-      - g++-8
-      - g++-7
-      - clang-6.0
+
 
 matrix:
   include:
@@ -22,15 +12,37 @@ matrix:
     compiler: gcc
     name: GCC 8 with Unit Test
     env: CC="/usr/bin/gcc-8" CXX="/usr/bin/g++-8" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-trusty-6.0
+          - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
+        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+        packages:
+          - g++-8
+          - g++-7
+          - clang-6.0
     before_script:
-      - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
-      - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
+          - sudo ln -s /usr/bin/gcc-8 /usr/local/bin/gcc
+          - sudo ln -s /usr/bin/g++-8 /usr/local/bin/g++
 
 
   - os: linux
     compiler: clang
     name: Clang 6 with Unit Test
     env: CC="/usr/bin/clang-6.0" CXX="/usr/bin/clang++-6.0" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-trusty-6.0
+          - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
+        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+        packages:
+          - g++-8
+          - g++-7
+          - clang-6.0
     before_script:
       - sudo ln -s /usr/bin/clang-6.0 /usr/local/bin/clang
       - sudo ln -s /usr/bin/clang++-6.0 /usr/local/bin/clang++
@@ -41,6 +53,17 @@ matrix:
     compiler: gcc
     name: Coverage
     env: COVERAGE=1 BUILD_ONLY=1 CC="/usr/bin/gcc-7" CXX="/usr/bin/g++-7" GCOV="/usr/bin/gcov-7" CMAKE_OPTIONS="-DEML_BUILD_TESTS=ON -DEML_BUILD_TESTS_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug"  CODECOV_TOKEN="eef635f5-3847-42ce-a61f-d248b7a3604f"
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - llvm-toolchain-trusty-6.0
+          - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
+        key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+        packages:
+          - g++-8
+          - g++-7
+          - clang-6.0
     before_script:
       - sudo ln -s /usr/bin/gcc-7 /usr/local/bin/gcc
       - sudo ln -s /usr/bin/g++-7 /usr/local/bin/g++
@@ -53,17 +76,27 @@ matrix:
 
   # Web
   - os: linux
-    compiler: emcc
     name: Web
     before_script:
-      - sudo apt-get install emscripten
-      - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-      - sudo apt-get install -y nodejs
-      - cd src/web
+      - git clone https://github.com/juj/emsdk.git
+      - cd emsdk
+      - git pull
+      - ./emsdk install latest
+      - ./emsdk activate latest
+      - npm install yarn
+      - source ./emsdk_env.sh --build=Release
+      - mkdir libstdc++
+      - cd libstdc++/
+      - wget "http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu/pool/main/g/gcc-5/libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb"
+      - ar xv libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb
+      - tar xf data.tar.gz
+      - cd usr/lib/
+      - export LD_LIBRARY_PATH=${PWD}
+      - pwd
+      - cd ../../../../src/web
     script:
-      - npm run build
-
-
+      - yarn install
+      - yarn run build
 
 script:
   - sudo pip install conan
