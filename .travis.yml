@@ -79,18 +79,18 @@ matrix:
     compiler: emcc
     name: Web
     before_script:
-      - sudo apt-get install yarn
       - git clone https://github.com/juj/emsdk.git
       - cd emsdk
       - git pull
       - ./emsdk install latest
       - ./emsdk activate latest
+      - npm install yarn
       - source ./emsdk_env.sh
       - $EMSCRIPTEN/emcc --version
       - cd ../src/web
     script:
-      - npm install 1>/dev/null
-      - npm run build
+      - yarn install
+      - yarn run build
 
 script:
   - sudo pip install conan
