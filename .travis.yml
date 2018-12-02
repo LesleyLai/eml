@@ -92,9 +92,7 @@ matrix:
       - tar xf data.tar.gz
       - cd usr/lib/
       - export LD_LIBRARY_PATH=${PWD}
-      - $EMSCRIPTEN/emcc --version
-      - echo $?
-      - cd ../../../src/web
+      - cd ../../src/web
     script:
       - yarn install
       - yarn run build
