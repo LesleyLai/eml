@@ -85,10 +85,9 @@ matrix:
       - cd emsdk
       - git pull
       - ./emsdk install latest 1>/dev/null
-      - ./emsdk activate latest 1>/dev/null
-      - source ./emsdk_env.sh 1>/dev/null
-      - $EMSCRIPTEN/emcc
-      - whereis emcc
+      - ./emsdk activate latest
+      - source ./emsdk_env.sh
+      - $EMSCRIPTEN/emcc --version
       - cd ../src/web
     script:
       - npm install
