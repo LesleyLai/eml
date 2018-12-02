@@ -5,19 +5,20 @@
 #include "eml.hpp"
 #include "vm.hpp"
 
-[[noreturn]] void repl()
-{
+[[noreturn]] void repl() {
   std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
+
+  eml::Compiler compiler;
+  eml::VM vm;
 
   while (true) {
     std::cout << "> ";
     std::string line;
     std::getline(std::cin, line);
     if (!line.empty()) {
-      auto bytecode = eml::compile(line);
+      const auto bytecode = compiler.compile(line);
       if (bytecode) {
-        eml::VM vm{std::move(*bytecode)};
-        const auto result = vm.interpret();
+        const auto result = vm.interpret(*bytecode);
         if (result) {
           std::cout << *result << '\n';
         }
