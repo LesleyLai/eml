@@ -56,11 +56,17 @@ matrix:
     compiler: emcc
     name: Web
     before_script:
-      - sudo apt-get install emscripten
       - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
       - sudo apt-get install -y nodejs
-      - cd src/web
+      - git clone https://github.com/juj/emsdk.git
+      - cd emsdk
+      - git pull
+      - ./emsdk install latest
+      - ./emsdk activate latest
+      - source ./emsdk_env.sh
+      - cd ../src/web
     script:
+      - npm install
       - npm run build
 
 
