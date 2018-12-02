@@ -80,15 +80,13 @@ matrix:
     addons:
       apt:
         packages:
-          - gcc-5-base
+          - g++-8
     before_script:
       - git clone https://github.com/juj/emsdk.git
       - cd emsdk
       - git pull
       - ./emsdk install latest
       - ./emsdk activate latest
-      - wget http://security.ubuntu.com/ubuntu/pool/main/g/gcc-5/libstdc++6_5.4.0-6ubuntu1~16.04.10_amd64.deb
-      - sudo dpkg -i libstdc++6_5.4.0-6ubuntu1~16.04.10_amd64.deb
       - npm install yarn
       - source ./emsdk_env.sh --build=Release
       - $EMSCRIPTEN/emcc --version
