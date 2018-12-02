@@ -51,6 +51,20 @@ matrix:
       - cd lcov-1.13 && sudo make install
       - cd ..
 
+  # Web
+  - os: linux
+    compiler: emcc
+    name: Web
+    before_script:
+      - sudo apt-get install emscripten
+      - curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+      - sudo apt-get install -y nodejs
+      - cd src/web
+    script:
+      - npm run build
+
+
+
 script:
   - sudo pip install conan
   - mkdir build && cd build
