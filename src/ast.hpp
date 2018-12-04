@@ -199,7 +199,15 @@ public:
     return binding_.identifier;
   }
 
-  auto binding_type() const -> std::optional<Type>
+  void set_binding_type(Type type)
+  {
+    binding_.type = std::move(type);
+  }
+
+  /**
+   * @brief Gets the type a definition bind to
+   */
+  auto binding_type() const -> const std::optional<Type>&
   {
     return binding_.type;
   }
@@ -235,7 +243,7 @@ public:
    * @brief Gets the type of the AST node, or std::nullopt if the node don't
    * have a type yet
    */
-  auto type() const -> std::optional<Type>
+  auto type() const -> const std::optional<Type>&
   {
     return type_;
   }

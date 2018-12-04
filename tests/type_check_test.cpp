@@ -340,3 +340,37 @@ TEST_CASE("Type check on binary comparison expressions")
     }
   }
 }
+
+TEST_CASE("Correctly type infer the let declerations and identifiers")
+{
+  constexpr auto s1 = "let x = true";
+  GIVEN(s1)
+  {
+    eml::Compiler compiler;
+
+    THEN("Type check should resolve the right hand side to type Bool")
+    {
+      const auto result = eml::parse(s1).and_then(
+          [&compiler](auto&& ast) { return compiler.type_check(ast); });
+      REQUIRE(result);
+      const auto bind_type =
+          dynamic_cast<ast::Definition&>(**result).binding_type();
+      REQUIRE(bind_type.has_value());
+      REQUIRE(*bind_type == eml::BoolType{});
+    }
+
+    GIVEN("x")
+    {
+      THEN("Should get the same type as the previous definition")
+      {
+        const auto result = eml::parse("x").and_then(
+            [&compiler](auto&& ast) { return compiler.type_check(ast); });
+        REQUIRE(result);
+        const auto id_type =
+            dynamic_cast<ast::IdentifierExpr&>(**result).type();
+        REQUIRE(id_type.has_value());
+        REQUIRE(*id_type == eml::BoolType{});
+      }
+    }
+  }
+}

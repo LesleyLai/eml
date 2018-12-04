@@ -189,7 +189,7 @@ struct TypeChecker : ast::AstVisitor {
   void operator()(ast::Definition& def) override
   {
     def.to().accept(*this);
-    if (def.binding_type()) {
+    if (def.binding_type().has_value()) {
       if (def.to().type() && def.binding_type() != def.to().type()) {
         std::stringstream ss;
         ss << "Type mismatch in value definition\n";
@@ -197,7 +197,7 @@ struct TypeChecker : ast::AstVisitor {
         error(ss.str());
       }
     } else {
-      def.binding_type() = def.to().type();
+      def.set_binding_type(*def.to().type());
     }
 
     // TODO(Lesley Lai): implement constant folding
