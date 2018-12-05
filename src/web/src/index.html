@@ -21,17 +21,6 @@
 
     <script src="Index.js"></script>
     
-    <script>
-     let interpret;
-     
-     var Module = {
-       onRuntimeInitialized: () => {
-         interpret = cwrap('interpret',
-                           'null', // return type
-                           ['string']);
-       }
-     };
-    </script>
     <script src="EmbeddedML.js">
     </script>
 

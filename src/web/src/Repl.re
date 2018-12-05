@@ -40,8 +40,11 @@ let make = (_children) => {
         ReasonReact.Update({...state, inputTest: newTest})
       }
       | Enter => {
-        let jsInterpret: string => string = [%bs.raw {| 
+        let jsInterpret: string => string = [%bs.raw {|
           function(s) {
+            const interpret = cwrap('interpret',
+                           'null', // return type
+                           ['string']);
             return Pointer_stringify(interpret(s));
           }
         |}];
@@ -50,7 +53,6 @@ let make = (_children) => {
         ReasonReact.Update({inputTest: "",
                             history: [{command: request, response: response}, ...state.history]});
       }
-      | _ => ReasonReact.NoUpdate
     }
   },
 
@@ -80,7 +82,7 @@ let make = (_children) => {
         | _ => ()
       })
       onChange=(event => {
-        self.send(InputText(ReactDOMRe.domElementToObj(ReactEventRe.Form.target(event))##value));
+        self.send(InputText(ReactEvent.Form.target(event)##value));
       })
       />
     </div>;
