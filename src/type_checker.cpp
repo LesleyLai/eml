@@ -1,4 +1,4 @@
-#include "type_checker.hpp"
+#include "ast.hpp"
 #include "compiler.hpp"
 
 #include <iomanip>

@@ -1,3 +1,4 @@
+#include "ast.hpp"
 #include "compiler.hpp"
 
 namespace eml {

@@ -1,4 +1,0 @@
-
-namespace eml {
-
-} // namespace eml

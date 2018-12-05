@@ -1,3 +1,4 @@
+#include "ast.hpp"
 #include "compiler.hpp"
 
 #include <catch2/catch.hpp>

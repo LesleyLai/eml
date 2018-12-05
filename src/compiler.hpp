@@ -12,7 +12,6 @@
 #include "value.hpp"
 
 #include "parser.hpp"
-#include "type_checker.hpp"
 
 /**
  * @file compiler.hpp

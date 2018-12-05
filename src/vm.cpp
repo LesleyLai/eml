@@ -7,7 +7,6 @@
 #include "common.hpp"
 #include "eml.hpp"
 #include "parser.hpp"
-#include "type_checker.hpp"
 
 #include "vm.hpp"
 
