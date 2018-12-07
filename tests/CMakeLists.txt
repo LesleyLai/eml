@@ -12,8 +12,8 @@ add_executable(${EML_TEST_TARGET}
     "ast_test.cpp"
     "parser_test.cpp"
     "scanner_test.cpp"
-    "util.hpp"
     "value_test.cpp"
+    "vm_test_util.hpp"
     "vm_test.cpp"
     "type_check_test.cpp"
     )

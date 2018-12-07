@@ -2,7 +2,7 @@
 #include "compiler.hpp"
 #include "debug.hpp"
 
-#include "util.hpp"
+#include "vm_test_util.hpp"
 
 #include <catch2/catch.hpp>
 
@@ -53,13 +53,13 @@ TEST_CASE("AST visiting and printing")
         push_number(expected, 3.);
         push_number(expected, 4.);
         push_number(expected, 5.);
-        expected.write(eml::op_add, eml::line_num{0});
-        expected.write(eml::op_multiply, eml::line_num{0});
+        write_instruction(expected, eml::op_add_f64);
+        write_instruction(expected, eml::op_multiply_f64);
         push_number(expected, 3.);
-        expected.write(eml::op_negate, eml::line_num{0});
+        write_instruction(expected, eml::op_negate_f64);
         push_number(expected, 1.);
-        expected.write(eml::op_subtract, eml::line_num{0});
-        expected.write(eml::op_divide, eml::line_num{0});
+        write_instruction(expected, eml::op_subtract_f64);
+        write_instruction(expected, eml::op_divide_f64);
 
         REQUIRE(c.disassemble() == expected.disassemble());
       }

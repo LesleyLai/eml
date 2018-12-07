@@ -55,7 +55,6 @@ add_library(lib${PROJECT_NAME}
     "src/bytecode.cpp"
     "src/common.hpp"
     "src/compiler.hpp"
-    "src/code_generator.hpp"
     "src/code_generator.cpp"
     "src/debug.hpp"
     "src/debug.cpp"
@@ -65,7 +64,6 @@ add_library(lib${PROJECT_NAME}
     "src/error.cpp"
     "src/parser.hpp"
     "src/parser.cpp"
-    "src/opcode.inc"
     "src/token_table.inc"
     "src/type.hpp"
     "src/type.cpp"
@@ -85,7 +83,7 @@ endif()
 if(EML_BUILD_WEBASM)
     add_subdirectory("src/web/cpp")
 else()
-    add_executable(${PROJECT_NAME} "src/Interpreter/main.cpp")
+    add_executable(${PROJECT_NAME} "src/cli/main.cpp")
     target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})
 endif()
 

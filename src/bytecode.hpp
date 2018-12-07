@@ -17,8 +17,37 @@ namespace eml {
  * @brief The instruction set of the Embedded ML vm
  */
 enum opcode : std::underlying_type_t<std::byte> {
-#define OPCODE(type, stack_impact) op_##type,
-#include "opcode.inc"
+  op_return,
+  op_push_f64, /*Pushes a float_64 constant with index [arg] to the stack*/
+  op_pop,      /*Pops and discards the top value of the stack*/
+
+  op_true,  /*Pushes true to the stack*/
+  op_false, /*Pushes false to the stack*/
+  op_unit,  /*Pushes unit to the stack*/
+
+  /*Unary Arithmatics*/
+  op_negate_f64,
+  op_not,
+
+  /*Binary Arithmatics*/
+  op_add_f64,
+  op_subtract_f64,
+  op_multiply_f64,
+  op_divide_f64,
+
+  /*Comparisons*/
+  op_equal,
+  op_not_equal,
+  op_less_f64,
+  op_less_equal_f64,
+  op_greater_f64,
+  op_greater_equal_f64,
+
+  /* Jumps */
+  op_jmp,       // Unconditionally jump instruction pointer [arg] forward
+  op_jmp_false, // Pop and if false then jump the instruction pointer [arg]
+                // forward.
+
 };
 
 /// @brief The underlying numerical type of the @ref opcode enum
