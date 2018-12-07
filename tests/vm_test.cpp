@@ -22,17 +22,17 @@ TEST_CASE("Arithmatic instructions", "[eml.vm]")
     push_number(code, v1, line_num{0});
     push_number(code, v2, line_num{0});
 
-    code.write(eml::op_add, line_num{0});
+    code.write(eml::op_add_f64, line_num{0});
 
     push_number(code, v3, line_num{0});
 
-    code.write(eml::op_divide, line_num{0});
+    code.write(eml::op_divide_f64, line_num{0});
 
     push_number(code, v4, line_num{0});
     push_number(code, v5, line_num{0});
 
-    code.write(eml::op_multiply, line_num{0});
-    code.write(eml::op_subtract, line_num{0});
+    code.write(eml::op_multiply_f64, line_num{0});
+    code.write(eml::op_subtract_f64, line_num{0});
 
     eml::VM machine{};
 

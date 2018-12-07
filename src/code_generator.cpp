@@ -60,7 +60,7 @@ struct CodeGenerator : ast::AstConstVisitor {
 
   void operator()(const ast::UnaryNegateExpr& expr) override
   {
-    unary_common(expr, op_negate);
+    unary_common(expr, op_negate_f64);
   }
 
   void operator()(const ast::UnaryNotExpr& expr) override
@@ -77,19 +77,19 @@ struct CodeGenerator : ast::AstConstVisitor {
 
   void operator()(const ast::PlusOpExpr& expr) override
   {
-    binary_common(expr, op_add);
+    binary_common(expr, op_add_f64);
   }
   void operator()(const ast::MinusOpExpr& expr) override
   {
-    binary_common(expr, op_subtract);
+    binary_common(expr, op_subtract_f64);
   }
   void operator()(const ast::MultOpExpr& expr) override
   {
-    binary_common(expr, op_multiply);
+    binary_common(expr, op_multiply_f64);
   }
   void operator()(const ast::DivOpExpr& expr) override
   {
-    binary_common(expr, op_divide);
+    binary_common(expr, op_divide_f64);
   }
   void operator()(const ast::EqOpExpr& expr) override
   {
@@ -101,19 +101,19 @@ struct CodeGenerator : ast::AstConstVisitor {
   }
   void operator()(const ast::LessOpExpr& expr) override
   {
-    binary_common(expr, op_less);
+    binary_common(expr, op_less_f64);
   }
   void operator()(const ast::LeOpExpr& expr) override
   {
-    binary_common(expr, op_less_equal);
+    binary_common(expr, op_less_equal_f64);
   }
   void operator()(const ast::GreaterOpExpr& expr) override
   {
-    binary_common(expr, op_greater);
+    binary_common(expr, op_greater_f64);
   }
   void operator()(const ast::GeExpr& expr) override
   {
-    binary_common(expr, op_greater_equal);
+    binary_common(expr, op_greater_equal_f64);
   }
 
   void operator()(const ast::Definition& /*def*/) override
