@@ -76,7 +76,7 @@ let make = (_children) => {
       <input
       autoFocus=true
       value=self.state.inputTest
-      style=(ReactDOMRe.Style.make(~color="#FFFFFF", ~background="#222", ~width="90%", ~border="none", ()))
+      style=(ReactDOMRe.Style.make(~color="#FFFFFF", ~background="#222", ~width="90%", ~border="none", ~fontSize="16px", ()))
       onKeyDown=(event => switch(ReactEvent.Keyboard.which(event)) {
         | 13 => self.send(Enter)
         | _ => ()
