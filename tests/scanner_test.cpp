@@ -10,6 +10,16 @@ using eml::token_type;
 
 TEST_CASE("scanner", "[scanner]")
 {
+  GIVEN("hello")
+  {
+    const auto hello = "hello";
+    THEN("Scan as an identifier")
+    {
+      Scanner s{hello};
+      REQUIRE(s.begin() != s.end());
+      REQUIRE(s.begin()->type == token_type::identifier);
+    }
+  }
 
   GIVEN("A string of keywords")
   {
@@ -55,6 +65,23 @@ TEST_CASE("scanner", "[scanner]")
         }
         REQUIRE(scanner_itr == std::end(s));
       }
+    }
+  }
+
+  GIVEN("A multi-line string")
+  {
+    const auto str = R"("
+                     Hello
+                     world
+                     ")";
+
+    Scanner s{str};
+    REQUIRE(s.begin() != s.end());
+
+    THEN("The whole string is one token")
+    {
+      REQUIRE(str == s.begin()->text);
+      REQUIRE(++s.begin() == s.end());
     }
   }
 
