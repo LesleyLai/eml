@@ -160,8 +160,21 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
     case op_greater_equal_f64:
       comparison_operation(stack_, std::greater_equal<Value>{});
       break;
-    default:
-      EML_UNREACHABLE();
+    case op_jmp: {
+      ++ip;
+      const auto jump_by = static_cast<int>(*ip);
+      ip += jump_by;
+    } break;
+
+    case op_jmp_false: {
+      ++ip;
+      if (!pop(stack_).unsafe_as_boolean()) {
+        const auto jump_by = static_cast<int>(*ip);
+        ip += jump_by;
+      }
+    }
+
+    break;
     }
 
     ++offset;

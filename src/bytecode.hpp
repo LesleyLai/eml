@@ -18,7 +18,7 @@ namespace eml {
  */
 enum opcode : std::underlying_type_t<std::byte> {
   op_return,
-  op_push_f64, /*Pushes a float_64 to the stack*/
+  op_push_f64, /*Pushes a float_64 constant with index [arg] to the stack*/
   op_pop,      /*Pops and discards the top value of the stack*/
 
   op_true,  /*Pushes true to the stack*/
@@ -42,6 +42,12 @@ enum opcode : std::underlying_type_t<std::byte> {
   op_less_equal_f64,
   op_greater_f64,
   op_greater_equal_f64,
+
+  /* Jumps */
+  op_jmp,       // Unconditionally jump instruction pointer [arg] forward
+  op_jmp_false, // Pop and if false then jump the instruction pointer [arg]
+                // forward.
+
 };
 
 /// @brief The underlying numerical type of the @ref opcode enum

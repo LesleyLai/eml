@@ -53,12 +53,18 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   };
 
   // Print instruction with one constant argument
-  auto disassemble_instruction_with_one_const_parem =
+  auto disassemble_instruction_with_one_const_float_parem =
       [&](auto& current_ip, std::string_view name) {
         print_hex_dump(current_ip, 2);
         const auto v = read_constant(++current_ip);
         ss << name << ' ' << to_string(v, PrintType::no) << '\n';
       };
+
+  // Print instruction with one constant argument
+  auto disassemble_jmp = [&](auto& current_ip, std::string_view name) {
+    print_hex_dump(current_ip, 2);
+    ss << name << ' ' << static_cast<int>(*++current_ip) << '\n';
+  };
 
   // Dump file in source line
   constexpr std::size_t linum_digits = 4;
@@ -74,7 +80,7 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
     disassemble_simple_instruction(ip, "return");
     break;
   case op_push_f64: {
-    disassemble_instruction_with_one_const_parem(ip, "push<f64>");
+    disassemble_instruction_with_one_const_float_parem(ip, "push<f64>");
   } break;
   case op_pop:
     disassemble_simple_instruction(ip, "pop<f64>");
@@ -124,8 +130,12 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   case op_greater_equal_f64:
     disassemble_simple_instruction(ip, "ge<f64> // greater than or equal to");
     break;
-  default:
-    ss << "Unknown instruction\n";
+  case op_jmp:
+    disassemble_jmp(ip, "jump");
+    break;
+  case op_jmp_false:
+    disassemble_jmp(ip, "jump_false");
+    break;
   }
 
   return ss.str();
