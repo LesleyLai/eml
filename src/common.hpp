@@ -79,6 +79,7 @@ struct Token {
                 << '\n'                                                        \
                 << "This is probabaly an internal bug of the Embedded ML "     \
                    "Implementation, please fill a bug report.\n";              \
+      std::abort();                                                            \
     }                                                                          \
   } while (0)
 

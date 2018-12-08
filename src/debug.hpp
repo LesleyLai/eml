@@ -12,7 +12,7 @@ struct AstNode;
 /**
  * @brief Converts AST node into a string with lisp-like prefix notation
  */
-std::string string_from_ast(const ast::AstNode& node);
+std::string to_string(const ast::AstNode& node);
 
 } // namespace eml
 

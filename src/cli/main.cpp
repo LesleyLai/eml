@@ -8,7 +8,8 @@
 [[noreturn]] void repl() {
   std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
 
-  eml::Compiler compiler;
+  eml::CompilerConfig config = {eml::Shadowing::allow};
+  eml::Compiler compiler{config};
   eml::VM vm;
 
   while (true) {

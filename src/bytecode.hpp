@@ -70,24 +70,46 @@ struct Bytecode {
 
   /**
    * @brief Write an instruction to the instructions
-   * @param code The instruction
+   * @param code The instruction to write
    * @param line The line this instruction in source
+   * @return The index of the opcode in instructions
    */
-  void write(opcode code, line_num line)
+  auto write(opcode code, line_num line) -> std::ptrdiff_t
   {
     instructions.push_back(static_cast<std::byte>(code));
     lines.push_back(line);
+    return instructions.size() - 1;
   }
 
   /**
    * @brief Write a byte to the instructions
-   * @param code The byte
+   * @param code The byte to write
    * @param line The line this instruction in source
+   * @return The index of the byte in instructions
    */
-  void write(std::byte code, line_num line)
+  auto write(std::byte code, line_num line) -> std::ptrdiff_t
   {
-    instructions.push_back(static_cast<std::byte>(code));
+    instructions.push_back(code);
     lines.push_back(line);
+    return instructions.size() - 1;
+  }
+
+  /**
+   * @brief Write a byte to the instructions at a certain index
+   * @param code The byte to write
+   * @param index The place to write the instruction
+   */
+  void write_at(std::byte code, std::ptrdiff_t index)
+  {
+    instructions[static_cast<std::size_t>(index)] = code;
+  }
+
+  /**
+   * @brief Returns the index of next instruction
+   */
+  auto next_instruction_index() noexcept -> std::ptrdiff_t
+  {
+    return static_cast<std::ptrdiff_t>(instructions.size());
   }
 
   /**
@@ -96,8 +118,7 @@ struct Bytecode {
    * Adds a constant value v to the chunk. Returns the index where it was
    * appended so that we can locate that same constant later.
    */
-  [[nodiscard]] std::optional<opcode_num_type> add_constant(Value v)
-  {
+  [[nodiscard]] std::optional<opcode_num_type> add_constant(Value v) {
     if (constants.size() >= std::numeric_limits<opcode_num_type>::max()) {
       return {};
     }

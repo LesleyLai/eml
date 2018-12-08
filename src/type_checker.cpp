@@ -186,6 +186,33 @@ struct TypeChecker : ast::AstVisitor {
                   ">=", Func2Type{NumberType{}, NumberType{}, BoolType{}});
   }
 
+  void operator()(ast::IfExpr& expr) override
+  {
+    if (expr.type()) {
+      return;
+    }
+
+    expr.cond().accept(*this);
+
+    if (expr.cond().type() != BoolType{}) {
+      std::stringstream ss;
+      ss << "I want a " << BoolType{} << " in condition of if expression\n";
+      ss << "Got " << *expr.cond().type() << '\n';
+      error(ss.str());
+    }
+
+    expr.If().accept(*this);
+    expr.Else().accept(*this);
+
+    if (expr.If().type() != expr.Else().type()) {
+      std::stringstream ss;
+      ss << "Type mismatch in branching!\n";
+      ss << "If branch: " << *expr.If().type() << '\n';
+      ss << "Else branch: " << *expr.Else().type() << '\n';
+      error(ss.str());
+    }
+  }
+
   void operator()(ast::Definition& def) override
   {
     def.to().accept(*this);

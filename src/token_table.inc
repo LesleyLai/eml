@@ -37,7 +37,7 @@
   TOKEN_TABLE_ENTRY(keyword_extern, "extern", nullptr, nullptr, none)   \
   TOKEN_TABLE_ENTRY(keyword_false, "false", parse_literal, nullptr, none) \
   TOKEN_TABLE_ENTRY(keyword_for, "for", nullptr, nullptr, none)         \
-  TOKEN_TABLE_ENTRY(keyword_if, "if", nullptr, nullptr, none)           \
+  TOKEN_TABLE_ENTRY(keyword_if, "if", parse_branch, nullptr, none)      \
   TOKEN_TABLE_ENTRY(keyword_let, "let", nullptr, nullptr, none)         \
   TOKEN_TABLE_ENTRY(keyword_not, "not", nullptr, nullptr, none)         \
   TOKEN_TABLE_ENTRY(keyword_or, "or", nullptr, nullptr, or)             \

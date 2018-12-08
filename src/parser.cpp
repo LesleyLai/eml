@@ -61,10 +61,8 @@ struct Parser {
     case token_type::keyword_case:
     case token_type::keyword_class:
     case token_type::keyword_def:
-    case token_type::keyword_else:
     case token_type::keyword_extern:
     case token_type::keyword_for:
-    case token_type::keyword_if:
     case token_type::keyword_not:
     case token_type::keyword_or:
     case token_type::keyword_return:
@@ -78,6 +76,16 @@ struct Parser {
     default:
       return; // Do nothing
     }
+  }
+
+  // Check if the current token match a type, produces error otherwise
+  void check(const eml::token_type type, const char* message)
+  {
+    if (current_itr->type == type) {
+      return;
+    }
+
+    error_at(*current_itr, message);
   }
 
   void consume(const eml::token_type type, const char* message)
@@ -174,6 +182,34 @@ Precedence higher(Precedence p)
       static_cast<std::underlying_type_t<Precedence>>(p) + 1);
 }
 
+auto parse_block(Parser& parser) -> ast::Expr_ptr
+{
+  parser.advance();
+
+  auto expr = parse_expression(parser);
+
+  parser.consume(token_type::right_brace, "A block must end with \'}\'");
+  return expr;
+}
+
+// if else
+auto parse_branch(Parser& parser) -> ast::Expr_ptr
+{
+  auto cond = parse_expression(parser);
+
+  parser.check(token_type::left_brace, "expect a block after if");
+
+  auto If = parse_block(parser);
+
+  parser.consume(token_type::keyword_else,
+                 "if expression must have an else branch");
+
+  parser.check(token_type::left_brace, "expect a block after else");
+  auto Else = parse_block(parser);
+
+  return ast::IfExpr::create(std::move(cond), std::move(If), std::move(Else));
+}
+
 auto parse_number(Parser& parser) -> ast::Expr_ptr
 {
   const double number = strtod(parser.previous.text.data(), nullptr);
@@ -183,7 +219,6 @@ auto parse_number(Parser& parser) -> ast::Expr_ptr
 auto parse_definition(Parser& parser) -> std::unique_ptr<ast::AstNode>
 {
   parser.advance();
-
   const auto id = parser.current_itr->text;
   parser.advance();
   parser.consume(token_type::equal, "Missing equal sign in let");
@@ -263,6 +298,7 @@ auto parse_grouping(Parser& parser)
 
   parser.consume(eml::token_type::right_paren,
                  "Expect `)` at the end of the expression");
+
   return expr_ptr;
 }
 
@@ -355,7 +391,7 @@ auto parse(std::string_view source) -> ParseResult
     return unexpected{std::move(parser.errors)};
   }
   if constexpr (eml::BuildOptions::debug_print_ast) {
-    std::cout << eml::string_from_ast(*expr) << '\n';
+    std::cout << eml::to_string(*expr) << '\n';
   }
   return std::move(expr);
 }

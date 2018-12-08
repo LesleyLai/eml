@@ -16,7 +16,7 @@ TEST_CASE("Test parsing", "[parser]")
       THEN("Should produces AST (* 5 6)")
       {
         REQUIRE(ast);
-        REQUIRE(eml::string_from_ast(**ast) == "(* 5 6)");
+        REQUIRE(eml::to_string(**ast) == "(* 5 6)");
       }
     }
   }
@@ -30,7 +30,30 @@ TEST_CASE("Test parsing", "[parser]")
       THEN("Should produces AST (let x (* (/ 1 2) 5))")
       {
         REQUIRE(ast);
-        REQUIRE(eml::string_from_ast(**ast) == "(let x (* (/ 1 2) 5))");
+        REQUIRE(eml::to_string(**ast) == "(let x (* (/ 1 2) 5))");
+      }
+    }
+  }
+
+  GIVEN("An if-else branch")
+  {
+    constexpr auto branch_str = R"(
+                                if (x < 0) {
+                                  0
+                                } else {
+                                  x
+                                }
+                                )";
+    WHEN("Parsed")
+    {
+      const auto ast = eml::parse(branch_str);
+      THEN("Should produces the correct AST")
+      {
+        REQUIRE(ast);
+        ast.map([](auto& ast) {
+          const auto& if_node = dynamic_cast<eml::ast::IfExpr&>(*ast);
+          // REQUIRE(if_node.If() == );
+        });
       }
     }
   }

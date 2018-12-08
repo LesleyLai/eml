@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 namespace eml {
 
@@ -64,6 +65,7 @@ class Definition;
 
 class LiteralExpr;
 class IdentifierExpr;
+class IfExpr;
 
 template <detail::UnaryOpType optype> struct UnaryOpExprTemplate;
 /// @brief AST Node for the unary negate operation (specializes @ref
@@ -130,6 +132,7 @@ struct AstConstVisitor {
   virtual void operator()(const LeOpExpr& expr) = 0;
   virtual void operator()(const GreaterOpExpr& expr) = 0;
   virtual void operator()(const GeExpr& expr) = 0;
+  virtual void operator()(const IfExpr& def) = 0;
 
   virtual void operator()(const Definition& def) = 0;
 };
@@ -159,6 +162,7 @@ struct AstVisitor {
   virtual void operator()(LeOpExpr& expr) = 0;
   virtual void operator()(GreaterOpExpr& expr) = 0;
   virtual void operator()(GeExpr& expr) = 0;
+  virtual void operator()(IfExpr& def) = 0;
 
   virtual void operator()(Definition& def) = 0;
 };
@@ -234,7 +238,8 @@ private:
 /**
  * @brief Base class for all the Expression AST Node
  */
-struct Expr : AstNode {
+struct[[nodiscard]] Expr : AstNode
+{
 public:
   Expr() = default;
   explicit Expr(Type type) : type_{std::move(type)} {}
@@ -243,7 +248,7 @@ public:
    * @brief Gets the type of the AST node, or std::nullopt if the node don't
    * have a type yet
    */
-  auto type() const -> const std::optional<Type>&
+  auto type() const->const std::optional<Type>&
   {
     return type_;
   }
@@ -344,6 +349,56 @@ public:
 private:
   std::string name_;
   std::optional<Value> value_;
+};
+
+/**
+ * @brief The IfExpr represent a branch if ... [else if ...] else ...
+ */
+class IfExpr : public Expr, public FactoryMixin<IfExpr> {
+public:
+  IfExpr(Expr_ptr cond, Expr_ptr If, Expr_ptr Else)
+      : cond_{std::move(cond)}, if_(std::move(If)), else_(std::move(Else))
+  {
+  }
+
+  /**
+   * @brief Gets the condition of an if expression
+   */
+  auto cond() const noexcept -> Expr&
+  {
+    return *cond_;
+  }
+
+  /**
+   * @brief Gets the expression that if branch evaluate to
+   */
+  auto If() const noexcept -> Expr&
+  {
+    return *if_;
+  }
+
+  /**
+   * @brief Gets the expression that else branch evaluate to
+   */
+  auto Else() const noexcept -> Expr&
+  {
+    return *else_;
+  }
+
+  void accept(AstVisitor& visitor) override
+  {
+    visitor(*this);
+  }
+
+  void accept(AstConstVisitor& visitor) const override
+  {
+    visitor(*this);
+  }
+
+private:
+  Expr_ptr cond_;
+  Expr_ptr if_;
+  Expr_ptr else_;
 };
 
 /**

@@ -18,7 +18,7 @@ TEST_CASE("AST visiting and printing")
       {
         ast::UnaryNegateExpr expr{ast::LiteralExpr::create(eml::Value{10.})};
 
-        REQUIRE(eml::string_from_ast(expr) == "(- 10)");
+        REQUIRE(eml::to_string(expr) == "(- 10)");
       }
     }
   }
@@ -35,7 +35,7 @@ TEST_CASE("AST visiting and printing")
                                  ast::LiteralExpr::create(eml::Value{1.})));
     WHEN("Invoke the Ast Printer")
     {
-      const auto str = eml::string_from_ast(*expr);
+      const auto str = eml::to_string(*expr);
       THEN("Should print the correct prefix notation")
       {
         REQUIRE(str == "(/ (* 3 (+ 4 5)) (- (- 3) 1))");

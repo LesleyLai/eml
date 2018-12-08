@@ -81,9 +81,21 @@ public:
   {
     binary_common(expr, ">");
   }
+
   void operator()(const ast::GeExpr& expr) override
   {
     binary_common(expr, ">=");
+  }
+
+  void operator()(const ast::IfExpr& expr) override
+  {
+    ss_ << "(if [";
+    expr.cond().accept(*this);
+    ss_ << "]\n\t";
+    expr.If().accept(*this);
+    ss_ << '\t';
+    expr.Else().accept(*this);
+    ss_ << ')';
   }
 
   void operator()(const ast::Definition& def) override
@@ -103,7 +115,7 @@ private:
 };
 } // anonymous namespace
 
-std::string string_from_ast(const eml::ast::AstNode& node)
+std::string to_string(const eml::ast::AstNode& node)
 {
   AstPrinter printer;
   node.accept(printer);
