@@ -38,21 +38,23 @@ TEST_CASE("Test parsing", "[parser]")
   GIVEN("An if-else branch")
   {
     constexpr auto branch_str = R"(
-                                if (x < 0) {
-                                  0
-                                } else {
-                                  x
-                                }
-                                )";
+                                  if (x < 0) {
+                                    0
+                                  } else {
+                                    x
+                                  }
+                                  )";
     WHEN("Parsed")
     {
-      const auto ast = eml::parse(branch_str);
+      const auto result = eml::parse(branch_str);
       THEN("Should produces the correct AST")
       {
-        REQUIRE(ast);
-        ast.map([](auto& ast) {
-          const auto& if_node = dynamic_cast<eml::ast::IfExpr&>(*ast);
-          // REQUIRE(if_node.If() == );
+        REQUIRE(result);
+        result.map([](auto& ast) {
+          const auto& branch_node = dynamic_cast<eml::ast::IfExpr&>(*ast);
+          REQUIRE(eml::to_string(branch_node.cond()) == "(< x 0)");
+          REQUIRE(eml::to_string(branch_node.If()) == "0");
+          REQUIRE(eml::to_string(branch_node.Else()) == "x");
         });
       }
     }
