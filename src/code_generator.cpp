@@ -17,6 +17,8 @@ struct TypeDispatcher {
   void operator()(const BoolType& /*t*/);
 
   void operator()(const UnitType& /*t*/);
+
+  [[noreturn]] void operator()(const ErrorType& /*t*/);
 };
 
 struct CodeGenerator : ast::AstConstVisitor {
@@ -30,19 +32,16 @@ struct CodeGenerator : ast::AstConstVisitor {
   void operator()(const ast::LiteralExpr& constant) override
   {
     TypeDispatcher visitor{*this, constant.value()};
-    std::visit(visitor, *constant.type());
+    std::visit(visitor, constant.type());
   }
 
   void operator()([[maybe_unused]] const ast::IdentifierExpr& id) override
   {
-    EML_ASSERT(id.type() != std::nullopt,
-               "Identifier expression passed to the code generator are "
-               "garanteed to have a type");
     EML_ASSERT(id.value() != std::nullopt,
                "Identifier expression passed to the code generator are "
                "garanteed to have a value");
     TypeDispatcher visitor{*this, *id.value()};
-    std::visit(visitor, *id.type());
+    std::visit(visitor, id.type());
   }
 
   void unary_common(const ast::UnaryOpExpr& expr, opcode op)
@@ -130,10 +129,9 @@ struct CodeGenerator : ast::AstConstVisitor {
 
   void operator()(const ast::IfExpr& expr) override
   {
-    EML_ASSERT(expr.cond().type() == BoolType{},
+    EML_ASSERT(eml::match(expr.cond().type(), BoolType{}),
                "Type of condition must be boolean");
-    EML_ASSERT(expr.If().type() != std::nullopt, "Branches must have a type");
-    EML_ASSERT(expr.If().type() == expr.Else().type(),
+    EML_ASSERT(eml::match(expr.If().type(), expr.Else().type()),
                "Type of different branches must match");
 
     expr.cond().accept(*this);
@@ -177,6 +175,11 @@ void TypeDispatcher::operator()(const BoolType&)
 void TypeDispatcher::operator()(const UnitType&)
 {
   generator.chunk_.write(eml::op_unit, line_num{0});
+}
+
+void TypeDispatcher::operator()(const ErrorType& /*t*/)
+{
+  EML_UNREACHABLE();
 }
 
 } // anonymous namespace

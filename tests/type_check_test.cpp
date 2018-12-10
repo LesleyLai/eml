@@ -315,14 +315,15 @@ TEST_CASE("Correctly type infer the let declerations and identifiers")
       const auto bind_type =
           dynamic_cast<eml::ast::Definition&>(**result).binding_type();
       REQUIRE(bind_type.has_value());
-      REQUIRE(*bind_type == eml::BoolType{});
+      REQUIRE(eml::match(*bind_type, eml::BoolType{}));
 
       const auto result2 = parse_and_type_check(compiler, "x");
       REQUIRE(result2.has_value());
-      const auto id_type =
-          dynamic_cast<eml::ast::IdentifierExpr&>(**result2).type();
-      REQUIRE(id_type.has_value());
-      REQUIRE(*id_type == eml::BoolType{});
+
+      const auto& id = dynamic_cast<eml::ast::IdentifierExpr&>(**result2);
+
+      REQUIRE(id.has_type());
+      REQUIRE(eml::match(id.type(), eml::BoolType{}));
     }
   }
 }

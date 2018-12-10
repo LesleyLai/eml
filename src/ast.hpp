@@ -238,19 +238,28 @@ private:
 /**
  * @brief Base class for all the Expression AST Node
  */
-struct[[nodiscard]] Expr : AstNode
+struct [[nodiscard]] Expr : AstNode
 {
 public:
   Expr() = default;
   explicit Expr(Type type) : type_{std::move(type)} {}
 
   /**
-   * @brief Gets the type of the AST node, or std::nullopt if the node don't
-   * have a type yet
+   * @brief Gets the type of the AST node
+   * @warning If the expression does not have a type, the result is undefined
    */
-  auto type() const->const std::optional<Type>&
+  auto type() const->const Type&
   {
-    return type_;
+    EML_ASSERT(has_type(), "Must have a type");
+    return *type_;
+  }
+
+  /**
+   * @brief Returns true if the ast node have a type assigned
+   */
+  auto has_type() const->bool
+  {
+    return type_.has_value();
   }
 
   /**

@@ -114,9 +114,6 @@ if(EML_BUILD_TESTS)
     endif()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_cmake_run(REQUIRES catch2/2.4.0@bincrafters/stable
-                    BASIC_SETUP CMAKE_TARGETS
-                    BUILD missing)
 
     add_subdirectory(tests)
     enable_testing()

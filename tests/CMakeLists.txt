@@ -18,6 +18,10 @@ add_executable(${EML_TEST_TARGET}
     "type_check_test.cpp"
     )
 
+conan_cmake_run(REQUIRES catch2/2.4.0@bincrafters/stable
+                BASIC_SETUP CMAKE_TARGETS
+                BUILD missing)
+
 target_link_libraries(${EML_TEST_TARGET} lib${PROJECT_NAME} CONAN_PKG::catch2)
 
 if(${EML_BUILD_TESTS_COVERAGE})
@@ -29,7 +33,7 @@ if(${EML_BUILD_TESTS_COVERAGE})
 
     include("../cmake/CodeCoverage.cmake")
     APPEND_COVERAGE_COMPILER_FLAGS("-g -O0 -fprofile-arcs -ftest-coverage")
-    set(COVERAGE_LCOV_EXCLUDES '/usr/*' '*/.conan/*' '/tests/*' '*/tests/*')
+    set(COVERAGE_LCOV_EXCLUDES '/usr/*' '*/.conan/*' '*/tests/*')
     SETUP_TARGET_FOR_COVERAGE_LCOV(
         NAME coverage                    # New target name
         EXECUTABLE ${EML_TEST_TARGET}
