@@ -9,6 +9,10 @@ namespace eml {
 namespace {
 struct AstPrinter : ast::AstConstVisitor {
 public:
+  explicit AstPrinter(ast::PrintOption option) noexcept : print_option_{option}
+  {
+  }
+
   void operator()(const ast::LiteralExpr& constant) override
   {
     ss_ << eml::to_string(constant.value(), PrintType::no);
@@ -91,16 +95,42 @@ public:
   {
     ss_ << "(if [";
     expr.cond().accept(*this);
-    ss_ << "]\n\t";
+    ss_ << ']';
+    if (print_option_ == ast::PrintOption::pretty) {
+      ss_ << "\n    ";
+    } else {
+      ss_ << ' ';
+    }
     expr.If().accept(*this);
-    ss_ << '\t';
+    ss_ << ' ';
     expr.Else().accept(*this);
     ss_ << ')';
+  }
+
+  void operator()(const ast::LambdaExpr& expr) override
+  {
+    ss_ << "(lambda ";
+    for (const auto& arg : expr.arguments()) {
+      ss_ << arg << ' ';
+    }
+
+    if (print_option_ == ast::PrintOption::pretty) {
+      ss_ << "\n    ";
+    }
+    expr.expression().accept(*this);
+
+    if (print_option_ == ast::PrintOption::pretty) {
+      ss_ << "\n    ";
+    }
+    ss_ << ")";
   }
 
   void operator()(const ast::Definition& def) override
   {
     ss_ << "(let " << def.identifier() << ' ';
+    if (print_option_ == ast::PrintOption::pretty) {
+      ss_ << "\n  ";
+    }
     def.to().accept(*this);
     ss_ << ')';
   }
@@ -112,12 +142,14 @@ public:
 
 private:
   std::stringstream ss_;
-};
-} // anonymous namespace
+  ast::PrintOption print_option_;
+}; // namespace
+} // namespace
 
-std::string to_string(const eml::ast::AstNode& node)
+std::string to_string(const eml::ast::AstNode& node,
+                      ast::PrintOption print_option)
 {
-  AstPrinter printer;
+  AstPrinter printer{print_option};
   node.accept(printer);
   return printer.to_string();
 }

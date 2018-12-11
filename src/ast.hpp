@@ -66,6 +66,7 @@ class Definition;
 class LiteralExpr;
 class IdentifierExpr;
 class IfExpr;
+class LambdaExpr;
 
 template <detail::UnaryOpType optype> struct UnaryOpExprTemplate;
 /// @brief AST Node for the unary negate operation (specializes @ref
@@ -133,6 +134,7 @@ struct AstConstVisitor {
   virtual void operator()(const GreaterOpExpr& expr) = 0;
   virtual void operator()(const GeExpr& expr) = 0;
   virtual void operator()(const IfExpr& def) = 0;
+  virtual void operator()(const LambdaExpr& expr) = 0;
 
   virtual void operator()(const Definition& def) = 0;
 };
@@ -163,6 +165,7 @@ struct AstVisitor {
   virtual void operator()(GreaterOpExpr& expr) = 0;
   virtual void operator()(GeExpr& expr) = 0;
   virtual void operator()(IfExpr& def) = 0;
+  virtual void operator()(LambdaExpr& expr) = 0;
 
   virtual void operator()(Definition& def) = 0;
 };
@@ -238,7 +241,7 @@ private:
 /**
  * @brief Base class for all the Expression AST Node
  */
-struct [[nodiscard]] Expr : AstNode
+struct[[nodiscard]] Expr : AstNode
 {
 public:
   Expr() = default;
@@ -363,7 +366,7 @@ private:
 /**
  * @brief The IfExpr represent a branch if ... [else if ...] else ...
  */
-class IfExpr : public Expr, public FactoryMixin<IfExpr> {
+class IfExpr final : public Expr, public FactoryMixin<IfExpr> {
 public:
   IfExpr(Expr_ptr cond, Expr_ptr If, Expr_ptr Else)
       : cond_{std::move(cond)}, if_(std::move(If)), else_(std::move(Else))
@@ -408,6 +411,41 @@ private:
   Expr_ptr cond_;
   Expr_ptr if_;
   Expr_ptr else_;
+};
+
+class LambdaExpr final : public Expr, public FactoryMixin<LambdaExpr> {
+public:
+  LambdaExpr(std::vector<std::string> arguments, Expr_ptr expression)
+      : args_{std::move(arguments)}, exprs_{std::move(expression)}
+  {
+    EML_ASSERT(exprs_ != nullptr,
+               "Cannot create a lambda that evaluate to nothing");
+  }
+
+  void accept(AstVisitor& visitor) override
+  {
+    visitor(*this);
+  }
+
+  void accept(AstConstVisitor& visitor) const override
+  {
+    visitor(*this);
+  }
+
+  [[nodiscard]] auto arguments() const noexcept
+      -> const std::vector<std::string>&
+  {
+    return args_;
+  }
+
+  [[nodiscard]] auto expression() const noexcept -> const Expr&
+  {
+    return *exprs_;
+  }
+
+private:
+  std::vector<std::string> args_;
+  Expr_ptr exprs_;
 };
 
 /**

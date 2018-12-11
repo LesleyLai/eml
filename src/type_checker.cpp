@@ -207,6 +207,12 @@ struct TypeChecker : ast::AstVisitor {
     }
   }
 
+  void operator()(ast::LambdaExpr& expr) override
+  {
+    error("Functions are not implemented yet!");
+    expr.set_type(ErrorType{});
+  }
+
   void operator()(ast::Definition& def) override
   {
     def.to().accept(*this);
@@ -222,16 +228,17 @@ struct TypeChecker : ast::AstVisitor {
     }
 
     // TODO(Lesley Lai): implement constant folding
-    try {
-      const auto& v = dynamic_cast<const ast::LiteralExpr&>(def.to());
+    const auto v = dynamic_cast<const ast::LiteralExpr*>(&def.to());
+
+    if (v == nullptr) {
+      error("Constant folding is unimplemented yet");
+    } else {
       compiler.add_global(std::string{def.identifier()}, *def.binding_type(),
-                          v.value());
-    } catch (std::exception& e) {
-      std::clog << e.what() << '\n';
-      std::clog << "Constant folding is not implemented yet!!!\n";
+                          v->value());
     }
   }
-};
+
+}; // namespace
 } // namespace
 
 Compiler::TypeCheckResult

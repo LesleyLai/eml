@@ -18,6 +18,12 @@ std::string Bytecode::disassemble() const
     case op_push_f64: {
       ++ip;
     } break;
+    case op_jmp: {
+      ++ip;
+    } break;
+    case op_jmp_false: {
+      ++ip;
+    } break;
     default:; // Nothing special
     }
 
@@ -57,7 +63,8 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
       [&](auto& current_ip, std::string_view name) {
         print_hex_dump(current_ip, 2);
         const auto v = read_constant(++current_ip);
-        ss << name << ' ' << to_string(v, PrintType::no) << '\n';
+        ss << name << ' ' << static_cast<std::uint32_t>(*current_ip) << " //"
+           << to_string(v, PrintType::no) << '\n';
       };
 
   // Print instruction with one constant argument
@@ -80,10 +87,10 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
     disassemble_simple_instruction(ip, "return");
     break;
   case op_push_f64: {
-    disassemble_instruction_with_one_const_float_parem(ip, "push<f64>");
+    disassemble_instruction_with_one_const_float_parem(ip, "push");
   } break;
   case op_pop:
-    disassemble_simple_instruction(ip, "pop<f64>");
+    disassemble_simple_instruction(ip, "pop");
     break;
   case op_true:
     disassemble_simple_instruction(ip, "push<true> // push true");

@@ -108,6 +108,11 @@ struct CodeGenerator : ast::AstConstVisitor {
     binary_common(expr, op_greater_equal_f64);
   }
 
+  void operator()(const ast::LambdaExpr& expr) override
+  {
+    throw "TODO";
+  }
+
   // Emits [instruction] followed by a placeholder for a jump offset. The
   // placeholder can be patched by calling [jumpPatch]. Returns the index of the
   // placeholder.

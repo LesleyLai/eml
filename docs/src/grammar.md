@@ -18,33 +18,21 @@ toplevel_input = expr
 
 @section definition Definition
 ```.ebnf
-definition = "let" identifier "=" expr
+definition = "let" identifier "=" expr;
 ```
 
-Definitions represent let [expressions](@ref expressions) at the top level. This is a
-
-```.eml
-let x = e
-```
-
-expression in the toplevel. Note that `in` is not used.
-
-```.eml
-let x = e in e'
-```
-
-will be represented as an `expr`.
-
+Definitions represent let [expressions](@ref expressions) at the top level.
 
 @section expressions Expressions
 The language run-time will interprets and computes an expression to produce a value. Embedded ML have a number of unary and binary expressions with different precedence. The grammar do not directly specify the precedence relationship, please look at [Precedence and Associativity](@ref precedence) for more information.
 
 ```.ebnf
-Expr = constant
+expr = constant
      | identifier
      | prefix_op expr
      | expr infix_op expr
-     | "let" identifier "=" expr
+     | "let" identifier (":" type)? "=" expr ";" expr // Let binding
+     | "\" (identifier (":" type)?)+ "->" expr // Lambda expression
 ```
  
 @subsection const Constants
@@ -65,4 +53,11 @@ prefix_op = "-"
 @subsection infix Infix operators
 ```.ebnf
 infix_op = "+" | "-" | "*" | "-" | "==" | "!=" | "<" | "<=" | ">" | ">="
+```
+
+@section type Types
+We can add explicit type annotation to an Embedded ML value binding or functions.
+```.ebnf
+type = identifier  // Named type
+     | type "->" type // Function type
 ```

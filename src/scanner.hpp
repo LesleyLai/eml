@@ -126,6 +126,8 @@ struct Scanner {
         return make_token(token_type::plus);
       case '/':
         return make_token(token_type::slash);
+      case '\\':
+        return make_token(token_type::backslash);
       case '*':
         return make_token(token_type::star);
 

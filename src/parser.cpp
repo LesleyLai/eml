@@ -46,7 +46,6 @@ struct Parser {
   {
     const auto type = token.type;
     switch (type) {
-    case token_type::minus_right_arrow:
     case token_type::colon:
     case token_type::semicolon:
     case token_type::greator_greator:
@@ -148,12 +147,14 @@ struct Parser {
 | 6          | `==` `!=`          | Equality comparison                | Left          |
 | 7          | `and`              | Logical and                        | Left          |
 | 8          | `or`               | Logical or                         | Left          |
-| 9          | `=`                | Definition, Assignment             | Right         |
+| 9          | `\`                | Lambda                             | Right         |
+| 10         | `=`                | Definition, Assignment             | Right         |
  */
 // clang-format on
 enum Precedence : std::uint8_t {
   prec_none,
   prec_assignment, // =
+  prec_lambda,     // "\"
   prec_or,         // or
   prec_and,        // and
   prec_equality,   // == !=
@@ -300,6 +301,25 @@ auto parse_grouping(Parser& parser)
                  "Expect `)` at the end of the expression");
 
   return expr_ptr;
+}
+
+auto parse_lambda(Parser& parser) -> ast::Expr_ptr
+{
+  std::vector<std::string> args;
+
+  for (; parser.current_itr->type == token_type::identifier; parser.advance()) {
+    args.emplace_back(parser.current_itr->text);
+  }
+
+  parser.consume(token_type::minus_right_arrow, "A lambda must have ->");
+
+  if (args.empty()) {
+    parser.error_at_previous("A lambda should have at least one argument!");
+  }
+
+  auto expr_ptr = parse_expression(parser);
+
+  return ast::LambdaExpr::create(std::move(args), std::move(expr_ptr));
 }
 
 auto parse_unary(Parser& parser) -> ast::Expr_ptr
