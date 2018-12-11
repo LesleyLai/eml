@@ -84,6 +84,34 @@ TEST_CASE("Function definitions")
     }
   }
 
+  GIVEN("A lambda expression with no argument")
+  {
+    constexpr auto s1 = R"(\ -> x + 1)";
+
+    WHEN("parse")
+    {
+      const auto result = eml::parse(s1);
+      THEN("Generate an error")
+      {
+        REQUIRE(!result.has_value());
+      }
+    }
+  }
+
+  GIVEN("A malformed lambda expression")
+  {
+    constexpr auto s1 = R"(\ x y x + x)";
+
+    WHEN("parse")
+    {
+      const auto result = eml::parse(s1);
+      THEN("Generate an error")
+      {
+        REQUIRE(!result.has_value());
+      }
+    }
+  }
+
   GIVEN("A binding to lambda expression")
   {
     constexpr auto s1 = R"(let f = \x -> x + 1)";
