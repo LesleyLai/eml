@@ -1,5 +1,8 @@
 include(CTest)
 set(EML_TEST_TARGET ${PROJECT_NAME}Test)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 add_executable(${EML_TEST_TARGET}
     "expected/assignment.cpp"
     "expected/bases.cpp"
@@ -43,4 +46,4 @@ endif()
 
 enable_testing()
 
-add_test(UnitTest "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}Test")
+add_test(UnitTest "${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}Test")
