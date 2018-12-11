@@ -231,7 +231,7 @@ struct TypeChecker : ast::AstVisitor {
       std::clog << "Constant folding is not implemented yet!!!\n";
     }
   }
-}; // namespace
+};
 } // namespace
 
 Compiler::TypeCheckResult

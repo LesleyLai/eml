@@ -25,7 +25,7 @@ TEST_CASE("Type check on unary expressions")
         THEN("Gets `Number` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::NumberType{});
+          REQUIRE(eml::match(expr.type(), eml::NumberType{}));
         }
       }
     }
@@ -60,7 +60,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
         THEN("Gets `Number` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::NumberType{});
+          REQUIRE(eml::match(expr.type(), eml::NumberType{}));
         }
       }
     }
@@ -90,7 +90,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
         THEN("Gets `Number` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::NumberType{});
+          REQUIRE(eml::match(expr.type(), eml::NumberType{}));
         }
       }
     }
@@ -125,7 +125,7 @@ TEST_CASE("Type check on binary comparison expressions")
         THEN("Gets `Bool` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::BoolType{});
+          REQUIRE(eml::match(expr.type(), eml::BoolType{}));
         }
       }
     }
@@ -143,7 +143,7 @@ TEST_CASE("Type check on binary comparison expressions")
         THEN("Gets `Bool` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::BoolType{});
+          REQUIRE(eml::match(expr.type(), eml::BoolType{}));
         }
       }
     }
@@ -173,7 +173,7 @@ TEST_CASE("Type check on binary comparison expressions")
         THEN("Gets `Bool` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::BoolType{});
+          REQUIRE(eml::match(expr.type(), eml::BoolType{}));
         }
       }
     }
@@ -203,7 +203,7 @@ TEST_CASE("Type check on binary comparison expressions")
         THEN("Gets `Bool` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::BoolType{});
+          REQUIRE(eml::match(expr.type(), eml::BoolType{}));
         }
       }
     }
@@ -234,7 +234,7 @@ TEST_CASE("Type check on binary comparison expressions")
         THEN("Gets `Bool` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::BoolType{});
+          REQUIRE(eml::match(expr.type(), eml::BoolType{}));
         }
       }
     }
@@ -264,7 +264,7 @@ TEST_CASE("Type check on binary comparison expressions")
         THEN("Gets `Bool` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::BoolType{});
+          REQUIRE(eml::match(expr.type(), eml::BoolType{}));
         }
       }
     }
@@ -282,7 +282,7 @@ TEST_CASE("Type check on binary comparison expressions")
         THEN("Gets `Bool` as its type")
         {
           const auto& expr = dynamic_cast<eml::ast::Expr&>(**checked_ast);
-          REQUIRE(expr.type() == eml::BoolType{});
+          REQUIRE(eml::match(expr.type(), eml::BoolType{}));
         }
       }
     }
