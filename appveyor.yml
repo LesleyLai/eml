@@ -18,6 +18,7 @@ platform:
 
 # build Configurations, i.e. Debug, Release, etc.
 configuration:
+  - Debug
   - Release
 
 #Cmake will autodetect the compiler, but we set the arch

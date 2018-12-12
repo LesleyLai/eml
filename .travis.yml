@@ -4,8 +4,6 @@ sudo: require
 os: linux
 dist: trusty
 
-
-
 matrix:
   include:
   - os: linux

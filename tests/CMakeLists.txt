@@ -36,7 +36,7 @@ if(${EML_BUILD_TESTS_COVERAGE})
 
     include("../cmake/CodeCoverage.cmake")
     APPEND_COVERAGE_COMPILER_FLAGS("-g -O0 -fprofile-arcs -ftest-coverage")
-    set(COVERAGE_LCOV_EXCLUDES '/usr/*' '*/.conan/*' '*/tests/*')
+    set(COVERAGE_LCOV_EXCLUDES '/usr/*' '*/.conan/*' '*/tests/*' 'tests/*')
     SETUP_TARGET_FOR_COVERAGE_LCOV(
         NAME coverage                    # New target name
         EXECUTABLE ${EML_TEST_TARGET}
