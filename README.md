@@ -1,6 +1,6 @@
 # Embedded ML
 [![Build Status](https://travis-ci.org/LesleyLai/eml.svg?branch=master)](https://travis-ci.org/LesleyLai/eml)
-[![Build status](https://ci.appveyor.com/api/projects/status/rf9t1bnli5rpj5r0?svg=true)](https://ci.appveyor.com/project/LesleyLai/eml)
+[![Build status](https://ci.appveyor.com/api/projects/status/rf9t1bnli5rpj5r0/branch/master?svg=true)](https://ci.appveyor.com/project/LesleyLai/eml/branch/master)
 [![codecov](https://codecov.io/gh/LesleyLai/eml/branch/master/graph/badge.svg)](https://codecov.io/gh/LesleyLai/eml)
 
 Embedded ML aims to be a static-typed scripting language that gets performance and type safety of a static-typed language, while still remains most of the convenience of a dynamic-typed language. This project is in a very early stage, so I will make breaking changes frequently.
