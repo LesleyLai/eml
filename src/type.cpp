@@ -1,4 +1,5 @@
 #include "type.hpp"
+#include "common.hpp"
 
 namespace eml {
 
@@ -18,6 +19,11 @@ struct TypePrinter {
   void operator()(UnitType)
   {
     os_ << "Unit";
+  }
+
+  void operator()(ErrorType)
+  {
+    os_ << "Error";
   }
 };
 

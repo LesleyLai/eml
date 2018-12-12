@@ -18,6 +18,12 @@ std::string Bytecode::disassemble() const
     case op_push_f64: {
       ++ip;
     } break;
+    case op_jmp: {
+      ++ip;
+    } break;
+    case op_jmp_false: {
+      ++ip;
+    } break;
     default:; // Nothing special
     }
 
@@ -53,12 +59,19 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   };
 
   // Print instruction with one constant argument
-  auto disassemble_instruction_with_one_const_parem =
+  auto disassemble_instruction_with_one_const_float_parem =
       [&](auto& current_ip, std::string_view name) {
         print_hex_dump(current_ip, 2);
         const auto v = read_constant(++current_ip);
-        ss << name << ' ' << to_string(v, PrintType::no) << '\n';
+        ss << name << ' ' << static_cast<std::uint32_t>(*current_ip) << " //"
+           << to_string(v, PrintType::no) << '\n';
       };
+
+  // Print instruction with one constant argument
+  auto disassemble_jmp = [&](auto& current_ip, std::string_view name) {
+    print_hex_dump(current_ip, 2);
+    ss << name << ' ' << static_cast<int>(*++current_ip) << '\n';
+  };
 
   // Dump file in source line
   constexpr std::size_t linum_digits = 4;
@@ -74,37 +87,37 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
     disassemble_simple_instruction(ip, "return");
     break;
   case op_push_f64: {
-    disassemble_instruction_with_one_const_parem(ip, "push");
+    disassemble_instruction_with_one_const_float_parem(ip, "push");
   } break;
   case op_pop:
     disassemble_simple_instruction(ip, "pop");
     break;
   case op_true:
-    disassemble_simple_instruction(ip, "true // push true");
+    disassemble_simple_instruction(ip, "push<true> // push true");
     break;
   case op_false:
-    disassemble_simple_instruction(ip, "false // push false");
+    disassemble_simple_instruction(ip, "push<false> // push false");
     break;
   case op_unit:
-    disassemble_simple_instruction(ip, "unit // push ()");
+    disassemble_simple_instruction(ip, "push<unit> // push ()");
     break;
   case op_not:
     disassemble_simple_instruction(ip, "not");
     break;
-  case op_negate:
-    disassemble_simple_instruction(ip, "negate");
+  case op_negate_f64:
+    disassemble_simple_instruction(ip, "negate<f64>");
     break;
-  case op_add:
-    disassemble_simple_instruction(ip, "add");
+  case op_add_f64:
+    disassemble_simple_instruction(ip, "add<f64>");
     break;
-  case op_subtract:
-    disassemble_simple_instruction(ip, "sub");
+  case op_subtract_f64:
+    disassemble_simple_instruction(ip, "sub<f64>");
     break;
-  case op_multiply:
-    disassemble_simple_instruction(ip, "mult");
+  case op_multiply_f64:
+    disassemble_simple_instruction(ip, "mult<f64>");
     break;
-  case op_divide:
-    disassemble_simple_instruction(ip, "div");
+  case op_divide_f64:
+    disassemble_simple_instruction(ip, "div<f64>");
     break;
   case op_equal:
     disassemble_simple_instruction(ip, "eq // equal to");
@@ -112,20 +125,24 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   case op_not_equal:
     disassemble_simple_instruction(ip, "ne // not equal to");
     break;
-  case op_less:
-    disassemble_simple_instruction(ip, "lt // less than");
+  case op_less_f64:
+    disassemble_simple_instruction(ip, "lt<f64> // less than");
     break;
-  case op_less_equal:
-    disassemble_simple_instruction(ip, "le // less than or equal to");
+  case op_less_equal_f64:
+    disassemble_simple_instruction(ip, "le<f64> // less than or equal to");
     break;
-  case op_greater:
-    disassemble_simple_instruction(ip, "gt // greater than");
+  case op_greater_f64:
+    disassemble_simple_instruction(ip, "gt<f64> // greater than");
     break;
-  case op_greater_equal:
-    disassemble_simple_instruction(ip, "ge // greater than or equal to");
+  case op_greater_equal_f64:
+    disassemble_simple_instruction(ip, "ge<f64> // greater than or equal to");
     break;
-  default:
-    ss << "Unknown instruction\n";
+  case op_jmp:
+    disassemble_jmp(ip, "jump");
+    break;
+  case op_jmp_false:
+    disassemble_jmp(ip, "jump_false");
+    break;
   }
 
   return ss.str();

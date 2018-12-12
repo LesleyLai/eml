@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "scripts": {
-    "build-cpp": "mkdir -p build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Debug -DEML_BUILD_WEBASM=On -G \"Unix Makefiles\" ../../.. && make",
+    "build-cpp": "mkdir -p build && cd build && cmake -DCMAKE_TOOLCHAIN_FILE=$EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=MINSIZEREL -DEML_BUILD_WEBASM=On -G \"Unix Makefiles\" ../../.. && make",
     "build-reason": "bsb -make-world",
     "build": "yarn run build-cpp && yarn run build-reason && yarn webpack:production",
     "start": "bsb -make-world -w",

@@ -1,55 +1,61 @@
+#define TOKEN_NORULE(token, text) TOKEN_TABLE_ENTRY(token, text, nullptr, nullptr, none)
+#define TOKEN_BINARY_OP(token, text, precedence) TOKEN_TABLE_ENTRY(token, text, nullptr, parse_binary, precedence)
+
 // TOKEN_TABLE_ENTRY(type, type_name, prefix, infix, precedence)
 #define TOKEN_TABLE                                                     \
   TOKEN_TABLE_ENTRY(left_paren, "(", parse_grouping, nullptr, call)     \
-  TOKEN_TABLE_ENTRY(right_paren, ")", nullptr, nullptr, none)           \
-  TOKEN_TABLE_ENTRY(left_brace, "{", nullptr, nullptr, none)            \
-  TOKEN_TABLE_ENTRY(right_brace, "}", nullptr, nullptr, none)           \
-  TOKEN_TABLE_ENTRY(comma, ",", nullptr, nullptr, none)                 \
+  TOKEN_NORULE(right_paren, ")")           \
+  TOKEN_TABLE_ENTRY(left_brace, "{", parse_block, nullptr, call)            \
+  TOKEN_NORULE(right_brace, "}")           \
+  TOKEN_NORULE(comma, ",")                 \
   TOKEN_TABLE_ENTRY(dot, ".", nullptr, nullptr, call)                   \
-    TOKEN_TABLE_ENTRY(minus, "-", parse_unary, parse_binary, term)      \
-  TOKEN_TABLE_ENTRY(minus_right_arrow, "->", nullptr, nullptr, none)    \
-  TOKEN_TABLE_ENTRY(plus, "+", nullptr, parse_binary, term)             \
-  TOKEN_TABLE_ENTRY(colon, ":", nullptr, nullptr, none)                 \
-  TOKEN_TABLE_ENTRY(semicolon, ";", nullptr, nullptr, none)             \
-  TOKEN_TABLE_ENTRY(slash, "/", nullptr, parse_binary, factor)          \
-  TOKEN_TABLE_ENTRY(star, "*", nullptr, parse_binary, factor)           \
+  TOKEN_TABLE_ENTRY(minus, "-", parse_unary, parse_binary, term)      \
+  TOKEN_NORULE(minus_right_arrow, "->")    \
+  TOKEN_BINARY_OP(plus, "+", term)             \
+  TOKEN_NORULE(colon, ":")                 \
+  TOKEN_NORULE(semicolon, ";")             \
+  TOKEN_BINARY_OP(slash, "/", factor)          \
+  TOKEN_TABLE_ENTRY(backslash, "\\", parse_lambda, nullptr, lambda)         \
+  TOKEN_BINARY_OP(star, "*", factor)           \
   TOKEN_TABLE_ENTRY(bang, "!", parse_unary, nullptr, none)              \
-  TOKEN_TABLE_ENTRY(bang_equal, "!=", nullptr, parse_binary, equality)  \
-  TOKEN_TABLE_ENTRY(equal, "=", nullptr, nullptr, none)                 \
-  TOKEN_TABLE_ENTRY(double_equal, "==", nullptr, parse_binary, equality) \
-  TOKEN_TABLE_ENTRY(equal_right_arrow, "=>", nullptr, nullptr, none)    \
-  TOKEN_TABLE_ENTRY(greator, ">", nullptr, parse_binary, comparison)    \
-  TOKEN_TABLE_ENTRY(greator_greator, ">>", nullptr, nullptr, none)      \
-  TOKEN_TABLE_ENTRY(greater_equal, ">=", nullptr, parse_binary, comparison) \
-  TOKEN_TABLE_ENTRY(less, "<", nullptr, parse_binary, comparison)       \
-  TOKEN_TABLE_ENTRY(less_less, "<<", nullptr, nullptr, none)            \
-  TOKEN_TABLE_ENTRY(less_equal, "<=", nullptr, parse_binary, comparison) \
+  TOKEN_BINARY_OP(bang_equal, "!=", equality)  \
+  TOKEN_NORULE(equal, "=")                 \
+  TOKEN_BINARY_OP(double_equal, "==", equality) \
+  TOKEN_NORULE(equal_right_arrow, "=>")    \
+  TOKEN_BINARY_OP(greator, ">", comparison)    \
+  TOKEN_NORULE(greator_greator, ">>")      \
+  TOKEN_BINARY_OP(greater_equal, ">=", comparison) \
+  TOKEN_BINARY_OP(less, "<", comparison)       \
+  TOKEN_NORULE(less_less, "<<")            \
+  TOKEN_BINARY_OP(less_equal, "<=", comparison) \
   TOKEN_TABLE_ENTRY(identifier, "identifier", parse_identifier, nullptr, none)   \
-  TOKEN_TABLE_ENTRY(string_literal, "string", nullptr, nullptr, none)   \
+  TOKEN_NORULE(string_literal, "string")   \
   TOKEN_TABLE_ENTRY(number_literal, "number", parse_number, nullptr, none) \
   TOKEN_TABLE_ENTRY(keyword_and, "and", nullptr, nullptr, and)          \
-  TOKEN_TABLE_ENTRY(keyword_async, "async", nullptr, nullptr, none)     \
-  TOKEN_TABLE_ENTRY(keyword_await, "await", nullptr, nullptr, none)     \
-  TOKEN_TABLE_ENTRY(keyword_case, "case", nullptr, nullptr, none)       \
-  TOKEN_TABLE_ENTRY(keyword_class, "class", nullptr, nullptr, none)     \
-  TOKEN_TABLE_ENTRY(keyword_def, "def", nullptr, nullptr, none)         \
-  TOKEN_TABLE_ENTRY(keyword_else, "else", nullptr, nullptr, none)       \
-  TOKEN_TABLE_ENTRY(keyword_extern, "extern", nullptr, nullptr, none)   \
+  TOKEN_NORULE(keyword_async, "async")     \
+  TOKEN_NORULE(keyword_await, "await")     \
+  TOKEN_NORULE(keyword_case, "case")       \
+  TOKEN_NORULE(keyword_class, "class")     \
+  TOKEN_NORULE(keyword_def, "def")         \
+  TOKEN_NORULE(keyword_else, "else")       \
+  TOKEN_NORULE(keyword_extern, "extern")   \
   TOKEN_TABLE_ENTRY(keyword_false, "false", parse_literal, nullptr, none) \
-  TOKEN_TABLE_ENTRY(keyword_for, "for", nullptr, nullptr, none)         \
-  TOKEN_TABLE_ENTRY(keyword_if, "if", nullptr, nullptr, none)           \
-  TOKEN_TABLE_ENTRY(keyword_let, "let", nullptr, nullptr, none)         \
-  TOKEN_TABLE_ENTRY(keyword_not, "not", nullptr, nullptr, none)         \
+  TOKEN_NORULE(keyword_for, "for")         \
+  TOKEN_TABLE_ENTRY(keyword_if, "if", parse_branch, nullptr, none)      \
+  TOKEN_NORULE(keyword_let, "let")         \
+  TOKEN_NORULE(keyword_not, "not")         \
   TOKEN_TABLE_ENTRY(keyword_or, "or", nullptr, nullptr, or)             \
-  TOKEN_TABLE_ENTRY(keyword_print, "print", nullptr, nullptr, none)     \
-  TOKEN_TABLE_ENTRY(keyword_return, "return", nullptr, nullptr, none)   \
-  TOKEN_TABLE_ENTRY(keyword_this, "this", nullptr, nullptr, none)       \
+  TOKEN_NORULE(keyword_print, "print")     \
+  TOKEN_NORULE(keyword_return, "return")   \
+  TOKEN_NORULE(keyword_this, "this")       \
   TOKEN_TABLE_ENTRY(keyword_true, "true", parse_literal, nullptr, none) \
   TOKEN_TABLE_ENTRY(keyword_unit, "()", parse_literal, nullptr, none)   \
-  TOKEN_TABLE_ENTRY(keyword_unsafe, "unsafe", nullptr, nullptr, none)   \
-  TOKEN_TABLE_ENTRY(keyword_variant, "variant", nullptr, nullptr, none) \
-  TOKEN_TABLE_ENTRY(error, "error", nullptr, nullptr, none)             \
-  TOKEN_TABLE_ENTRY(eof, "eof", nullptr, nullptr, none)
+  TOKEN_NORULE(keyword_unsafe, "unsafe")   \
+  TOKEN_NORULE(keyword_variant, "variant") \
+  TOKEN_NORULE(error, "error")             \
+  TOKEN_NORULE(eof, "eof")
 
 TOKEN_TABLE
 #undef TOKEN_TABLE
+#undef TOKEN_NORULE
+#undef TOKEN_BINARY_OP

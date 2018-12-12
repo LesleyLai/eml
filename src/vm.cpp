@@ -3,11 +3,9 @@
 #include <sstream>
 #include <string_view>
 
-#include "code_generator.hpp"
 #include "common.hpp"
 #include "eml.hpp"
 #include "parser.hpp"
-#include "type_checker.hpp"
 
 #include "vm.hpp"
 
@@ -30,32 +28,17 @@ auto pop(std::vector<Value>& stack) -> Value
   return v;
 }
 
-void runtime_error(std::string_view message)
-{
-  std::clog << "Runtime error: " << message.data() << '\n';
-}
-
 // Helper for binary operations
 template <typename F> void binary_operation(std::vector<Value>& stack, F op)
 {
   Value right = pop(stack);
   Value left = pop(stack);
 
-  if (!left.is_number()) {
-    std::stringstream ss;
-    ss << "The left operands of a binary operation must be a number.\nGets "
-       << left;
-    runtime_error(ss.str());
-    return;
-  }
+  EML_ASSERT(left.is_number(),
+             "The left operands of a binary operation must be a number.");
 
-  if (!right.is_number()) {
-    std::stringstream ss;
-    ss << "The right operands of a binary operation must be a number.\nGets "
-       << right;
-    runtime_error(ss.str());
-    return;
-  }
+  EML_ASSERT(right.is_number(),
+             "The left operands of a binary operation must be a number.");
 
   push(stack, Value{op(left.unsafe_as_number(), right.unsafe_as_number())});
 }
@@ -114,33 +97,26 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
     case op_false: {
       push(stack_, Value{false});
     } break;
-    case op_negate: {
+    case op_negate_f64: {
       const Value v = stack_.back();
-      if (!v.is_number()) {
-        runtime_error("Operand of unary - must be a number.");
-        return Value{};
-      }
+      EML_ASSERT(v.is_number(), "Operand of unary - must be a number.");
       push(stack_, Value{-pop(stack_).unsafe_as_number()});
     } break;
     case op_not: {
       const Value v = stack_.back();
-      if (!v.is_boolean()) {
-        runtime_error("Operand of unary ! must be a boolean.");
-        return Value{};
-      }
-
+      EML_ASSERT(v.is_boolean(), "Operand of unary ! must be a boolean.");
       push(stack_, Value{!pop(stack_).unsafe_as_boolean()});
     } break;
-    case op_add:
+    case op_add_f64:
       binary_operation(stack_, std::plus<double>{});
       break;
-    case op_subtract:
+    case op_subtract_f64:
       binary_operation(stack_, std::minus<double>{});
       break;
-    case op_multiply:
+    case op_multiply_f64:
       binary_operation(stack_, std::multiplies<double>{});
       break;
-    case op_divide:
+    case op_divide_f64:
       binary_operation(stack_, std::divides<double>{});
       break;
     case op_equal:
@@ -149,20 +125,33 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
     case op_not_equal:
       comparison_operation(stack_, std::not_equal_to<Value>{});
       break;
-    case op_less:
+    case op_less_f64:
       comparison_operation(stack_, std::less<Value>{});
       break;
-    case op_less_equal:
+    case op_less_equal_f64:
       comparison_operation(stack_, std::less_equal<Value>{});
       break;
-    case op_greater:
+    case op_greater_f64:
       comparison_operation(stack_, std::greater<Value>{});
       break;
-    case op_greater_equal:
+    case op_greater_equal_f64:
       comparison_operation(stack_, std::greater_equal<Value>{});
       break;
-    default:
-      EML_UNREACHABLE();
+    case op_jmp: {
+      ++ip;
+      const auto jump_by = static_cast<int>(*ip);
+      ip += jump_by;
+    } break;
+
+    case op_jmp_false: {
+      ++ip;
+      if (!pop(stack_).unsafe_as_boolean()) {
+        const auto jump_by = static_cast<int>(*ip);
+        ip += jump_by;
+      }
+    }
+
+    break;
     }
 
     ++offset;

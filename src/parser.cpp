@@ -46,7 +46,6 @@ struct Parser {
   {
     const auto type = token.type;
     switch (type) {
-    case token_type::minus_right_arrow:
     case token_type::colon:
     case token_type::semicolon:
     case token_type::greator_greator:
@@ -61,10 +60,8 @@ struct Parser {
     case token_type::keyword_case:
     case token_type::keyword_class:
     case token_type::keyword_def:
-    case token_type::keyword_else:
     case token_type::keyword_extern:
     case token_type::keyword_for:
-    case token_type::keyword_if:
     case token_type::keyword_not:
     case token_type::keyword_or:
     case token_type::keyword_return:
@@ -78,6 +75,16 @@ struct Parser {
     default:
       return; // Do nothing
     }
+  }
+
+  // Check if the current token match a type, produces error otherwise
+  void check(const eml::token_type type, const char* message)
+  {
+    if (current_itr->type == type) {
+      return;
+    }
+
+    error_at(*current_itr, message);
   }
 
   void consume(const eml::token_type type, const char* message)
@@ -140,12 +147,14 @@ struct Parser {
 | 6          | `==` `!=`          | Equality comparison                | Left          |
 | 7          | `and`              | Logical and                        | Left          |
 | 8          | `or`               | Logical or                         | Left          |
-| 9          | `=`                | Definition, Assignment             | Right         |
+| 9          | `\`                | Lambda                             | Right         |
+| 10         | `=`                | Definition, Assignment             | Right         |
  */
 // clang-format on
 enum Precedence : std::uint8_t {
   prec_none,
   prec_assignment, // =
+  prec_lambda,     // "\"
   prec_or,         // or
   prec_and,        // and
   prec_equality,   // == !=
@@ -174,6 +183,41 @@ Precedence higher(Precedence p)
       static_cast<std::underlying_type_t<Precedence>>(p) + 1);
 }
 
+auto parse_block(Parser& parser) -> ast::Expr_ptr
+{
+  auto expr = parse_expression(parser);
+
+  parser.consume(token_type::right_brace, "A block must end with \'}\'");
+  return expr;
+}
+
+auto parse_grouping(Parser& parser) -> ast::Expr_ptr
+{
+  auto expr_ptr = parse_expression(parser);
+
+  parser.consume(eml::token_type::right_paren,
+                 "Expect `)` at the end of the expression");
+
+  return expr_ptr;
+}
+
+// if else
+auto parse_branch(Parser& parser) -> ast::Expr_ptr
+{
+  parser.consume(eml::token_type::left_paren,
+                 "condition of an if expression must in a group");
+  auto cond = parse_grouping(parser);
+
+  auto If = parse_expression(parser);
+
+  parser.consume(token_type::keyword_else,
+                 "if expression must have an else branch");
+
+  auto Else = parse_expression(parser);
+
+  return ast::IfExpr::create(std::move(cond), std::move(If), std::move(Else));
+}
+
 auto parse_number(Parser& parser) -> ast::Expr_ptr
 {
   const double number = strtod(parser.previous.text.data(), nullptr);
@@ -183,7 +227,6 @@ auto parse_number(Parser& parser) -> ast::Expr_ptr
 auto parse_definition(Parser& parser) -> std::unique_ptr<ast::AstNode>
 {
   parser.advance();
-
   const auto id = parser.current_itr->text;
   parser.advance();
   parser.consume(token_type::equal, "Missing equal sign in let");
@@ -257,13 +300,23 @@ auto parse_expression(Parser& parser) -> ast::Expr_ptr
   return parse_precedence(parser, prec_assignment);
 }
 
-auto parse_grouping(Parser& parser)
+auto parse_lambda(Parser& parser) -> ast::Expr_ptr
 {
+  std::vector<std::string> args;
+
+  for (; parser.current_itr->type == token_type::identifier; parser.advance()) {
+    args.emplace_back(parser.current_itr->text);
+  }
+
+  parser.consume(token_type::minus_right_arrow, "A lambda must have ->");
+
+  if (args.empty()) {
+    parser.error_at_previous("A lambda should have at least one argument!");
+  }
+
   auto expr_ptr = parse_expression(parser);
 
-  parser.consume(eml::token_type::right_paren,
-                 "Expect `)` at the end of the expression");
-  return expr_ptr;
+  return ast::LambdaExpr::create(std::move(args), std::move(expr_ptr));
 }
 
 auto parse_unary(Parser& parser) -> ast::Expr_ptr
@@ -355,7 +408,7 @@ auto parse(std::string_view source) -> ParseResult
     return unexpected{std::move(parser.errors)};
   }
   if constexpr (eml::BuildOptions::debug_print_ast) {
-    std::cout << eml::string_from_ast(*expr) << '\n';
+    std::cout << eml::to_string(*expr) << '\n';
   }
   return std::move(expr);
 }

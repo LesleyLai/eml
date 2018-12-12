@@ -11,12 +11,11 @@ if (DOXYGEN_FOUND)
 
     # note the option ALL which allows to build the docs together with the application
     add_custom_target( doc_doxygen ALL
-        #COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/docs/m.css/doxygen/dox2html5.py" ${DOXYGEN_OUT}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs/src
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM )
 
 else (DOXYGEN_FOUND)
-  message("Doxygen need to be installed to generate the doxygen documentation")
+  message(SEND_ERROR "Doxygen need to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)

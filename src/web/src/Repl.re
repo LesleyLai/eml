@@ -40,8 +40,11 @@ let make = (_children) => {
         ReasonReact.Update({...state, inputTest: newTest})
       }
       | Enter => {
-        let jsInterpret: string => string = [%bs.raw {| 
+        let jsInterpret: string => string = [%bs.raw {|
           function(s) {
+            const interpret = cwrap('interpret',
+                           'null', // return type
+                           ['string']);
             return Pointer_stringify(interpret(s));
           }
         |}];
@@ -50,7 +53,6 @@ let make = (_children) => {
         ReasonReact.Update({inputTest: "",
                             history: [{command: request, response: response}, ...state.history]});
       }
-      | _ => ReasonReact.NoUpdate
     }
   },
 
@@ -74,13 +76,13 @@ let make = (_children) => {
       <input
       autoFocus=true
       value=self.state.inputTest
-      style=(ReactDOMRe.Style.make(~color="#FFFFFF", ~background="#222", ~width="90%", ~border="none", ()))
+      style=(ReactDOMRe.Style.make(~color="#FFFFFF", ~background="#222", ~width="90%", ~border="none", ~fontSize="16px", ()))
       onKeyDown=(event => switch(ReactEvent.Keyboard.which(event)) {
         | 13 => self.send(Enter)
         | _ => ()
       })
       onChange=(event => {
-        self.send(InputText(ReactDOMRe.domElementToObj(ReactEventRe.Form.target(event))##value));
+        self.send(InputText(ReactEvent.Form.target(event)##value));
       })
       />
     </div>;

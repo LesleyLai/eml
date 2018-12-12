@@ -55,22 +55,18 @@ add_library(lib${PROJECT_NAME}
     "src/bytecode.cpp"
     "src/common.hpp"
     "src/compiler.hpp"
-    "src/code_generator.hpp"
     "src/code_generator.cpp"
     "src/debug.hpp"
     "src/debug.cpp"
     "src/eml.hpp"
-    "src/eml.cpp"
     "src/expected.hpp"
     "src/error.hpp"
     "src/error.cpp"
     "src/parser.hpp"
     "src/parser.cpp"
-    "src/opcode.inc"
     "src/token_table.inc"
     "src/type.hpp"
     "src/type.cpp"
-    "src/type_checker.hpp"
     "src/type_checker.cpp"
     "src/scanner.hpp"
     "src/scanner.cpp"
@@ -87,7 +83,7 @@ endif()
 if(EML_BUILD_WEBASM)
     add_subdirectory("src/web/cpp")
 else()
-    add_executable(${PROJECT_NAME} "src/Interpreter/main.cpp")
+    add_executable(${PROJECT_NAME} "src/cli/main.cpp")
     target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})
 endif()
 
@@ -97,7 +93,7 @@ target_compile_definitions(lib${PROJECT_NAME} PUBLIC
     EML_MINOR_VERSION=${PROJECT_VERSION_MINOR}
     EML_PATCH_VERSION=${PROJECT_VERSION_PATCH})
 
-if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG)
 endif()
 
@@ -118,9 +114,6 @@ if(EML_BUILD_TESTS)
     endif()
 
     include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_cmake_run(REQUIRES catch2/2.4.0@bincrafters/stable
-                    BASIC_SETUP CMAKE_TARGETS
-                    BUILD missing)
 
     add_subdirectory(tests)
     enable_testing()

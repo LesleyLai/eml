@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 namespace eml {
 
@@ -64,6 +65,8 @@ class Definition;
 
 class LiteralExpr;
 class IdentifierExpr;
+class IfExpr;
+class LambdaExpr;
 
 template <detail::UnaryOpType optype> struct UnaryOpExprTemplate;
 /// @brief AST Node for the unary negate operation (specializes @ref
@@ -130,6 +133,8 @@ struct AstConstVisitor {
   virtual void operator()(const LeOpExpr& expr) = 0;
   virtual void operator()(const GreaterOpExpr& expr) = 0;
   virtual void operator()(const GeExpr& expr) = 0;
+  virtual void operator()(const IfExpr& def) = 0;
+  virtual void operator()(const LambdaExpr& expr) = 0;
 
   virtual void operator()(const Definition& def) = 0;
 };
@@ -159,6 +164,8 @@ struct AstVisitor {
   virtual void operator()(LeOpExpr& expr) = 0;
   virtual void operator()(GreaterOpExpr& expr) = 0;
   virtual void operator()(GeExpr& expr) = 0;
+  virtual void operator()(IfExpr& def) = 0;
+  virtual void operator()(LambdaExpr& expr) = 0;
 
   virtual void operator()(Definition& def) = 0;
 };
@@ -199,7 +206,15 @@ public:
     return binding_.identifier;
   }
 
-  auto binding_type() const -> std::optional<Type>
+  void set_binding_type(Type type)
+  {
+    binding_.type = std::move(type);
+  }
+
+  /**
+   * @brief Gets the type a definition bind to
+   */
+  auto binding_type() const -> const std::optional<Type>&
   {
     return binding_.type;
   }
@@ -226,18 +241,28 @@ private:
 /**
  * @brief Base class for all the Expression AST Node
  */
-struct Expr : AstNode {
+struct[[nodiscard]] Expr : AstNode
+{
 public:
   Expr() = default;
   explicit Expr(Type type) : type_{std::move(type)} {}
 
   /**
-   * @brief Gets the type of the AST node, or std::nullopt if the node don't
-   * have a type yet
+   * @brief Gets the type of the AST node
+   * @warning If the expression does not have a type, the result is undefined
    */
-  auto type() const -> std::optional<Type>
+  auto type() const->const Type&
   {
-    return type_;
+    EML_ASSERT(has_type(), "Must have a type");
+    return *type_;
+  }
+
+  /**
+   * @brief Returns true if the ast node have a type assigned
+   */
+  auto has_type() const->bool
+  {
+    return type_.has_value();
   }
 
   /**
@@ -336,6 +361,115 @@ public:
 private:
   std::string name_;
   std::optional<Value> value_;
+};
+
+/**
+ * @brief The IfExpr represent a branch if ... [else if ...] else ...
+ */
+class IfExpr final : public Expr, public FactoryMixin<IfExpr> {
+public:
+  IfExpr(Expr_ptr cond, Expr_ptr If, Expr_ptr Else)
+      : cond_{std::move(cond)}, if_(std::move(If)), else_(std::move(Else))
+  {
+  }
+
+  /**
+   * @brief Gets the condition of an if expression
+   */
+  auto cond() const noexcept -> const Expr&
+  {
+    return *cond_;
+  }
+
+  /**
+   * @brief Gets the expression that if branch evaluate to
+   */
+  auto If() const noexcept -> const Expr&
+  {
+    return *if_;
+  }
+
+  /**
+   * @brief Gets the expression that else branch evaluate to
+   */
+  auto Else() const noexcept -> const Expr&
+  {
+    return *else_;
+  }
+
+  /**
+   * @brief Gets the condition of an if expression
+   */
+  auto cond() noexcept -> Expr&
+  {
+    return *cond_;
+  }
+
+  /**
+   * @brief Gets the expression that if branch evaluate to
+   */
+  auto If() noexcept -> Expr&
+  {
+    return *if_;
+  }
+
+  /**
+   * @brief Gets the expression that else branch evaluate to
+   */
+  auto Else() noexcept -> Expr&
+  {
+    return *else_;
+  }
+
+  void accept(AstVisitor& visitor) override
+  {
+    visitor(*this);
+  }
+
+  void accept(AstConstVisitor& visitor) const override
+  {
+    visitor(*this);
+  }
+
+private:
+  Expr_ptr cond_;
+  Expr_ptr if_;
+  Expr_ptr else_;
+};
+
+class LambdaExpr final : public Expr, public FactoryMixin<LambdaExpr> {
+public:
+  LambdaExpr(std::vector<std::string> arguments, Expr_ptr expression)
+      : args_{std::move(arguments)}, exprs_{std::move(expression)}
+  {
+    EML_ASSERT(exprs_ != nullptr,
+               "Cannot create a lambda that evaluate to nothing");
+  }
+
+  void accept(AstVisitor& visitor) override
+  {
+    visitor(*this);
+  }
+
+  void accept(AstConstVisitor& visitor) const override
+  {
+    visitor(*this);
+  }
+
+  [[nodiscard]] auto arguments() const noexcept
+      -> const std::vector<std::string>&
+  {
+    return args_;
+  }
+
+  [[nodiscard]] auto expression() const noexcept -> const Expr&
+  {
+    return *exprs_;
+  }
+
+private:
+  std::vector<std::string> args_;
+  Expr_ptr exprs_;
 };
 
 /**

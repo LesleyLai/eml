@@ -1,8 +1,10 @@
-#include "type_checker.hpp"
+#include "ast.hpp"
 #include "compiler.hpp"
 
 #include <iomanip>
 #include <sstream>
+
+#include "debug.hpp"
 
 namespace eml {
 
@@ -29,7 +31,7 @@ struct TypeChecker : ast::AstVisitor {
   void operator()([[maybe_unused]] ast::LiteralExpr& constant) override
   {
     // no-op
-    EML_ASSERT(constant.type() != std::nullopt,
+    EML_ASSERT(constant.has_type(),
                "All literal should have a type assigned from the parser");
   }
 
@@ -40,8 +42,9 @@ struct TypeChecker : ast::AstVisitor {
       id.set_type(query_result->first);
       id.set_value(query_result->second);
     } else {
+      id.set_type(ErrorType{});
       std::stringstream ss;
-      ss << "Undefined value " << id.name() << '\n';
+      ss << "Undefined identifier: " << id.name() << '\n';
       error(ss.str());
     }
   }
@@ -49,14 +52,11 @@ struct TypeChecker : ast::AstVisitor {
   void unary_common(ast::UnaryOpExpr& expr, std::string_view op,
                     const Func1Type& allowed_type)
   {
-    if (expr.type()) {
-      return;
-    }
-
     expr.operand().accept(*this);
-    if (expr.operand().type() == allowed_type.arg_type) {
+    if (match(expr.operand().type(), allowed_type.arg_type)) {
       expr.set_type(allowed_type.result_type);
     } else {
+      expr.set_type(ErrorType{});
       if (!panic_mode) {
         std::stringstream ss;
         const auto align = 8;
@@ -64,7 +64,7 @@ struct TypeChecker : ast::AstVisitor {
         ss << std::left << "Requires " << op << " " << std::setw(align)
            << allowed_type.arg_type << '\n';
         ss << std::left << "Has      " << op << " " << std::setw(align)
-           << *expr.operand().type() << '\n';
+           << expr.operand().type() << '\n';
         error(ss.str());
       }
     }
@@ -94,16 +94,13 @@ struct TypeChecker : ast::AstVisitor {
   void binary_common(ast::BinaryOpExpr& expr, std::string_view op,
                      const Func2Type& allowed_type)
   {
-    if (expr.type()) {
-      return;
-    }
-
     expr.lhs().accept(*this);
     expr.rhs().accept(*this);
-    if (expr.lhs().type() == allowed_type.arg1_type &&
-        expr.rhs().type() == allowed_type.arg2_type) {
+    if (eml::match(expr.lhs().type(), allowed_type.arg1_type) &&
+        eml::match(expr.rhs().type(), allowed_type.arg2_type)) {
       expr.set_type(allowed_type.result_type);
     } else {
+      expr.set_type(ErrorType{});
       if (!panic_mode) {
         const auto align = 8;
         std::stringstream ss;
@@ -111,8 +108,8 @@ struct TypeChecker : ast::AstVisitor {
         ss << std::left << "Requires " << std::setw(align)
            << allowed_type.arg1_type << std::setw(3) << op << std::setw(align)
            << allowed_type.arg2_type << '\n';
-        ss << "Has      " << std::setw(align) << *expr.lhs().type()
-           << std::setw(3) << op << std::setw(align) << *expr.rhs().type()
+        ss << "Has      " << std::setw(align) << expr.lhs().type()
+           << std::setw(3) << op << std::setw(align) << expr.rhs().type()
            << '\n';
         error(ss.str());
       }
@@ -123,17 +120,18 @@ struct TypeChecker : ast::AstVisitor {
   {
     expr.lhs().accept(*this);
     expr.rhs().accept(*this);
-    if (expr.lhs().type() == expr.rhs().type()) {
+    if (eml::match(expr.lhs().type(), expr.rhs().type())) {
       expr.set_type(BoolType{});
     } else {
+      expr.set_type(ErrorType{});
       if (!panic_mode) {
         std::stringstream ss;
         ss << "Unmatched types around comparison operator " << op << '\n';
         ss << "Requires "
            << "T " << op << " T\n";
         ss << "where T: EqualityComparable\n";
-        ss << "Has " << *expr.lhs().type() << " " << op << " "
-           << *expr.rhs().type() << '\n';
+        ss << "Has " << expr.lhs().type() << " " << op << " "
+           << expr.rhs().type() << '\n';
         error(ss.str());
       }
     }
@@ -186,30 +184,65 @@ struct TypeChecker : ast::AstVisitor {
                   ">=", Func2Type{NumberType{}, NumberType{}, BoolType{}});
   }
 
+  void operator()(ast::IfExpr& expr) override
+  {
+
+    expr.cond().accept(*this);
+    expr.If().accept(*this);
+    expr.Else().accept(*this);
+
+    if (!eml::match(expr.cond().type(), BoolType{})) {
+      expr.set_type(ErrorType{});
+      if (!panic_mode) {
+        std::stringstream ss;
+        ss << "I want a " << BoolType{} << " in condition of if expression\n";
+        ss << "Got " << expr.cond().type() << '\n';
+        error(ss.str());
+      }
+    } else if (!eml::match(expr.If().type(), expr.Else().type())) {
+      expr.set_type(ErrorType{});
+      std::stringstream ss;
+      ss << "Type mismatch in branching!\n";
+      ss << "If branch: " << expr.If().type() << '\n';
+      ss << "Else branch: " << expr.Else().type() << '\n';
+      error(ss.str());
+    } else {
+      expr.set_type(expr.If().type());
+    }
+  }
+
+  void operator()(ast::LambdaExpr& expr) override
+  {
+    error("Functions are not implemented yet!");
+    expr.set_type(ErrorType{});
+  }
+
   void operator()(ast::Definition& def) override
   {
     def.to().accept(*this);
-    if (def.binding_type()) {
-      if (def.to().type() && def.binding_type() != def.to().type()) {
+
+    if (def.binding_type().has_value()) {
+      if (!match(*def.binding_type(), def.to().type())) {
         std::stringstream ss;
         ss << "Type mismatch in value definition\n";
-        ss << "Got let" << *def.binding_type() << " = " << *def.to().type();
+        ss << "Got let" << *def.binding_type() << " = " << def.to().type();
         error(ss.str());
       }
     } else {
-      def.binding_type() = def.to().type();
+      def.set_binding_type(def.to().type());
     }
 
     // TODO(Lesley Lai): implement constant folding
-    try {
-      const auto& v = dynamic_cast<const ast::LiteralExpr&>(def.to());
+    const auto v = dynamic_cast<const ast::LiteralExpr*>(&def.to());
+
+    if (v == nullptr) {
+      error("Constant folding is unimplemented yet");
+    } else {
       compiler.add_global(std::string{def.identifier()}, *def.binding_type(),
-                          v.value());
-    } catch (std::exception& e) {
-      std::clog << e.what() << '\n';
-      std::clog << "Constant folding is not implemented yet!!!\n";
+                          v->value());
     }
   }
+
 }; // namespace
 } // namespace
 
