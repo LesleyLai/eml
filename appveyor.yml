@@ -18,21 +18,18 @@ platform:
 
 # build Configurations, i.e. Debug, Release, etc.
 configuration:
+  - Debug
   - Release
 
 #Cmake will autodetect the compiler, but we set the arch
 before_build:
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
-  - mkdir Build
-  - cd Build
-  - conan install ..
-  - cd ..
   - cmake -H. -BBuild -A%PLATFORM%
 
 # build with MSBuild
 build:
-  project: Build\BolderRenderEngine.sln   # path to Visual Studio solution or project
+  project: Build\EmbeddedML.sln   # path to Visual Studio solution or project
   parallel: true                        # enable MSBuild parallel builds
   verbosity: normal                     # MSBuild verbosity level {quiet|minimal|normal|detailed}
 
