@@ -38,7 +38,10 @@ TEST_CASE("Test parsing", "[parser]")
       }
     }
   }
+}
 
+TEST_CASE("Branching", "[parser]")
+{
   GIVEN("An if-else branch")
   {
     constexpr auto branch_str = R"(
@@ -57,7 +60,32 @@ TEST_CASE("Test parsing", "[parser]")
         result.map([](auto& ast) {
           const auto& branch_node = dynamic_cast<eml::ast::IfExpr&>(*ast);
           REQUIRE(eml::to_string(branch_node, PrintOption::flat) ==
-                  "(if [(< x 0)] 0 x)");
+                  "(if (< x 0) 0 x)");
+        });
+      }
+    }
+  }
+
+  GIVEN("An if-else if-else branch")
+  {
+    constexpr auto branch_str = R"(
+                                    if (x < 0) {
+                                      0
+                                    } else if (x < 5) {
+                                      5
+                                    } else {
+                                      x
+                                    }
+                                    )";
+    WHEN("Parsed")
+    {
+      const auto result = eml::parse(branch_str);
+      THEN("Should produces the correct AST")
+      {
+        REQUIRE(result);
+        result.map([](auto& ast) {
+          REQUIRE(eml::to_string(*ast, PrintOption::flat) ==
+                  "(if (< x 0) 0 (if (< x 5) 5 x))");
         });
       }
     }
@@ -70,7 +98,7 @@ TEST_CASE("Function definitions")
   {
     constexpr auto s1 = R"(\x -> x + 1)";
 
-    WHEN("parse")
+    WHEN("parsed")
     {
       const auto result = eml::parse(s1);
       THEN("produces the correct AST")
@@ -88,7 +116,7 @@ TEST_CASE("Function definitions")
   {
     constexpr auto s1 = R"(\ -> x + 1)";
 
-    WHEN("parse")
+    WHEN("parsed")
     {
       const auto result = eml::parse(s1);
       THEN("Generate an error")
@@ -102,7 +130,7 @@ TEST_CASE("Function definitions")
   {
     constexpr auto s1 = R"(\ x y x + x)";
 
-    WHEN("parse")
+    WHEN("parsed")
     {
       const auto result = eml::parse(s1);
       THEN("Generate an error")
@@ -116,7 +144,7 @@ TEST_CASE("Function definitions")
   {
     constexpr auto s1 = R"(let f = \x -> x + 1)";
 
-    WHEN("parse")
+    WHEN("parsed")
     {
       const auto result = eml::parse(s1);
       THEN("produces the correct AST")

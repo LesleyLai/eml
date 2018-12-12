@@ -376,7 +376,7 @@ public:
   /**
    * @brief Gets the condition of an if expression
    */
-  auto cond() const noexcept -> Expr&
+  auto cond() const noexcept -> const Expr&
   {
     return *cond_;
   }
@@ -384,7 +384,7 @@ public:
   /**
    * @brief Gets the expression that if branch evaluate to
    */
-  auto If() const noexcept -> Expr&
+  auto If() const noexcept -> const Expr&
   {
     return *if_;
   }
@@ -392,7 +392,31 @@ public:
   /**
    * @brief Gets the expression that else branch evaluate to
    */
-  auto Else() const noexcept -> Expr&
+  auto Else() const noexcept -> const Expr&
+  {
+    return *else_;
+  }
+
+  /**
+   * @brief Gets the condition of an if expression
+   */
+  auto cond() noexcept -> Expr&
+  {
+    return *cond_;
+  }
+
+  /**
+   * @brief Gets the expression that if branch evaluate to
+   */
+  auto If() noexcept -> Expr&
+  {
+    return *if_;
+  }
+
+  /**
+   * @brief Gets the expression that else branch evaluate to
+   */
+  auto Else() noexcept -> Expr&
   {
     return *else_;
   }

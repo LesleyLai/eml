@@ -7,6 +7,11 @@ Identifier is a string contains alphanumerical character or "_", the first chara
 identifier = [_a-zA-Z][_a-zA-Z0-9]
 ```
 
+At some place, we can annotation identifiers with an optional type annotation:
+```.ebnf
+typed_identifier = identifier (":" type)?
+```
+
 @section toplevel_input Toplevel Input
 
 The embedded ML program is a list of the top level inputs. `toplevel_input` represents all of the entry points into the interpreter. These are all of the types of input that a user can put in the toplevel.
@@ -29,10 +34,24 @@ The language run-time will interprets and computes an expression to produce a va
 ```.ebnf
 expr = constant
      | identifier
+     | block
      | prefix_op expr
      | expr infix_op expr
-     | "let" identifier (":" type)? "=" expr ";" expr // Let binding
-     | "\" (identifier (":" type)?)+ "->" expr // Lambda expression
+     | group
+     | "if" group expr "else" expr // If expression
+     | "let" typed_identifier "=" expr ";" expr // Let binding
+     | "\" (typed_identifier)+ "->" expr // Lambda expression
+```
+
+Groups have parentheses around expressions.
+```.ebnf
+group = "(" expr ")"
+```
+
+Blocks is a group of expressions that evaluate to the last expression.
+
+```.ebnf
+block = "{" expr "}"
 ```
  
 @subsection const Constants
@@ -60,4 +79,5 @@ We can add explicit type annotation to an Embedded ML value binding or functions
 ```.ebnf
 type = identifier  // Named type
      | type "->" type // Function type
+     | "(" type ")"
 ```

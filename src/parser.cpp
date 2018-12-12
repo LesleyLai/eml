@@ -185,28 +185,35 @@ Precedence higher(Precedence p)
 
 auto parse_block(Parser& parser) -> ast::Expr_ptr
 {
-  parser.advance();
-
   auto expr = parse_expression(parser);
 
   parser.consume(token_type::right_brace, "A block must end with \'}\'");
   return expr;
 }
 
+auto parse_grouping(Parser& parser) -> ast::Expr_ptr
+{
+  auto expr_ptr = parse_expression(parser);
+
+  parser.consume(eml::token_type::right_paren,
+                 "Expect `)` at the end of the expression");
+
+  return expr_ptr;
+}
+
 // if else
 auto parse_branch(Parser& parser) -> ast::Expr_ptr
 {
-  auto cond = parse_expression(parser);
+  parser.consume(eml::token_type::left_paren,
+                 "condition of an if expression must in a group");
+  auto cond = parse_grouping(parser);
 
-  parser.check(token_type::left_brace, "expect a block after if");
-
-  auto If = parse_block(parser);
+  auto If = parse_expression(parser);
 
   parser.consume(token_type::keyword_else,
                  "if expression must have an else branch");
 
-  parser.check(token_type::left_brace, "expect a block after else");
-  auto Else = parse_block(parser);
+  auto Else = parse_expression(parser);
 
   return ast::IfExpr::create(std::move(cond), std::move(If), std::move(Else));
 }
@@ -291,16 +298,6 @@ auto parse_toplevel(Parser& parser) -> std::unique_ptr<ast::AstNode>
 auto parse_expression(Parser& parser) -> ast::Expr_ptr
 {
   return parse_precedence(parser, prec_assignment);
-}
-
-auto parse_grouping(Parser& parser)
-{
-  auto expr_ptr = parse_expression(parser);
-
-  parser.consume(eml::token_type::right_paren,
-                 "Expect `)` at the end of the expression");
-
-  return expr_ptr;
 }
 
 auto parse_lambda(Parser& parser) -> ast::Expr_ptr

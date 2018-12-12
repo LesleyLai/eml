@@ -327,3 +327,49 @@ TEST_CASE("Correctly type infer the let declerations and identifiers")
     }
   }
 }
+
+TEST_CASE("Type check for branches")
+{
+  eml::Compiler compiler;
+  GIVEN("An if expression")
+  {
+    WHEN("Type check")
+    {
+      const auto checked_ast =
+          parse_and_type_check(compiler, "if (true) { 2 } else {3}");
+      THEN("Resolve to the type of the branches")
+      {
+        REQUIRE(checked_ast.has_value());
+        const auto& if_expr = dynamic_cast<eml::ast::IfExpr&>(**checked_ast);
+        REQUIRE(eml::match(if_expr.type(), if_expr.If().type()));
+        REQUIRE(eml::match(if_expr.type(), if_expr.Else().type()));
+      }
+    }
+  }
+
+  GIVEN("A mistyped if expression condition")
+  {
+    WHEN("Type check")
+    {
+      const auto checked_ast =
+          parse_and_type_check(compiler, "if (1) { 2 } else {3}");
+      THEN("Failed the type check")
+      {
+        REQUIRE(!checked_ast.has_value());
+      }
+    }
+  }
+
+  GIVEN("Mismatched if expression branches")
+  {
+    WHEN("Type check")
+    {
+      const auto checked_ast =
+          parse_and_type_check(compiler, "if (1) { 2 } else {()}");
+      THEN("Failed the type check")
+      {
+        REQUIRE(!checked_ast.has_value());
+      }
+    }
+  }
+}

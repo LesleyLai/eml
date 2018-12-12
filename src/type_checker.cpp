@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <sstream>
 
+#include "debug.hpp"
+
 namespace eml {
 
 struct Func1Type {
@@ -184,6 +186,7 @@ struct TypeChecker : ast::AstVisitor {
 
   void operator()(ast::IfExpr& expr) override
   {
+
     expr.cond().accept(*this);
     expr.If().accept(*this);
     expr.Else().accept(*this);
@@ -196,14 +199,15 @@ struct TypeChecker : ast::AstVisitor {
         ss << "Got " << expr.cond().type() << '\n';
         error(ss.str());
       }
-    }
-
-    if (!eml::match(expr.If().type(), expr.Else().type())) {
+    } else if (!eml::match(expr.If().type(), expr.Else().type())) {
+      expr.set_type(ErrorType{});
       std::stringstream ss;
       ss << "Type mismatch in branching!\n";
       ss << "If branch: " << expr.If().type() << '\n';
       ss << "Else branch: " << expr.Else().type() << '\n';
       error(ss.str());
+    } else {
+      expr.set_type(expr.If().type());
     }
   }
 
@@ -216,6 +220,7 @@ struct TypeChecker : ast::AstVisitor {
   void operator()(ast::Definition& def) override
   {
     def.to().accept(*this);
+
     if (def.binding_type().has_value()) {
       if (!match(*def.binding_type(), def.to().type())) {
         std::stringstream ss;

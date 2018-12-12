@@ -93,9 +93,8 @@ public:
 
   void operator()(const ast::IfExpr& expr) override
   {
-    ss_ << "(if [";
+    ss_ << "(if ";
     expr.cond().accept(*this);
-    ss_ << ']';
     if (print_option_ == ast::PrintOption::pretty) {
       ss_ << "\n    ";
     } else {

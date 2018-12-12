@@ -5,7 +5,7 @@
 #define TOKEN_TABLE                                                     \
   TOKEN_TABLE_ENTRY(left_paren, "(", parse_grouping, nullptr, call)     \
   TOKEN_NORULE(right_paren, ")")           \
-  TOKEN_NORULE(left_brace, "{")            \
+  TOKEN_TABLE_ENTRY(left_brace, "{", parse_block, nullptr, call)            \
   TOKEN_NORULE(right_brace, "}")           \
   TOKEN_NORULE(comma, ",")                 \
   TOKEN_TABLE_ENTRY(dot, ".", nullptr, nullptr, call)                   \
