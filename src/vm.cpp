@@ -28,32 +28,17 @@ auto pop(std::vector<Value>& stack) -> Value
   return v;
 }
 
-void runtime_error(std::string_view message)
-{
-  std::clog << "Runtime error: " << message.data() << '\n';
-}
-
 // Helper for binary operations
 template <typename F> void binary_operation(std::vector<Value>& stack, F op)
 {
   Value right = pop(stack);
   Value left = pop(stack);
 
-  if (!left.is_number()) {
-    std::stringstream ss;
-    ss << "The left operands of a binary operation must be a number.\nGets "
-       << left;
-    runtime_error(ss.str());
-    return;
-  }
+  EML_ASSERT(left.is_number(),
+             "The left operands of a binary operation must be a number.");
 
-  if (!right.is_number()) {
-    std::stringstream ss;
-    ss << "The right operands of a binary operation must be a number.\nGets "
-       << right;
-    runtime_error(ss.str());
-    return;
-  }
+  EML_ASSERT(right.is_number(),
+             "The left operands of a binary operation must be a number.");
 
   push(stack, Value{op(left.unsafe_as_number(), right.unsafe_as_number())});
 }
@@ -114,19 +99,12 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
     } break;
     case op_negate_f64: {
       const Value v = stack_.back();
-      if (!v.is_number()) {
-        runtime_error("Operand of unary - must be a number.");
-        return Value{};
-      }
+      EML_ASSERT(v.is_number(), "Operand of unary - must be a number.");
       push(stack_, Value{-pop(stack_).unsafe_as_number()});
     } break;
     case op_not: {
       const Value v = stack_.back();
-      if (!v.is_boolean()) {
-        runtime_error("Operand of unary ! must be a boolean.");
-        return Value{};
-      }
-
+      EML_ASSERT(v.is_boolean(), "Operand of unary ! must be a boolean.");
       push(stack_, Value{!pop(stack_).unsafe_as_boolean()});
     } break;
     case op_add_f64:

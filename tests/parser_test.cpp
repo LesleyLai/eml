@@ -45,9 +45,8 @@ TEST_CASE("Branching", "[parser]")
   GIVEN("An if-else branch")
   {
     constexpr auto branch_str = R"(
-                                  if (x < 0) {
-                                    0
-                                  } else {
+                                  if (x < 0) 0
+                                  else {
                                     x
                                   }
                                   )";

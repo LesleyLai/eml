@@ -48,7 +48,7 @@ Groups have parentheses around expressions.
 group = "(" expr ")"
 ```
 
-Blocks is a group of expressions that evaluate to the last expression.
+Blocks is a expression surrounded by curly braces.
 
 ```.ebnf
 block = "{" expr "}"
