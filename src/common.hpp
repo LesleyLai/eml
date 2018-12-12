@@ -3,6 +3,8 @@
 
 #include <string_view>
 
+#include "meta.hpp"
+
 /**
  * @file common.hpp
  * @brief Compile time configurations and utilitize macros and functions
@@ -11,10 +13,6 @@
  * implementation. In particular, it contains compile time configurations
  * defines that control how EML works.
  */
-
-#define EML_STRINGIFY_DETAIL(x) #x
-#define EML_STRINGIFY(x) EML_STRINGIFY_DETAIL(x)
-#undef EML_STRINGIFY_DETAIL
 
 namespace eml {
 
@@ -66,6 +64,37 @@ struct Token {
   FilePos position = {};
 };
 
+/**
+ * @brief Statically cast a pointer of IN to a pointer of OUT
+ * @tparam IN The input type
+ * @tparam OUT The output type
+ * @pre IN and OUT must satisfy the trait @ref eml::is_polymorphic_with<IN, OUT>
+ * @warning If IN is a base class of OUT, then the input value must have runtime
+ * type of OUT, otherwise the result is undefined
+ */
+template <class OUT, class IN,
+          typename = std::enable_if_t<is_polymorphic_with_v<IN, OUT>>>
+constexpr auto polymorphic_cast(IN* value) -> OUT*
+{
+#ifdef EML_DEBUG
+  return dynamic_cast<OUT*>(value);
+#else
+  return static_cast<OUT*>(value);
+#endif
+}
+
+/// @overload
+template <class OUT, class IN,
+          typename = std::enable_if_t<is_polymorphic_with_v<IN, OUT>>>
+constexpr auto polymorphic_cast(IN& value) -> OUT&
+{
+#ifdef EML_DEBUG
+  return dynamic_cast<OUT&>(value);
+#else
+  return static_cast<OUT&>(value);
+#endif
+}
+
 } // namespace eml
 
 #ifdef EML_DEBUG
@@ -95,12 +124,14 @@ struct Token {
 // code is never reached.
 #define EML_UNREACHABLE()                                                      \
   do {                                                                         \
-    std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                    \
-              << "This code should not be reached in "                         \
-              << std::string_view{static_cast<const char*>(__func__)} << '\n'  \
-              << "This is probabaly an internal bug of the Embedded ML "       \
-                 "Implementation, please fill a bug report.\n";                \
-    std::abort();                                                              \
+    []() {                                                                     \
+      std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                  \
+                << "This code should not be reached in "                       \
+                << std::string_view{static_cast<const char*>(__func__)}        \
+                << "\nThis is probabaly an internal bug of the Embedded ML "   \
+                   "Implementation, please fill a bug report.\n";              \
+      std::abort();                                                            \
+    }();                                                                       \
   } while (0)
 #else
 #define EML_ASSERT(condition, message)                                         \
