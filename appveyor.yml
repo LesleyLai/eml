@@ -25,10 +25,6 @@ configuration:
 before_build:
   - set PATH=%PATH%;%PYTHON%/Scripts/
   - pip.exe install conan
-  - mkdir Build
-  - cd Build
-  - conan install ..
-  - cd ..
   - cmake -H. -BBuild -A%PLATFORM%
 
 # build with MSBuild
