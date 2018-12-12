@@ -72,14 +72,17 @@ struct Token {
 #define EML_ASSERT(condition, message)                                         \
   do {                                                                         \
     if (!(condition)) {                                                        \
-      std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                  \
-                << "Assert failed in "                                         \
-                << std::string_view{static_cast<const char*>(__func__)}        \
-                << ": " << std::string_view{static_cast<const char*>(message)} \
-                << '\n'                                                        \
-                << "This is probabaly an internal bug of the Embedded ML "     \
-                   "Implementation, please fill a bug report.\n";              \
-      std::abort();                                                            \
+      []() {                                                                   \
+        std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                \
+                  << "Assert failed in "                                       \
+                  << std::string_view{static_cast<const char*>(__func__)}      \
+                  << ": "                                                      \
+                  << std::string_view{static_cast<const char*>(message)}       \
+                  << '\n'                                                      \
+                  << "This is probabaly an internal bug of the Embedded ML "   \
+                     "Implementation, please fill a bug report.\n";            \
+        std::abort();                                                          \
+      }();                                                                     \
     }                                                                          \
   } while (0)
 
