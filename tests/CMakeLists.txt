@@ -1,5 +1,5 @@
 include(CTest)
-set(EML_TEST_TARGET ${PROJECT_NAME}Test)
+set(EML_TEST_TARGET eml-test)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -26,7 +26,7 @@ conan_cmake_run(REQUIRES catch2/2.4.0@bincrafters/stable
                 BASIC_SETUP CMAKE_TARGETS
                 BUILD missing)
 
-target_link_libraries(${EML_TEST_TARGET} lib${PROJECT_NAME} CONAN_PKG::catch2)
+target_link_libraries(${EML_TEST_TARGET} eml CONAN_PKG::catch2)
 
 if(${EML_BUILD_TESTS_COVERAGE})
     include(ProcessorCount)
@@ -47,4 +47,4 @@ endif()
 
 enable_testing()
 
-add_test(UnitTest "${CMAKE_BINARY_DIR}/bin/${PROJECT_NAME}Test")
+add_test(UnitTest "${CMAKE_BINARY_DIR}/bin/${EML_TEST_TARGET}")

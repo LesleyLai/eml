@@ -1,8 +1,8 @@
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(EMCC_LINKER_FLAGS "")
 
-add_executable(${PROJECT_NAME} "main.cpp")
-target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})
+add_executable(eml_web "main.cpp")
+target_link_libraries(eml_web eml)
 
 set_target_properties(${PROJECT_NAME}
   PROPERTIES LINK_FLAGS

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 project(EmbeddedML
     VERSION 0.0.0
+    LANGUAGES CXX
     )
 
 set (CMAKE_CXX_STANDARD 17)
@@ -23,7 +24,6 @@ option(EML_ENABLE_CLANG_TIDY
 if(EML_ENABLE_CLANG_TIDY)
     include("cmake/clang-tidy.cmake")
 endif()
-
 
 option(EML_DEBUG_PRINT_AST
     "The Parser will print the generated ast"
@@ -49,7 +49,7 @@ if(EML_BUILD_DOCUMENTS)
     include("cmake/doxygen.cmake")
 endif()
 
-add_library(lib${PROJECT_NAME}
+add_library(eml
     "src/ast.hpp"
     "src/bytecode.hpp"
     "src/bytecode.cpp"
@@ -74,35 +74,35 @@ add_library(lib${PROJECT_NAME}
     "src/value.cpp"
     "src/vm.hpp"
     "src/vm.cpp")
-target_include_directories(lib${PROJECT_NAME} PUBLIC "src")
+target_include_directories(eml PUBLIC "src")
+
 if(${EML_BUILD_TESTS_COVERAGE})
-    target_compile_options(lib${PROJECT_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
-    target_link_libraries(lib${PROJECT_NAME} gcov)
+    target_compile_options(eml PRIVATE -fprofile-arcs -ftest-coverage)
+    target_link_libraries(eml gcov)
 endif()
 
 if(EML_BUILD_WEBASM)
     add_subdirectory("src/web/cpp")
 else()
-    add_executable(${PROJECT_NAME} "src/cli/main.cpp")
-    target_link_libraries(${PROJECT_NAME} lib${PROJECT_NAME})
+    add_subdirectory("src/cli")
 endif()
 
-target_compile_definitions(lib${PROJECT_NAME} PUBLIC
+target_compile_definitions(eml PUBLIC
     EML_VERSION="${PROJECT_VERSION}"
     EML_MAJOR_VERSION=${PROJECT_VERSION_MAJOR}
     EML_MINOR_VERSION=${PROJECT_VERSION_MINOR}
     EML_PATCH_VERSION=${PROJECT_VERSION_PATCH})
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG)
+    target_compile_definitions(eml PRIVATE EML_DEBUG)
 endif()
 
 if(EML_DEBUG_VM_TRACE_EXECUTION)
-    target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG_VM_TRACE_EXECUTION)
+    target_compile_definitions(eml PRIVATE EML_DEBUG_VM_TRACE_EXECUTION)
 endif()
 
 if(EML_DEBUG_PRINT_AST)
-    target_compile_definitions(lib${PROJECT_NAME} PRIVATE EML_DEBUG_PRINT_AST)
+    target_compile_definitions(eml PRIVATE EML_DEBUG_PRINT_AST)
 endif()
 
 if(EML_BUILD_TESTS)
