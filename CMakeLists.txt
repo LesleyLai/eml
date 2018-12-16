@@ -13,10 +13,6 @@ include("CMakeDependentOption")
 include("cmake/compiler.cmake")
 #include("cmake/cppcheck.cmake")
 
-option(EML_BUILD_WEBASM
-    "The project will be built in webassembly instead of the native code"
-    OFF)
-
 option(EML_ENABLE_CLANG_TIDY
     "Enable clang tidy checks"
     OFF)
@@ -81,11 +77,8 @@ if(${EML_BUILD_TESTS_COVERAGE})
     target_link_libraries(eml gcov)
 endif()
 
-if(EML_BUILD_WEBASM)
-    add_subdirectory("src/web/cpp")
-else()
-    add_subdirectory("src/cli")
-endif()
+# The standalone interpreter of the embedded ML
+add_subdirectory("src/cli")
 
 target_compile_definitions(eml PUBLIC
     EML_VERSION="${PROJECT_VERSION}"

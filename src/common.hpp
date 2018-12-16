@@ -124,14 +124,12 @@ constexpr auto polymorphic_cast(IN& value) -> OUT&
 // code is never reached.
 #define EML_UNREACHABLE()                                                      \
   do {                                                                         \
-    []() {                                                                     \
-      std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                  \
-                << "This code should not be reached in "                       \
-                << std::string_view{static_cast<const char*>(__func__)}        \
-                << "\nThis is probabaly an internal bug of the Embedded ML "   \
-                   "Implementation, please fill a bug report.\n";              \
-      std::abort();                                                            \
-    }();                                                                       \
+    std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "                    \
+              << "This code should not be reached in "                         \
+              << std::string_view{static_cast<const char*>(__func__)}          \
+              << "\nThis is probabaly an internal bug of the Embedded ML "     \
+                 "Implementation, please fill a bug report.\n";                \
+    std::abort();                                                              \
   } while (0)
 #else
 #define EML_ASSERT(condition, message)                                         \

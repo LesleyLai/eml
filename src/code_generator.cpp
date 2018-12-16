@@ -108,7 +108,7 @@ struct CodeGenerator : ast::AstConstVisitor {
     binary_common(expr, op_greater_equal_f64);
   }
 
-  void operator()(const ast::LambdaExpr& expr) override
+  void operator()(const ast::LambdaExpr& /*expr*/) override
   {
     throw "TODO";
   }

@@ -256,7 +256,6 @@ auto parse_literal(Parser& parser) -> ast::Expr_ptr
 
   default:
     EML_UNREACHABLE();
-    return nullptr;
   }
 }
 
@@ -335,7 +334,6 @@ auto parse_unary(Parser& parser) -> ast::Expr_ptr
     return ast::UnaryNegateExpr::create(std::move(operand_ptr));
   default:
     EML_UNREACHABLE();
-    return nullptr;
   }
 }
 
@@ -382,7 +380,6 @@ auto parse_binary(Parser& parser, ast::Expr_ptr left_ptr) -> ast::Expr_ptr
 
   default:
     EML_UNREACHABLE();
-    return nullptr;
   }
 }
 

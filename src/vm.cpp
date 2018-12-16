@@ -98,12 +98,12 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
       push(stack_, Value{false});
     } break;
     case op_negate_f64: {
-      const Value v = stack_.back();
+      [[maybe_unused]] const Value v = stack_.back();
       EML_ASSERT(v.is_number(), "Operand of unary - must be a number.");
       push(stack_, Value{-pop(stack_).unsafe_as_number()});
     } break;
     case op_not: {
-      const Value v = stack_.back();
+      [[maybe_unused]] const Value v = stack_.back();
       EML_ASSERT(v.is_boolean(), "Operand of unary ! must be a boolean.");
       push(stack_, Value{!pop(stack_).unsafe_as_boolean()});
     } break;
