@@ -1,0 +1,3 @@
+[submodule "src/try-eml"]
+	path = src/try-eml
+	url = https://github.com/LesleyLai/try-eml.git
