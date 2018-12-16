@@ -42,5 +42,5 @@ const char* interpret(const char* line_c) {
 }
 
 int main() {
-    std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
+  // no-op
 }
