@@ -9,24 +9,21 @@
 
 namespace eml {
 
-namespace ast {
 struct AstNode;
 
 /**
  * @brief The PrintOption enum
  */
-enum class PrintOption {
+enum class AstPrintOption {
   pretty, ///< @brief Pretty print Ast with nice identations
   flat,   ///< @brief Prints Ast into a one line string, useful for unit tests
 };
 
-} // namespace ast
-
 /**
  * @brief Converts AST node into a string with lisp-like prefix notation
  */
-std::string to_string(const ast::AstNode& node,
-                      ast::PrintOption = ast::PrintOption::pretty);
+std::string to_string(const AstNode& node,
+                      AstPrintOption = AstPrintOption::pretty);
 
 } // namespace eml
 

@@ -7,40 +7,38 @@
 namespace eml {
 
 namespace {
-struct AstPrinter : ast::AstConstVisitor {
+struct AstPrinter : AstConstVisitor {
 public:
-  explicit AstPrinter(ast::PrintOption option) noexcept : print_option_{option}
-  {
-  }
+  explicit AstPrinter(AstPrintOption option) noexcept : print_option_{option} {}
 
-  void operator()(const ast::LiteralExpr& constant) override
+  void operator()(const LiteralExpr& constant) override
   {
     ss_ << eml::to_string(constant.value(), PrintType::no);
   }
 
-  void operator()(const ast::IdentifierExpr& id) override
+  void operator()(const IdentifierExpr& id) override
   {
     ss_ << id.name();
   }
 
-  void unary_common(const ast::UnaryOpExpr& expr, char op)
+  void unary_common(const UnaryOpExpr& expr, char op)
   {
     ss_ << '(' << op << ' ';
     expr.operand().accept(*this);
     ss_ << ')';
   }
 
-  void operator()(const ast::UnaryNegateExpr& expr) override
+  void operator()(const UnaryNegateExpr& expr) override
   {
     unary_common(expr, '-');
   }
 
-  void operator()(const ast::UnaryNotExpr& expr) override
+  void operator()(const UnaryNotExpr& expr) override
   {
     unary_common(expr, '!');
   }
 
-  void binary_common(const ast::BinaryOpExpr& expr, std::string_view op)
+  void binary_common(const BinaryOpExpr& expr, std::string_view op)
   {
     ss_ << '(' << op << ' ';
     expr.lhs().accept(*this);
@@ -49,53 +47,53 @@ public:
     ss_ << ')';
   }
 
-  void operator()(const ast::PlusOpExpr& expr) override
+  void operator()(const PlusOpExpr& expr) override
   {
     binary_common(expr, "+");
   }
-  void operator()(const ast::MinusOpExpr& expr) override
+  void operator()(const MinusOpExpr& expr) override
   {
     binary_common(expr, "-");
   }
-  void operator()(const ast::MultOpExpr& expr) override
+  void operator()(const MultOpExpr& expr) override
   {
     binary_common(expr, "*");
   }
-  void operator()(const ast::DivOpExpr& expr) override
+  void operator()(const DivOpExpr& expr) override
   {
     binary_common(expr, "/");
   }
-  void operator()(const ast::EqOpExpr& expr) override
+  void operator()(const EqOpExpr& expr) override
   {
     binary_common(expr, "==");
   }
-  void operator()(const ast::NeqOpExpr& expr) override
+  void operator()(const NeqOpExpr& expr) override
   {
     binary_common(expr, "!=");
   }
-  void operator()(const ast::LessOpExpr& expr) override
+  void operator()(const LessOpExpr& expr) override
   {
     binary_common(expr, "<");
   }
-  void operator()(const ast::LeOpExpr& expr) override
+  void operator()(const LeOpExpr& expr) override
   {
     binary_common(expr, "<=");
   }
-  void operator()(const ast::GreaterOpExpr& expr) override
+  void operator()(const GreaterOpExpr& expr) override
   {
     binary_common(expr, ">");
   }
 
-  void operator()(const ast::GeExpr& expr) override
+  void operator()(const GeExpr& expr) override
   {
     binary_common(expr, ">=");
   }
 
-  void operator()(const ast::IfExpr& expr) override
+  void operator()(const IfExpr& expr) override
   {
     ss_ << "(if ";
     expr.cond().accept(*this);
-    if (print_option_ == ast::PrintOption::pretty) {
+    if (print_option_ == AstPrintOption::pretty) {
       ss_ << "\n    ";
     } else {
       ss_ << ' ';
@@ -106,28 +104,28 @@ public:
     ss_ << ')';
   }
 
-  void operator()(const ast::LambdaExpr& expr) override
+  void operator()(const LambdaExpr& expr) override
   {
     ss_ << "(lambda ";
     for (const auto& arg : expr.arguments()) {
       ss_ << arg << ' ';
     }
 
-    if (print_option_ == ast::PrintOption::pretty) {
+    if (print_option_ == AstPrintOption::pretty) {
       ss_ << "\n    ";
     }
     expr.expression().accept(*this);
 
-    if (print_option_ == ast::PrintOption::pretty) {
+    if (print_option_ == AstPrintOption::pretty) {
       ss_ << "\n    ";
     }
     ss_ << ")";
   }
 
-  void operator()(const ast::Definition& def) override
+  void operator()(const Definition& def) override
   {
     ss_ << "(let " << def.identifier() << ' ';
-    if (print_option_ == ast::PrintOption::pretty) {
+    if (print_option_ == AstPrintOption::pretty) {
       ss_ << "\n  ";
     }
     def.to().accept(*this);
@@ -141,12 +139,12 @@ public:
 
 private:
   std::stringstream ss_;
-  ast::PrintOption print_option_;
-}; // namespace
+  AstPrintOption print_option_;
+};
+
 } // namespace
 
-std::string to_string(const eml::ast::AstNode& node,
-                      ast::PrintOption print_option)
+std::string to_string(const eml::AstNode& node, AstPrintOption print_option)
 {
   AstPrinter printer{print_option};
   node.accept(printer);

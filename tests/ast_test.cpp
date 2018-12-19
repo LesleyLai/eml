@@ -8,15 +8,13 @@
 
 TEST_CASE("AST visiting and printing")
 {
-  namespace ast = eml::ast;
-
   GIVEN("A Unary negate expression -10")
   {
     WHEN("Invoke the Ast Printer")
     {
       THEN("Should print (- 10)")
       {
-        ast::UnaryNegateExpr expr{ast::LiteralExpr::create(eml::Value{10.})};
+        eml::UnaryNegateExpr expr{eml::LiteralExpr::create(eml::Value{10.})};
 
         REQUIRE(eml::to_string(expr) == "(- 10)");
       }
@@ -25,14 +23,14 @@ TEST_CASE("AST visiting and printing")
 
   GIVEN("A binary arithmatic expression 3 * (4 + 5) / (-3 - 1)")
   {
-    const ast::Expr_ptr expr = ast::DivOpExpr::create(
-        ast::MultOpExpr::create(
-            ast::LiteralExpr::create(eml::Value{3.}),
-            ast::PlusOpExpr::create(ast::LiteralExpr::create(eml::Value{4.}),
-                                    ast::LiteralExpr::create(eml::Value{5.}))),
-        ast::MinusOpExpr::create(ast::UnaryNegateExpr::create(
-                                     ast::LiteralExpr::create(eml::Value{3.})),
-                                 ast::LiteralExpr::create(eml::Value{1.})));
+    const eml::Expr_ptr expr = eml::DivOpExpr::create(
+        eml::MultOpExpr::create(
+            eml::LiteralExpr::create(eml::Value{3.}),
+            eml::PlusOpExpr::create(eml::LiteralExpr::create(eml::Value{4.}),
+                                    eml::LiteralExpr::create(eml::Value{5.}))),
+        eml::MinusOpExpr::create(eml::UnaryNegateExpr::create(
+                                     eml::LiteralExpr::create(eml::Value{3.})),
+                                 eml::LiteralExpr::create(eml::Value{1.})));
     WHEN("Invoke the Ast Printer")
     {
       const auto str = eml::to_string(*expr);

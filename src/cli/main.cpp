@@ -5,7 +5,8 @@
 #include "eml.hpp"
 #include "vm.hpp"
 
-[[noreturn]] void repl() {
+[[noreturn]] void repl()
+{
   std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
 
   eml::CompilerConfig config = {eml::Shadowing::allow};
@@ -17,19 +18,19 @@
 
     const std::string source = []() {
       std::string line;
-      std::string source;
+      std::string result;
 
       while (true) {
         std::getline(std::cin, line);
         if (!line.empty() && line.back() == '\\') {
-          source += line.substr(0, line.size() - 1);
+          result += line.substr(0, line.size() - 1);
         } else {
-          source += line;
+          result += line;
           break;
         }
         std::cout << "... ";
       }
-      return source;
+      return result;
     }();
 
     if (!source.empty()) {

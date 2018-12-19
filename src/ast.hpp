@@ -5,7 +5,9 @@
 
 /**
  * @file ast.hpp
- * @brief This file contains the definition of the AST
+ * @brief contains all the definitions related to the [Abstract
+ * Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) of the
+ * Embedded ML
  */
 
 #include "common.hpp"
@@ -17,13 +19,6 @@
 #include <vector>
 
 namespace eml {
-
-/**
- * @brief contains all the definitions related to the [Abstract
- * Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) of the
- * Embedded ML
- */
-namespace ast {
 
 struct AstNode;
 struct Expr;
@@ -191,7 +186,7 @@ struct Let {
 }; // namespace detail
 
 /**
- * @brief A definition is a top-level construct `let x <: T> = e`
+ * @brief A definition is a top-level construct `let x = e` or `let x: T = e`
  */
 class Definition : public AstNode, public FactoryMixin<Definition> {
 public:
@@ -241,7 +236,7 @@ private:
 /**
  * @brief Base class for all the Expression AST Node
  */
-struct[[nodiscard]] Expr : AstNode
+struct [[nodiscard]] Expr : AstNode
 {
 public:
   Expr() = default;
@@ -437,6 +432,9 @@ private:
   Expr_ptr else_;
 };
 
+/**
+ * @brief Represents the AST node of a funcion definition
+ */
 class LambdaExpr final : public Expr, public FactoryMixin<LambdaExpr> {
 public:
   LambdaExpr(std::vector<std::string> arguments, Expr_ptr expression)
@@ -568,7 +566,6 @@ struct BinaryOpExprTemplate final : BinaryOpExpr,
   }
 };
 
-} // namespace ast
 } // namespace eml
 
 #endif // EML_AST_HPP

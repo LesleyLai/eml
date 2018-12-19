@@ -1,5 +1,5 @@
 @page grammar Embedded ML Grammar
-@brief The formal grammar of the Embedded ML language is the guideline of the parser to transform tokens into [AST](@ref eml::ast). It may not have a one-to-one relationship with the AST.
+@brief The formal grammar of the Embedded ML language is the guideline of the parser to transform tokens into [AST](@ref ast.hpp). It may not have a one-to-one relationship with the AST.
 
 @section identifier Identifier
 Identifier is a string contains alphanumerical character or "_", the first character cannot be an number.

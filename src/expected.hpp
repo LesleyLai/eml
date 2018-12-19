@@ -1041,6 +1041,8 @@ template <class T, class E> struct expected_default_ctor_base<T, E, false> {
 };
 } // namespace detail
 
+/// @brief Exception throwed when accessing std::expected with no value
+/// @note This exception will only throw if the exception is enabled
 template <class E> class bad_expected_access : public std::exception {
 public:
   explicit bad_expected_access(E e) : m_val(std::move(e)) {}

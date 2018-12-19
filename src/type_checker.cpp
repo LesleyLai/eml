@@ -20,7 +20,7 @@ struct Func2Type {
 };
 
 namespace {
-struct TypeChecker : ast::AstVisitor {
+struct TypeChecker : AstVisitor {
   Compiler& compiler;
   bool has_error = false;
   bool panic_mode = false;
@@ -28,14 +28,14 @@ struct TypeChecker : ast::AstVisitor {
 
   explicit TypeChecker(Compiler& c) : compiler(c) {}
 
-  void operator()([[maybe_unused]] ast::LiteralExpr& constant) override
+  void operator()([[maybe_unused]] LiteralExpr& constant) override
   {
     // no-op
     EML_ASSERT(constant.has_type(),
                "All literal should have a type assigned from the parser");
   }
 
-  void operator()(ast::IdentifierExpr& id) override
+  void operator()(IdentifierExpr& id) override
   {
     const auto query_result = compiler.get_global(id.name());
     if (query_result) {
@@ -49,7 +49,7 @@ struct TypeChecker : ast::AstVisitor {
     }
   }
 
-  void unary_common(ast::UnaryOpExpr& expr, std::string_view op,
+  void unary_common(UnaryOpExpr& expr, std::string_view op,
                     const Func1Type& allowed_type)
   {
     expr.operand().accept(*this);
@@ -70,12 +70,12 @@ struct TypeChecker : ast::AstVisitor {
     }
   }
 
-  void operator()(ast::UnaryNegateExpr& expr) override
+  void operator()(UnaryNegateExpr& expr) override
   {
     unary_common(expr, "-", Func1Type{NumberType{}, NumberType{}});
   }
 
-  void operator()(ast::UnaryNotExpr& expr) override
+  void operator()(UnaryNotExpr& expr) override
   {
     unary_common(expr, "!", Func1Type{BoolType{}, BoolType{}});
   }
@@ -91,7 +91,7 @@ struct TypeChecker : ast::AstVisitor {
     errors.emplace_back(std::in_place_type<TypeError>, message);
   }
 
-  void binary_common(ast::BinaryOpExpr& expr, std::string_view op,
+  void binary_common(BinaryOpExpr& expr, std::string_view op,
                      const Func2Type& allowed_type)
   {
     expr.lhs().accept(*this);
@@ -116,7 +116,7 @@ struct TypeChecker : ast::AstVisitor {
     }
   }
 
-  void equality_common(ast::BinaryOpExpr& expr, std::string_view op)
+  void equality_common(BinaryOpExpr& expr, std::string_view op)
   {
     expr.lhs().accept(*this);
     expr.rhs().accept(*this);
@@ -137,54 +137,54 @@ struct TypeChecker : ast::AstVisitor {
     }
   }
 
-  void operator()(ast::PlusOpExpr& expr) override
+  void operator()(PlusOpExpr& expr) override
   {
     binary_common(expr, "+",
                   Func2Type{NumberType{}, NumberType{}, NumberType{}});
   }
-  void operator()(ast::MinusOpExpr& expr) override
+  void operator()(MinusOpExpr& expr) override
   {
     binary_common(expr, "-",
                   Func2Type{NumberType{}, NumberType{}, NumberType{}});
   }
-  void operator()(ast::MultOpExpr& expr) override
+  void operator()(MultOpExpr& expr) override
   {
     binary_common(expr, "*",
                   Func2Type{NumberType{}, NumberType{}, NumberType{}});
   }
-  void operator()(ast::DivOpExpr& expr) override
+  void operator()(DivOpExpr& expr) override
   {
     binary_common(expr, "/",
                   Func2Type{NumberType{}, NumberType{}, NumberType{}});
   }
-  void operator()(ast::EqOpExpr& expr) override
+  void operator()(EqOpExpr& expr) override
   {
     equality_common(expr, "==");
   }
-  void operator()(ast::NeqOpExpr& expr) override
+  void operator()(NeqOpExpr& expr) override
   {
     equality_common(expr, "!=");
   }
-  void operator()(ast::LessOpExpr& expr) override
+  void operator()(LessOpExpr& expr) override
   {
     binary_common(expr, "<", Func2Type{NumberType{}, NumberType{}, BoolType{}});
   }
-  void operator()(ast::LeOpExpr& expr) override
+  void operator()(LeOpExpr& expr) override
   {
     binary_common(expr,
                   "<=", Func2Type{NumberType{}, NumberType{}, BoolType{}});
   }
-  void operator()(ast::GreaterOpExpr& expr) override
+  void operator()(GreaterOpExpr& expr) override
   {
     binary_common(expr, ">", Func2Type{NumberType{}, NumberType{}, BoolType{}});
   }
-  void operator()(ast::GeExpr& expr) override
+  void operator()(GeExpr& expr) override
   {
     binary_common(expr,
                   ">=", Func2Type{NumberType{}, NumberType{}, BoolType{}});
   }
 
-  void operator()(ast::IfExpr& expr) override
+  void operator()(IfExpr& expr) override
   {
 
     expr.cond().accept(*this);
@@ -211,13 +211,13 @@ struct TypeChecker : ast::AstVisitor {
     }
   }
 
-  void operator()(ast::LambdaExpr& expr) override
+  void operator()(LambdaExpr& expr) override
   {
     error("Functions are not implemented yet!");
     expr.set_type(ErrorType{});
   }
 
-  void operator()(ast::Definition& def) override
+  void operator()(Definition& def) override
   {
     def.to().accept(*this);
 
@@ -233,7 +233,7 @@ struct TypeChecker : ast::AstVisitor {
     }
 
     // TODO(Lesley Lai): implement constant folding
-    const auto v = dynamic_cast<const ast::LiteralExpr*>(&def.to());
+    const auto v = dynamic_cast<const LiteralExpr*>(&def.to());
 
     if (v == nullptr) {
       error("Constant folding is unimplemented yet");
@@ -246,8 +246,7 @@ struct TypeChecker : ast::AstVisitor {
 }; // namespace
 } // namespace
 
-Compiler::TypeCheckResult
-Compiler::type_check(std::unique_ptr<ast::AstNode>& ptr)
+Compiler::TypeCheckResult Compiler::type_check(std::unique_ptr<AstNode>& ptr)
 {
   TypeChecker type_checker{*this};
   ptr->accept(type_checker);

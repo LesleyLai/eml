@@ -11,21 +11,21 @@
 namespace eml {
 
 // A error node that represents with syntax error
-class ErrorExpr final : public ast::Expr, public ast::FactoryMixin<ErrorExpr> {
-  void accept(ast::AstVisitor& /*visitor*/) override
+class ErrorExpr final : public Expr, public FactoryMixin<ErrorExpr> {
+  void accept(AstVisitor& /*visitor*/) override
   {
     EML_UNREACHABLE();
   }
 
-  void accept(ast::AstConstVisitor& /*visitor*/) const override
+  void accept(AstConstVisitor& /*visitor*/) const override
   {
     EML_UNREACHABLE();
   }
 };
 
 struct Parser;
-auto parse_toplevel(Parser& parser) -> std::unique_ptr<ast::AstNode>;
-auto parse_expression(Parser& parser) -> ast::Expr_ptr;
+auto parse_toplevel(Parser& parser) -> std::unique_ptr<AstNode>;
+auto parse_expression(Parser& parser) -> Expr_ptr;
 
 struct Parser {
   explicit Parser(std::string_view source)
@@ -166,8 +166,8 @@ enum Precedence : std::uint8_t {
   prec_primary
 };
 
-using PrefixParselet = ast::Expr_ptr (*)(Parser& Parser);
-using InfixParselet = ast::Expr_ptr (*)(Parser& Parser, ast::Expr_ptr left);
+using PrefixParselet = Expr_ptr (*)(Parser& Parser);
+using InfixParselet = Expr_ptr (*)(Parser& Parser, Expr_ptr left);
 
 struct ParseRule {
   PrefixParselet prefix;
@@ -183,7 +183,7 @@ Precedence higher(Precedence p)
       static_cast<std::underlying_type_t<Precedence>>(p) + 1);
 }
 
-auto parse_block(Parser& parser) -> ast::Expr_ptr
+auto parse_block(Parser& parser) -> Expr_ptr
 {
   auto expr = parse_expression(parser);
 
@@ -191,7 +191,7 @@ auto parse_block(Parser& parser) -> ast::Expr_ptr
   return expr;
 }
 
-auto parse_grouping(Parser& parser) -> ast::Expr_ptr
+auto parse_grouping(Parser& parser) -> Expr_ptr
 {
   auto expr_ptr = parse_expression(parser);
 
@@ -202,7 +202,7 @@ auto parse_grouping(Parser& parser) -> ast::Expr_ptr
 }
 
 // if else
-auto parse_branch(Parser& parser) -> ast::Expr_ptr
+auto parse_branch(Parser& parser) -> Expr_ptr
 {
   parser.consume(eml::token_type::left_paren,
                  "condition of an if expression must in a group");
@@ -215,16 +215,16 @@ auto parse_branch(Parser& parser) -> ast::Expr_ptr
 
   auto Else = parse_expression(parser);
 
-  return ast::IfExpr::create(std::move(cond), std::move(If), std::move(Else));
+  return IfExpr::create(std::move(cond), std::move(If), std::move(Else));
 }
 
-auto parse_number(Parser& parser) -> ast::Expr_ptr
+auto parse_number(Parser& parser) -> Expr_ptr
 {
   const double number = strtod(parser.previous.text.data(), nullptr);
-  return ast::LiteralExpr::create(Value{number}, NumberType{});
+  return LiteralExpr::create(Value{number}, NumberType{});
 }
 
-auto parse_definition(Parser& parser) -> std::unique_ptr<ast::AstNode>
+auto parse_definition(Parser& parser) -> std::unique_ptr<AstNode>
 {
   parser.advance();
   const auto id = parser.current_itr->text;
@@ -234,25 +234,25 @@ auto parse_definition(Parser& parser) -> std::unique_ptr<ast::AstNode>
 
   parser.advance();
 
-  return ast::Definition::create(id, std::move(expr));
+  return Definition::create(id, std::move(expr));
 }
 
-auto parse_identifier(Parser& parser) -> std::unique_ptr<ast::Expr>
+auto parse_identifier(Parser& parser) -> std::unique_ptr<Expr>
 {
-  return ast::IdentifierExpr::create(std::string{parser.previous.text});
+  return IdentifierExpr::create(std::string{parser.previous.text});
 }
 
-auto parse_literal(Parser& parser) -> ast::Expr_ptr
+auto parse_literal(Parser& parser) -> Expr_ptr
 {
   switch (parser.previous.type) {
   case token_type::keyword_unit:
-    return ast::LiteralExpr::create(Value{}, UnitType{});
+    return LiteralExpr::create(Value{}, UnitType{});
 
   case token_type::keyword_true:
-    return ast::LiteralExpr::create(Value{true}, BoolType{});
+    return LiteralExpr::create(Value{true}, BoolType{});
 
   case token_type::keyword_false:
-    return ast::LiteralExpr::create(Value{false}, BoolType{});
+    return LiteralExpr::create(Value{false}, BoolType{});
 
   default:
     EML_UNREACHABLE();
@@ -260,7 +260,7 @@ auto parse_literal(Parser& parser) -> ast::Expr_ptr
 }
 
 // parses any expression of a given precedence level or higher:
-auto parse_precedence(Parser& parser, Precedence precedence) -> ast::Expr_ptr
+auto parse_precedence(Parser& parser, Precedence precedence) -> Expr_ptr
 {
   parser.advance();
 
@@ -285,7 +285,7 @@ auto parse_precedence(Parser& parser, Precedence precedence) -> ast::Expr_ptr
   return left_ptr;
 }
 
-auto parse_toplevel(Parser& parser) -> std::unique_ptr<ast::AstNode>
+auto parse_toplevel(Parser& parser) -> std::unique_ptr<AstNode>
 {
   switch (parser.current_itr->type) {
   case token_type::keyword_let:
@@ -295,12 +295,12 @@ auto parse_toplevel(Parser& parser) -> std::unique_ptr<ast::AstNode>
   }
 }
 
-auto parse_expression(Parser& parser) -> ast::Expr_ptr
+auto parse_expression(Parser& parser) -> Expr_ptr
 {
   return parse_precedence(parser, prec_assignment);
 }
 
-auto parse_lambda(Parser& parser) -> ast::Expr_ptr
+auto parse_lambda(Parser& parser) -> Expr_ptr
 {
   std::vector<std::string> args;
 
@@ -316,10 +316,10 @@ auto parse_lambda(Parser& parser) -> ast::Expr_ptr
 
   auto expr_ptr = parse_expression(parser);
 
-  return ast::LambdaExpr::create(std::move(args), std::move(expr_ptr));
+  return LambdaExpr::create(std::move(args), std::move(expr_ptr));
 }
 
-auto parse_unary(Parser& parser) -> ast::Expr_ptr
+auto parse_unary(Parser& parser) -> Expr_ptr
 {
   const token_type operator_type = parser.previous.type;
 
@@ -329,15 +329,15 @@ auto parse_unary(Parser& parser) -> ast::Expr_ptr
   // Emit the operator instruction.
   switch (operator_type) {
   case token_type::bang:
-    return ast::UnaryNotExpr::create(std::move(operand_ptr));
+    return UnaryNotExpr::create(std::move(operand_ptr));
   case token_type::minus:
-    return ast::UnaryNegateExpr::create(std::move(operand_ptr));
+    return UnaryNegateExpr::create(std::move(operand_ptr));
   default:
     EML_UNREACHABLE();
   }
 }
 
-auto parse_binary(Parser& parser, ast::Expr_ptr left_ptr) -> ast::Expr_ptr
+auto parse_binary(Parser& parser, Expr_ptr left_ptr) -> Expr_ptr
 {
   // Remember the operator.
   token_type operator_type = parser.previous.type;
@@ -350,33 +350,33 @@ auto parse_binary(Parser& parser, ast::Expr_ptr left_ptr) -> ast::Expr_ptr
   // Emit the operator instruction.
   switch (operator_type) {
   case token_type::plus:
-    return ast::PlusOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return PlusOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
   case token_type::minus:
-    return ast::MinusOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return MinusOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   case token_type::star:
-    return ast::MultOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return MultOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   case token_type::slash:
-    return ast::DivOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return DivOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   case token_type::double_equal:
-    return ast::EqOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return EqOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   case token_type::bang_equal:
-    return ast::NeqOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return NeqOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   case token_type::less:
-    return ast::LessOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return LessOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   case token_type::less_equal:
-    return ast::LeOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return LeOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   case token_type::greator:
-    return ast::GreaterOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return GreaterOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   case token_type::greater_equal:
-    return ast::GeExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+    return GeExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   default:
     EML_UNREACHABLE();

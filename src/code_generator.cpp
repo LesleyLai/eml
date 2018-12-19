@@ -21,7 +21,7 @@ struct TypeDispatcher {
   [[noreturn]] void operator()(const ErrorType& /*t*/);
 };
 
-struct CodeGenerator : ast::AstConstVisitor {
+struct CodeGenerator : AstConstVisitor {
   friend TypeDispatcher;
 
   explicit CodeGenerator(Bytecode& chunk, const Compiler& compiler)
@@ -29,13 +29,13 @@ struct CodeGenerator : ast::AstConstVisitor {
   {
   }
 
-  void operator()(const ast::LiteralExpr& constant) override
+  void operator()(const LiteralExpr& constant) override
   {
     TypeDispatcher visitor{*this, constant.value()};
     std::visit(visitor, constant.type());
   }
 
-  void operator()([[maybe_unused]] const ast::IdentifierExpr& id) override
+  void operator()([[maybe_unused]] const IdentifierExpr& id) override
   {
     EML_ASSERT(id.value() != std::nullopt,
                "Identifier expression passed to the code generator are "
@@ -44,71 +44,71 @@ struct CodeGenerator : ast::AstConstVisitor {
     std::visit(visitor, id.type());
   }
 
-  void unary_common(const ast::UnaryOpExpr& expr, opcode op)
+  void unary_common(const UnaryOpExpr& expr, opcode op)
   {
     expr.operand().accept(*this);
     chunk_.write(op, line_num{0});
   }
 
-  void operator()(const ast::UnaryNegateExpr& expr) override
+  void operator()(const UnaryNegateExpr& expr) override
   {
     unary_common(expr, op_negate_f64);
   }
 
-  void operator()(const ast::UnaryNotExpr& expr) override
+  void operator()(const UnaryNotExpr& expr) override
   {
     unary_common(expr, op_not);
   }
 
-  void binary_common(const ast::BinaryOpExpr& expr, opcode op)
+  void binary_common(const BinaryOpExpr& expr, opcode op)
   {
     expr.lhs().accept(*this);
     expr.rhs().accept(*this);
     chunk_.write(op, line_num{0});
   }
 
-  void operator()(const ast::PlusOpExpr& expr) override
+  void operator()(const PlusOpExpr& expr) override
   {
     binary_common(expr, op_add_f64);
   }
-  void operator()(const ast::MinusOpExpr& expr) override
+  void operator()(const MinusOpExpr& expr) override
   {
     binary_common(expr, op_subtract_f64);
   }
-  void operator()(const ast::MultOpExpr& expr) override
+  void operator()(const MultOpExpr& expr) override
   {
     binary_common(expr, op_multiply_f64);
   }
-  void operator()(const ast::DivOpExpr& expr) override
+  void operator()(const DivOpExpr& expr) override
   {
     binary_common(expr, op_divide_f64);
   }
-  void operator()(const ast::EqOpExpr& expr) override
+  void operator()(const EqOpExpr& expr) override
   {
     binary_common(expr, op_equal);
   }
-  void operator()(const ast::NeqOpExpr& expr) override
+  void operator()(const NeqOpExpr& expr) override
   {
     binary_common(expr, op_not_equal);
   }
-  void operator()(const ast::LessOpExpr& expr) override
+  void operator()(const LessOpExpr& expr) override
   {
     binary_common(expr, op_less_f64);
   }
-  void operator()(const ast::LeOpExpr& expr) override
+  void operator()(const LeOpExpr& expr) override
   {
     binary_common(expr, op_less_equal_f64);
   }
-  void operator()(const ast::GreaterOpExpr& expr) override
+  void operator()(const GreaterOpExpr& expr) override
   {
     binary_common(expr, op_greater_f64);
   }
-  void operator()(const ast::GeExpr& expr) override
+  void operator()(const GeExpr& expr) override
   {
     binary_common(expr, op_greater_equal_f64);
   }
 
-  void operator()(const ast::LambdaExpr& /*expr*/) override
+  void operator()(const LambdaExpr& /*expr*/) override
   {
     throw "TODO";
   }
@@ -132,7 +132,7 @@ struct CodeGenerator : ast::AstConstVisitor {
     chunk_.write_at(static_cast<std::byte>(jump_to - index - 1), index);
   }
 
-  void operator()(const ast::IfExpr& expr) override
+  void operator()(const IfExpr& expr) override
   {
     EML_ASSERT(eml::match(expr.cond().type(), BoolType{}),
                "Type of condition must be boolean");
@@ -153,7 +153,7 @@ struct CodeGenerator : ast::AstConstVisitor {
     jump_patch(if_jump_pos);
   }
 
-  void operator()(const ast::Definition& /*def*/) override {} // no-op
+  void operator()(const Definition& /*def*/) override {} // no-op
 
   Bytecode& chunk_; // Not null
   const Compiler& compiler_;
@@ -189,7 +189,7 @@ void TypeDispatcher::operator()(const ErrorType& /*t*/)
 
 } // anonymous namespace
 
-auto Compiler::bytecode_from_ast(const ast::AstNode& expr) const -> Bytecode
+auto Compiler::bytecode_from_ast(const AstNode& expr) const -> Bytecode
 {
   Bytecode code;
   CodeGenerator code_generator{code, *this};

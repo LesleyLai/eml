@@ -7,8 +7,6 @@
 
 #include <catch2/catch.hpp>
 
-using eml::ast::PrintOption;
-
 TEST_CASE("Test parsing", "[parser]")
 {
   GIVEN("(5 * 6)")
@@ -19,7 +17,7 @@ TEST_CASE("Test parsing", "[parser]")
       THEN("Should produces AST (* 5 6)")
       {
         REQUIRE(ast);
-        REQUIRE(eml::to_string(**ast, PrintOption::flat) == "(* 5 6)");
+        REQUIRE(eml::to_string(**ast, eml::AstPrintOption::flat) == "(* 5 6)");
       }
     }
   }
@@ -33,7 +31,7 @@ TEST_CASE("Test parsing", "[parser]")
       THEN("Should produces AST (let x (* (/ 1 2) 5))")
       {
         REQUIRE(ast);
-        REQUIRE(eml::to_string(**ast, PrintOption::flat) ==
+        REQUIRE(eml::to_string(**ast, eml::AstPrintOption::flat) ==
                 "(let x (* (/ 1 2) 5))");
       }
     }
@@ -57,8 +55,8 @@ TEST_CASE("Branching", "[parser]")
       {
         REQUIRE(result);
         result.map([](auto& ast) {
-          const auto& branch_node = dynamic_cast<eml::ast::IfExpr&>(*ast);
-          REQUIRE(eml::to_string(branch_node, PrintOption::flat) ==
+          const auto& branch_node = dynamic_cast<eml::IfExpr&>(*ast);
+          REQUIRE(eml::to_string(branch_node, eml::AstPrintOption::flat) ==
                   "(if (< x 0) 0 x)");
         });
       }
@@ -83,7 +81,7 @@ TEST_CASE("Branching", "[parser]")
       {
         REQUIRE(result);
         result.map([](auto& ast) {
-          REQUIRE(eml::to_string(*ast, PrintOption::flat) ==
+          REQUIRE(eml::to_string(*ast, eml::AstPrintOption::flat) ==
                   "(if (< x 0) 0 (if (< x 5) 5 x))");
         });
       }
@@ -104,7 +102,7 @@ TEST_CASE("Function definitions")
       {
         REQUIRE(result);
         result.map([](auto& ast) {
-          REQUIRE(eml::to_string(*ast, PrintOption::flat) ==
+          REQUIRE(eml::to_string(*ast, eml::AstPrintOption::flat) ==
                   "(lambda x (+ x 1))");
         });
       }
@@ -150,7 +148,7 @@ TEST_CASE("Function definitions")
       {
         REQUIRE(result);
         result.map([](auto& ast) {
-          REQUIRE(eml::to_string(*ast, PrintOption::flat) ==
+          REQUIRE(eml::to_string(*ast, eml::AstPrintOption::flat) ==
                   "(let f (lambda x (+ x 1)))");
         });
       }

@@ -31,6 +31,9 @@ enum class Shadowing {
   warning_on_same_scope, ///< @brief Warn on shadowing in the same scope
 };
 
+/**
+ * @brief Runtime configurations that decides how the eml compiler should behave
+ */
 struct CompilerConfig {
   Shadowing shadowing_policy = Shadowing::warning_on_same_scope;
 };
@@ -43,7 +46,7 @@ struct CompilerConfig {
 class Compiler {
 public:
   using TypeCheckResult =
-      expected<std::unique_ptr<ast::AstNode>, std::vector<CompilationError>>;
+      expected<std::unique_ptr<AstNode>, std::vector<CompilationError>>;
   using CompileResult = expected<Bytecode, std::vector<CompilationError>>;
 
   /**
@@ -69,7 +72,7 @@ public:
   /**
    * @brief Compiles the AST Expr node expr into bytecode
    */
-  auto bytecode_from_ast(const eml::ast::AstNode& expr) const -> Bytecode;
+  auto bytecode_from_ast(const eml::AstNode& expr) const -> Bytecode;
 
   /**
    * @brief  Adds a global constants to a byte code chunk
@@ -111,7 +114,7 @@ public:
    * This function returns an ast that all nodes have types if successful, or a
    * vector of error if it find type errors
    */
-  auto type_check(std::unique_ptr<ast::AstNode>& ptr) -> TypeCheckResult;
+  auto type_check(std::unique_ptr<AstNode>& ptr) -> TypeCheckResult;
 
 private:
   CompilerConfig options_;
