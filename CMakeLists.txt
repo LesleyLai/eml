@@ -58,6 +58,8 @@ add_library(eml
     "src/expected.hpp"
     "src/error.hpp"
     "src/error.cpp"
+    "src/module.hpp"
+    "src/module.cpp"
     "src/parser.hpp"
     "src/parser.cpp"
     "src/token_table.inc"
@@ -86,9 +88,7 @@ target_compile_definitions(eml PUBLIC
     EML_MINOR_VERSION=${PROJECT_VERSION_MINOR}
     EML_PATCH_VERSION=${PROJECT_VERSION_PATCH})
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(eml PRIVATE EML_DEBUG)
-endif()
+target_compile_definitions(eml PRIVATE $<$<CONFIG:Debug>:EML_DEBUG>)
 
 if(EML_DEBUG_VM_TRACE_EXECUTION)
     target_compile_definitions(eml PRIVATE EML_DEBUG_VM_TRACE_EXECUTION)

@@ -9,7 +9,7 @@
 {
   std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
 
-  eml::CompilerConfig config = {eml::Shadowing::allow};
+  eml::CompilerConfig config = {eml::SameScopeShadowing::allow};
   eml::Compiler compiler{config};
   eml::VM vm;
 

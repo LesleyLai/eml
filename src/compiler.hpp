@@ -8,6 +8,7 @@
 #include "bytecode.hpp"
 #include "error.hpp"
 #include "expected.hpp"
+#include "module.hpp"
 #include "type.hpp"
 #include "value.hpp"
 
@@ -21,26 +22,14 @@
 namespace eml {
 
 /**
- * @brief The compiler policy about shadowing
- *
- * This runtime policy enum decides whether the compiler will silently allow
- * name shadowing, or provides a warning message
- */
-enum class Shadowing {
-  allow,                 ///< @brief Allow shadowing without any warning
-  warning_on_same_scope, ///< @brief Warn on shadowing in the same scope
-};
-
-/**
  * @brief Runtime configurations that decides how the eml compiler should behave
  */
 struct CompilerConfig {
-  Shadowing shadowing_policy = Shadowing::warning_on_same_scope;
+  SameScopeShadowing shadowing_policy = SameScopeShadowing::warning;
 };
 
 /**
  * @brief The compiler for the EML
- *
  * This class provides the API for the EML frontend.
  */
 class Compiler {
@@ -79,18 +68,18 @@ public:
    */
   void add_global(const std::string& identifier, Type t, Value v)
   {
-    auto query_result = global_env_.find(identifier);
-    if (query_result != global_env_.end()) { // Shadowing
+    auto query_result = constexpr_env_.find(identifier);
+    if (query_result != constexpr_env_.end()) { // Shadowing
 
-      if (options_.shadowing_policy == Shadowing::warning_on_same_scope) {
+      if (options_.shadowing_policy == SameScopeShadowing::warning) {
         std::clog << "Warning: Global value definition of " << identifier
                   << " shadows earlier binding "
                      "in the global scope\n";
       }
 
-      global_env_[identifier] = std::pair{std::move(t), std::move(v)};
+      constexpr_env_[identifier] = std::pair{std::move(t), std::move(v)};
     } else {
-      global_env_.emplace(identifier, std::pair{std::move(t), std::move(v)});
+      constexpr_env_.emplace(identifier, std::pair{std::move(t), std::move(v)});
     }
   }
 
@@ -100,8 +89,8 @@ public:
   [[nodiscard]] auto get_global(std::string_view identifier) const
       -> std::optional<const std::pair<Type, Value>>
   {
-    const auto pos = global_env_.find(std::string{identifier});
-    if (pos != global_env_.end()) {
+    const auto pos = constexpr_env_.find(std::string{identifier});
+    if (pos != constexpr_env_.end()) {
       return {pos->second};
     } else {
       return {};
@@ -119,7 +108,7 @@ public:
 private:
   CompilerConfig options_;
   std::unordered_map<std::string, std::pair<Type, Value>>
-      global_env_; // Identifier to (type, value index) mapping for globals
+      constexpr_env_; // Identifier to (type, value index) mapping for globals
 };
 
 } // namespace eml
