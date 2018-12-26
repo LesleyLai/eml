@@ -8,7 +8,7 @@
 #include "eml.hpp"
 #include "vm.hpp"
 
-static eml::CompilerConfig config{eml::Shadowing::allow};
+static eml::CompilerConfig config{eml::SameScopeShadowing::allow};
 static eml::Compiler compiler(config);
 static eml::VM vm;
 
