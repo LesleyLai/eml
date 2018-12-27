@@ -39,7 +39,7 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   std::stringstream ss;
 
   auto print_hex_dump = [&ss](auto current_ip, std::size_t count) {
-    // Over max byte of hex will cause misalignment in output
+    // Over max bytes of hex will cause misalignment in output
     constexpr std::size_t max_byte = 5;
     for (auto i = std::size_t{0}; i < count; ++i) {
       const auto code = std::to_integer<unsigned>(*current_ip);

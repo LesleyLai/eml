@@ -43,13 +43,21 @@ template <typename F> void binary_operation(std::vector<Value>& stack, F op)
   push(stack, Value{op(left.unsafe_as_number(), right.unsafe_as_number())});
 }
 
+template <typename F> void equality_operation(std::vector<Value>& stack, F op)
+{
+  Value right = pop(stack);
+  Value left = pop(stack);
+
+  push(stack, Value{op(left, right)});
+}
+
 // Helper for comparison operations
 template <typename F> void comparison_operation(std::vector<Value>& stack, F op)
 {
   Value right = pop(stack);
   Value left = pop(stack);
 
-  push(stack, Value{op(left, right)});
+  push(stack, Value{op(left.unsafe_as_number(), right.unsafe_as_number())});
 }
 
 } // anonymous namespace
@@ -120,22 +128,22 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
       binary_operation(stack_, std::divides<double>{});
       break;
     case op_equal:
-      comparison_operation(stack_, std::equal_to<Value>{});
+      equality_operation(stack_, std::equal_to<Value>{});
       break;
     case op_not_equal:
-      comparison_operation(stack_, std::not_equal_to<Value>{});
+      equality_operation(stack_, std::not_equal_to<Value>{});
       break;
     case op_less_f64:
-      comparison_operation(stack_, std::less<Value>{});
+      comparison_operation(stack_, std::less<double>{});
       break;
     case op_less_equal_f64:
-      comparison_operation(stack_, std::less_equal<Value>{});
+      comparison_operation(stack_, std::less_equal<double>{});
       break;
     case op_greater_f64:
-      comparison_operation(stack_, std::greater<Value>{});
+      comparison_operation(stack_, std::greater<double>{});
       break;
     case op_greater_equal_f64:
-      comparison_operation(stack_, std::greater_equal<Value>{});
+      comparison_operation(stack_, std::greater_equal<double>{});
       break;
     case op_jmp: {
       ++ip;

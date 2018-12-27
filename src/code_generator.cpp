@@ -18,6 +18,8 @@ struct TypeDispatcher {
 
   void operator()(const UnitType& /*t*/);
 
+  void operator()(const StringType& /*t*/);
+
   [[noreturn]] void operator()(const ErrorType& /*t*/);
 };
 
@@ -161,8 +163,15 @@ struct CodeGenerator : AstConstVisitor {
 
 void TypeDispatcher::operator()(const NumberType&)
 {
-  const double number = v.unsafe_as_number();
-  const auto offset = generator.chunk_.add_constant(eml::Value{number});
+  const auto offset = generator.chunk_.add_constant(v);
+
+  generator.chunk_.write(eml::op_push_f64, line_num{0});
+  generator.chunk_.write(std::byte{*offset}, line_num{0});
+}
+
+void TypeDispatcher::operator()(const StringType&)
+{
+  const auto offset = generator.chunk_.add_constant(v);
 
   generator.chunk_.write(eml::op_push_f64, line_num{0});
   generator.chunk_.write(std::byte{*offset}, line_num{0});

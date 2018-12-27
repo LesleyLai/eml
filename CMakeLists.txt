@@ -38,7 +38,8 @@ option(EML_BUILD_TESTS
     OFF)
 
 CMAKE_DEPENDENT_OPTION(EML_BUILD_TESTS_COVERAGE
-    "Build the project with code coverage support for tests" OFF
+    "Build the project with code coverage support for tests,
+    must compile with a gcc-compatible compiler" OFF
                        "EML_BUILD_TESTS" OFF)
 
 if(EML_BUILD_DOCUMENTS)
@@ -58,8 +59,12 @@ add_library(eml
     "src/expected.hpp"
     "src/error.hpp"
     "src/error.cpp"
+    "src/memory.hpp"
+    "src/memory.cpp"
+    "src/meta.hpp"
     "src/module.hpp"
     "src/module.cpp"
+    "src/object.hpp"
     "src/parser.hpp"
     "src/parser.cpp"
     "src/token_table.inc"

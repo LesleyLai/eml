@@ -177,7 +177,7 @@ struct ParseRule {
 
 constexpr auto get_rule(token_type type) -> ParseRule;
 
-Precedence higher(Precedence p)
+auto higher(Precedence p) -> Precedence
 {
   return static_cast<Precedence>(
       static_cast<std::underlying_type_t<Precedence>>(p) + 1);
@@ -222,6 +222,13 @@ auto parse_number(Parser& parser) -> Expr_ptr
 {
   const double number = strtod(parser.previous.text.data(), nullptr);
   return LiteralExpr::create(Value{number}, NumberType{});
+}
+
+auto parse_string(Parser& parser) -> Expr_ptr
+{
+  const std::string s = parser.previous.text.data();
+  auto s_obj = new StringObj(s);
+  return LiteralExpr::create(Value{s_obj}, NumberType{});
 }
 
 auto parse_definition(Parser& parser) -> std::unique_ptr<AstNode>

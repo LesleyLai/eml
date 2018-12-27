@@ -21,6 +21,11 @@ struct TypePrinter {
     os_ << "Unit";
   }
 
+  void operator()(StringType)
+  {
+    os_ << "String";
+  }
+
   void operator()(ErrorType)
   {
     os_ << "Error";

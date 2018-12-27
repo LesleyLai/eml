@@ -17,11 +17,13 @@ namespace eml {
 struct NumberType {};
 struct BoolType {};
 struct UnitType {};
+struct StringType {};
 struct ErrorType {};
 
 // clang-format on
 
-using Type = std::variant<NumberType, BoolType, UnitType, ErrorType>;
+using Type =
+    std::variant<NumberType, BoolType, UnitType, StringType, ErrorType>;
 
 std::ostream& operator<<(std::ostream& os, const Type& type);
 

@@ -12,6 +12,9 @@
 #include <optional>
 #include <type_traits>
 
+#include "common.hpp"
+#include "object.hpp"
+
 namespace eml {
 
 struct Value {
@@ -22,6 +25,7 @@ struct Value {
     Unit,
     Boolean,
     Number,
+    Reference,
   };
 
   struct unit_t {
@@ -31,16 +35,19 @@ struct Value {
     constexpr val() : unit{} {}
     constexpr explicit val(double d) : num{d} {}
     constexpr explicit val(bool b) : boolean{b} {}
+    constexpr explicit val(Obj* o) : ref{o} {}
 
     unit_t unit;
     double num;
     bool boolean;
+    Obj* ref;
   } val;
   type type;
 
   constexpr Value() noexcept : type{type::Unit} {}
   constexpr explicit Value(double v) noexcept : val{v}, type{type::Number} {}
   constexpr explicit Value(bool b) noexcept : val{b}, type{type::Boolean} {}
+  constexpr explicit Value(Obj* o) noexcept : val{o}, type{type::Reference} {}
 
   constexpr Value(const Value& value) noexcept = default;
   Value& operator=(const Value& value) noexcept = default;
@@ -90,6 +97,23 @@ struct Value {
   {
     return val.boolean;
   }
+
+  /**
+   * @brief Returns whether the value is a reference
+   */
+  constexpr auto is_reference() const noexcept -> bool
+  {
+    return type == type::Reference;
+  }
+
+  /**
+   * @brief Extracts the underlying reference from the Value
+   * @warning The result is undefined if the value is actually not a reference
+   */
+  constexpr auto unsafe_as_reference() const noexcept -> Obj*
+  {
+    return val.ref;
+  }
 };
 
 constexpr auto operator==(const Value& lhs, const Value& rhs)
@@ -104,6 +128,8 @@ constexpr auto operator==(const Value& lhs, const Value& rhs)
     return lhs.unsafe_as_boolean() == rhs.unsafe_as_boolean();
   case Value::type::Number:
     return lhs.unsafe_as_number() == rhs.unsafe_as_number();
+  case Value::type::Reference:
+    return lhs.unsafe_as_reference() == rhs.unsafe_as_reference();
   case Value::type::Unit:
     return true;
   }
@@ -115,47 +141,6 @@ constexpr auto operator!=(const Value& lhs, const Value& rhs)
 {
   return !(lhs == rhs);
 }
-
-constexpr auto operator<(const Value& lhs, const Value& rhs)
-{
-  if (lhs.type != rhs.type) {
-    std::clog << "Runtime error: comparing different types\n";
-    return false;
-  }
-
-  switch (lhs.type) {
-  case Value::type::Boolean:
-    std::clog << "Runtime error: comparing boolean types\n";
-    return false;
-  case Value::type::Number:
-    return lhs.unsafe_as_number() < rhs.unsafe_as_number();
-  case Value::type::Unit:
-    std::clog << "Runtime error: comparing unit types\n";
-    return false;
-  }
-
-  return false; // Unreachable
-}
-
-constexpr auto operator<=(const Value& lhs, const Value& rhs)
-{
-  return (lhs < rhs) || (lhs == rhs);
-}
-
-constexpr auto operator>(const Value& lhs, const Value& rhs)
-{
-  return !(lhs <= rhs);
-}
-
-constexpr auto operator>=(const Value& lhs, const Value& rhs)
-{
-  return !(lhs < rhs);
-}
-
-enum PrintType {
-  yes,
-  no,
-};
 
 auto to_string(const Value& v, PrintType print_type = PrintType::yes)
     -> std::string;

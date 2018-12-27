@@ -29,7 +29,7 @@
   TOKEN_NORULE(less_less, "<<")            \
   TOKEN_BINARY_OP(less_equal, "<=", comparison) \
   TOKEN_TABLE_ENTRY(identifier, "identifier", parse_identifier, nullptr, none)   \
-  TOKEN_NORULE(string_literal, "string")   \
+  TOKEN_TABLE_ENTRY(string_literal, "string", parse_string, nullptr, none)   \
   TOKEN_TABLE_ENTRY(number_literal, "number", parse_number, nullptr, none) \
   TOKEN_TABLE_ENTRY(keyword_and, "and", nullptr, nullptr, and)          \
   TOKEN_NORULE(keyword_async, "async")     \

@@ -1,6 +1,7 @@
 #ifndef EML_COMMON_HPP
 #define EML_COMMON_HPP
 
+#include <iostream>
 #include <string_view>
 
 #include "meta.hpp"
