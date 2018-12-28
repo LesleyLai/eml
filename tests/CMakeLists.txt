@@ -27,7 +27,7 @@ conan_cmake_run(REQUIRES catch2/2.4.0@bincrafters/stable
                 BUILD missing)
 
 target_link_libraries(${EML_TEST_TARGET}
-    PRIVATE compiler_options eml CONAN_PKG::catch2)
+    PRIVATE eml CONAN_PKG::catch2)
 
 if(${EML_BUILD_TESTS_COVERAGE})
     include(ProcessorCount)

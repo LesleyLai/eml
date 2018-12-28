@@ -39,7 +39,7 @@ public:
   using CompileResult = expected<Bytecode, std::vector<CompilationError>>;
 
   /**
-   * @brief
+   * @brief Constructs a compiler object
    * @arg options Runtime configuration of the compiler. If unprovided, have
    * sensible defaults
    */

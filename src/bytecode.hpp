@@ -78,7 +78,7 @@ struct Bytecode {
   {
     instructions.push_back(static_cast<std::byte>(code));
     lines.push_back(line);
-    return instructions.size() - 1;
+    return static_cast<std::ptrdiff_t>(instructions.size() - 1);
   }
 
   /**
@@ -91,7 +91,7 @@ struct Bytecode {
   {
     instructions.push_back(code);
     lines.push_back(line);
-    return instructions.size() - 1;
+    return static_cast<std::ptrdiff_t>(instructions.size() - 1);
   }
 
   /**
@@ -118,7 +118,8 @@ struct Bytecode {
    * Adds a constant value v to the chunk. Returns the index where it was
    * appended so that we can locate that same constant later.
    */
-  [[nodiscard]] std::optional<opcode_num_type> add_constant(Value v) {
+  [[nodiscard]] std::optional<opcode_num_type> add_constant(Value v)
+  {
     if (constants.size() >= std::numeric_limits<opcode_num_type>::max()) {
       return {};
     }

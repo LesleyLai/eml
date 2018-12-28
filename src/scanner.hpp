@@ -53,7 +53,6 @@ struct Scanner {
 
     /**
      * @brief operator *
-     * @return
      * @warning If this iterator is not dereferenceable, operation is undefined
      */
     constexpr auto operator*() const -> const Token
