@@ -1,27 +1,45 @@
 # Compiler specific settings
 
 if(compiler_included)
-    return()
+  return()
 endif()
 set(compiler_included true)
 
-function(add_compiler_flags)
-    foreach(flag ${ARGV})
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}" PARENT_SCOPE)
-    endforeach()
-endfunction()
+# Link this 'library' to use the standard warnings
+add_library(compiler_options INTERFACE)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    add_compiler_flags(-Wall)
-    add_compiler_flags(-Wextra)
-    add_compiler_flags(-Wno-sign-compare)
-endif()
+if(MSVC)
+  target_compile_options(compiler_options INTERFACE /W4 "/permissive-")
+  if(EML_WARNING_AS_ERROR)
+    target_compile_options(compiler_options INTERFACE /WX)
+  endif()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(compiler_options
+                         INTERFACE -Wall
+                                   -Wextra
+                                   -Wshadow
+                                   -Wnon-virtual-dtor
+                                   -Wold-style-cast
+                                   -Wcast-align
+                                   -Wunused
+                                   -Woverloaded-virtual
+                                   -Wpedantic
+                                   -Wconversion
+                                   -Wsign-conversion
+                                   -Wnull-dereference
+                                   -Wdouble-promotion
+                                   -Wformat=2)
+  if(EML_WARNING_AS_ERROR)
+    target_compile_options(compiler_options INTERFACE -Werror)
+  endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    string(REGEX REPLACE "/W3" "/W4" "${CMAKE_CXX_FLAGS}" "${CMAKE_CXX_FLAGS}")
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS) # Suppress C4996
-
-    if (NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.10)
-        add_compiler_flags(/permissive-) # force standard conformance
-    endif()
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_compile_options(compiler_options
+                           INTERFACE -Wmisleading-indentation
+                                     -Wduplicated-cond
+                                     -Wduplicated-branches
+                                     -Wlogical-op
+                                     -Wuseless-cast
+                           )
+  endif()
 endif()
