@@ -73,7 +73,7 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
       std::cout << "Stack: [";
 
       for (auto i = stack_.begin(); i < stack_.end(); ++i) {
-        std::cout << to_string(*i, PrintType::no);
+        // std::cout << to_string(*i, PrintType::no);
         if (i != stack_.end() - 1) {
           std::cout << ", ";
         }

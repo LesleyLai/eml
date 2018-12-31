@@ -42,9 +42,10 @@ TEST_CASE("AST visiting and printing")
 
     WHEN("Compile into Bytecode")
     {
+      eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
       eml::VM vm{};
-      eml::Compiler compiler{};
-      const auto c = compiler.bytecode_from_ast(*expr);
+      eml::Compiler compiler{gc};
+      const auto [c, _] = compiler.generate_code(*expr);
       THEN("Should produces the expected instruction sets")
       {
         eml::Bytecode expected;

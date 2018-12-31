@@ -9,11 +9,13 @@
 
 TEST_CASE("Test parsing", "[parser]")
 {
+  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+
   GIVEN("(5 * 6)")
   {
     WHEN("Parsed")
     {
-      const auto ast = eml::parse("(5 * 6)");
+      const auto ast = eml::parse("(5 * 6)", gc);
       THEN("Should produces AST (* 5 6)")
       {
         REQUIRE(ast);
@@ -27,7 +29,7 @@ TEST_CASE("Test parsing", "[parser]")
   {
     WHEN("Parsed")
     {
-      const auto ast = eml::parse(definition_str);
+      const auto ast = eml::parse(definition_str, gc);
       THEN("Should produces AST (let x (* (/ 1 2) 5))")
       {
         REQUIRE(ast);
@@ -40,6 +42,8 @@ TEST_CASE("Test parsing", "[parser]")
 
 TEST_CASE("Branching", "[parser]")
 {
+  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+
   GIVEN("An if-else branch")
   {
     constexpr auto branch_str = R"(
@@ -50,7 +54,7 @@ TEST_CASE("Branching", "[parser]")
                                   )";
     WHEN("Parsed")
     {
-      const auto result = eml::parse(branch_str);
+      const auto result = eml::parse(branch_str, gc);
       THEN("Should produces the correct AST")
       {
         REQUIRE(result);
@@ -76,7 +80,7 @@ TEST_CASE("Branching", "[parser]")
                                     )";
     WHEN("Parsed")
     {
-      const auto result = eml::parse(branch_str);
+      const auto result = eml::parse(branch_str, gc);
       THEN("Should produces the correct AST")
       {
         REQUIRE(result);
@@ -91,13 +95,15 @@ TEST_CASE("Branching", "[parser]")
 
 TEST_CASE("Function definitions")
 {
+  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+
   GIVEN("A lambda expression")
   {
     constexpr auto s1 = R"(\x -> x + 1)";
 
     WHEN("parsed")
     {
-      const auto result = eml::parse(s1);
+      const auto result = eml::parse(s1, gc);
       THEN("produces the correct AST")
       {
         REQUIRE(result);
@@ -115,7 +121,7 @@ TEST_CASE("Function definitions")
 
     WHEN("parsed")
     {
-      const auto result = eml::parse(s1);
+      const auto result = eml::parse(s1, gc);
       THEN("Generate an error")
       {
         REQUIRE(!result.has_value());
@@ -129,7 +135,7 @@ TEST_CASE("Function definitions")
 
     WHEN("parsed")
     {
-      const auto result = eml::parse(s1);
+      const auto result = eml::parse(s1, gc);
       THEN("Generate an error")
       {
         REQUIRE(!result.has_value());
@@ -143,7 +149,7 @@ TEST_CASE("Function definitions")
 
     WHEN("parsed")
     {
-      const auto result = eml::parse(s1);
+      const auto result = eml::parse(s1, gc);
       THEN("produces the correct AST")
       {
         REQUIRE(result);
@@ -158,9 +164,11 @@ TEST_CASE("Function definitions")
 
 TEST_CASE("Error handling of the parser", "[parser]")
 {
+  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+
   GIVEN("1!!!")
   {
-    const auto ast = eml::parse("1!!!");
+    const auto ast = eml::parse("1!!!", gc);
     THEN("Should produces error")
     {
       REQUIRE(!ast.has_value());

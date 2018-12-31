@@ -4,39 +4,62 @@
 
 namespace eml {
 
-auto to_string(const eml::Value& v, eml::PrintType print_type) -> std::string
-{
-  std::stringstream ss;
-  switch (v.type) {
-  case Value::type::Number:
+struct TypeValuePrinter {
+  const Value& v;
+  PrintType print_type;
+
+  auto operator()(const NumberType&) -> std::string
+  {
+    std::stringstream ss;
     ss << v.unsafe_as_number();
     if (print_type == PrintType::yes) {
       ss << ": Number";
     }
-    break;
-  case Value::type::Boolean:
+    return ss.str();
+  }
+
+  auto operator()(const BoolType&) -> std::string
+  {
+    std::stringstream ss;
     ss << std::boolalpha << v.unsafe_as_boolean();
     if (print_type == PrintType::yes) {
       ss << ": Bool";
     }
-    break;
-  case Value::type::Unit:
+    return ss.str();
+  }
+
+  auto operator()(const UnitType&) -> std::string
+  {
+    std::stringstream ss;
     ss << "()";
     if (print_type == PrintType::yes) {
       ss << ": Unit";
     }
-    break;
-  case Value::type::Reference:
-    ss << v.unsafe_as_reference()->to_string(print_type) << '\n';
+    return ss.str();
   }
 
-  return ss.str();
-}
+  [[noreturn]] auto operator()(const ErrorType&) -> std::string
+  {
+    EML_UNREACHABLE();
+  }
 
-auto operator<<(std::ostream& s, const Value& v) -> std::ostream&
+  auto operator()(const StringType&) -> std::string
+  {
+    const auto* obj = v.unsafe_as_reference();
+    std::string s{reinterpret_cast<const char*>(obj->data()), obj->size()};
+    s = "\"" + s + "\"";
+    if (print_type == PrintType::yes) {
+      s += ": String";
+    }
+    return s;
+  }
+};
+
+auto to_string(const Type& t, const Value& v, PrintType print_type)
+    -> std::string
 {
-  s << to_string(v);
-  return s;
+  TypeValuePrinter printer{v, print_type};
+  return std::visit(printer, t);
 }
 
 } // namespace eml

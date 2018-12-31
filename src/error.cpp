@@ -24,7 +24,7 @@ struct ErrorPrinter {
       os_ << " at \"" << e.at.text << '\"';
     }
 
-    os_ << ": " << e.msg;
+    os_ << ": " << e.msg << '\n';
   }
 
   void operator()(const TypeError& e)

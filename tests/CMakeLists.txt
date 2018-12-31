@@ -12,6 +12,7 @@ add_executable(${EML_TEST_TARGET}
     "expected/issues.cpp"
     "expected/observers.cpp"
     "main.cpp"
+    "memory_test.cpp"
     "ast_test.cpp"
     "parser_test.cpp"
     "cast_test.cpp"

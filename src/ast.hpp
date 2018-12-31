@@ -166,7 +166,7 @@ struct AstVisitor {
 };
 
 struct AstNode {
-  AstNode() = default;
+  explicit AstNode(std::optional<Type> type = std::nullopt) : type_{type} {}
   virtual ~AstNode() = default;
   AstNode(const AstNode&) = delete;
   AstNode& operator=(const AstNode&) = delete;
@@ -175,6 +175,35 @@ struct AstNode {
 
   virtual void accept(AstConstVisitor& visitor) const = 0;
   virtual void accept(AstVisitor& visitor) = 0;
+
+  /**
+   * @brief Gets the type of the AST node
+   * @warning If the expression does not have a type, the result is undefined
+   */
+  auto type() const -> const Type&
+  {
+    EML_ASSERT(has_type(), "Must have a type");
+    return *type_;
+  }
+
+  /**
+   * @brief Returns true if the ast node have a type assigned
+   */
+  auto has_type() const -> bool
+  {
+    return type_.has_value();
+  }
+
+  /**
+   * @brief Sets the type of the AST node
+   */
+  void set_type(Type type)
+  {
+    type_ = type;
+  }
+
+private:
+  std::optional<Type> type_ = std::nullopt;
 };
 
 namespace detail {
@@ -192,7 +221,7 @@ class Definition : public AstNode, public FactoryMixin<Definition> {
 public:
   Definition(std::string_view identifier, std::unique_ptr<Expr> to,
              std::optional<Type> type = {})
-      : binding_{identifier, std::move(to), std::move(type)}
+      : AstNode{UnitType{}}, binding_{identifier, std::move(to), type}
   {
   }
 
@@ -240,36 +269,7 @@ struct [[nodiscard]] Expr : AstNode
 {
 public:
   Expr() = default;
-  explicit Expr(Type type) : type_{std::move(type)} {}
-
-  /**
-   * @brief Gets the type of the AST node
-   * @warning If the expression does not have a type, the result is undefined
-   */
-  auto type() const->const Type&
-  {
-    EML_ASSERT(has_type(), "Must have a type");
-    return *type_;
-  }
-
-  /**
-   * @brief Returns true if the ast node have a type assigned
-   */
-  auto has_type() const->bool
-  {
-    return type_.has_value();
-  }
-
-  /**
-   * @brief Sets the type of the AST node
-   */
-  void set_type(Type type)
-  {
-    type_ = std::move(type);
-  }
-
-private:
-  std::optional<Type> type_ = std::nullopt;
+  explicit Expr(Type type) : AstNode{type} {}
 };
 
 using Expr_ptr = std::unique_ptr<Expr>;
@@ -294,11 +294,9 @@ class LiteralExpr final : public Expr, public FactoryMixin<LiteralExpr> {
   }
 
 public:
-  explicit LiteralExpr(Value v) : Expr{deduce_literal_type(v)}, v_{std::move(v)}
-  {
-  }
+  explicit LiteralExpr(Value v) : Expr{deduce_literal_type(v)}, v_{v} {}
 
-  LiteralExpr(Value v, Type t) : Expr{std::move(t)}, v_{std::move(v)} {}
+  LiteralExpr(Value v, Type t) : Expr{t}, v_{std::move(v)} {}
   auto value() const -> Value
   {
     return v_;

@@ -64,7 +64,7 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
         print_hex_dump(current_ip, 2);
         const auto v = read_constant(++current_ip);
         ss << name << ' ' << static_cast<std::uint32_t>(*current_ip) << " //"
-           << to_string(v, PrintType::no) << '\n';
+           << to_string(eml::NumberType{}, v, PrintType::no) << '\n';
       };
 
   // Print instruction with one constant argument

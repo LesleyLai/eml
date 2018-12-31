@@ -8,6 +8,7 @@
 #include "bytecode.hpp"
 #include "error.hpp"
 #include "expected.hpp"
+#include "memory.hpp"
 #include "module.hpp"
 #include "type.hpp"
 #include "value.hpp"
@@ -36,14 +37,19 @@ class Compiler {
 public:
   using TypeCheckResult =
       expected<std::unique_ptr<AstNode>, std::vector<CompilationError>>;
-  using CompileResult = expected<Bytecode, std::vector<CompilationError>>;
+  using CompileResult =
+      expected<std::tuple<Bytecode, Type>, std::vector<CompilationError>>;
 
   /**
    * @brief Constructs a compiler object
+   * @arg gc The garbage collector that the EML compiler used
    * @arg options Runtime configuration of the compiler. If unprovided, have
    * sensible defaults
    */
-  explicit Compiler(CompilerConfig options = {}) noexcept : options_{options} {}
+  explicit Compiler(GarbageCollector& gc, CompilerConfig options = {}) noexcept
+      : options_{options}, garbage_collector_{gc}
+  {
+  }
 
   /**
    * @brief compiles the source into bytecode
@@ -53,15 +59,16 @@ public:
    */
   auto compile(std::string_view src) -> CompileResult
   {
-    return eml::parse(src)
+    return eml::parse(src, garbage_collector_)
         .and_then([this](auto ast) { return type_check(ast); })
-        .map([this](const auto& ast) { return bytecode_from_ast(*ast); });
+        .map([this](const auto& ast) { return generate_code(*ast); });
   }
 
   /**
    * @brief Compiles the AST Expr node expr into bytecode
    */
-  auto bytecode_from_ast(const eml::AstNode& expr) const -> Bytecode;
+  auto generate_code(const eml::AstNode& expr) const
+      -> std::tuple<Bytecode, Type>;
 
   /**
    * @brief  Adds a global constants to a byte code chunk
@@ -107,6 +114,8 @@ public:
 
 private:
   CompilerConfig options_;
+  std::reference_wrapper<GarbageCollector> garbage_collector_;
+
   std::unordered_map<std::string, std::pair<Type, Value>>
       constexpr_env_; // Identifier to (type, value index) mapping for globals
 };

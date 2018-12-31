@@ -3,6 +3,7 @@
 #include "common.hpp"
 #include "debug.hpp"
 #include "scanner.hpp"
+#include "string.hpp"
 #include "type.hpp"
 
 #include <cstdint>
@@ -28,8 +29,8 @@ auto parse_toplevel(Parser& parser) -> std::unique_ptr<AstNode>;
 auto parse_expression(Parser& parser) -> Expr_ptr;
 
 struct Parser {
-  explicit Parser(std::string_view source)
-      : scanner{source}, current_itr{scanner.begin()}
+  explicit Parser(std::string_view source, GarbageCollector& gc)
+      : scanner{source}, current_itr{scanner.begin()}, garbage_collector{gc}
   {
     check_unsupported_token_type(*current_itr);
   }
@@ -38,6 +39,7 @@ struct Parser {
   eml::Scanner::iterator current_itr;
   eml::Token previous;
   std::vector<CompilationError> errors;
+  std::reference_wrapper<GarbageCollector> garbage_collector;
 
   bool had_error = false;
   bool panic_mode = false; // Ignore errors if in panic
@@ -226,9 +228,12 @@ auto parse_number(Parser& parser) -> Expr_ptr
 
 auto parse_string(Parser& parser) -> Expr_ptr
 {
-  const std::string s = parser.previous.text.data();
-  auto s_obj = new StringObj(s);
-  return LiteralExpr::create(Value{s_obj}, NumberType{});
+  std::string_view text{parser.previous.text};
+  text.remove_prefix(1);
+  text.remove_suffix(1);
+
+  auto s_obj = eml::make_string(text, parser.garbage_collector);
+  return LiteralExpr::create(Value{s_obj}, StringType{});
 }
 
 auto parse_definition(Parser& parser) -> std::unique_ptr<AstNode>
@@ -270,6 +275,11 @@ auto parse_literal(Parser& parser) -> Expr_ptr
 auto parse_precedence(Parser& parser, Precedence precedence) -> Expr_ptr
 {
   parser.advance();
+
+  if (parser.previous.type == token_type::error) {
+    parser.error_at_previous(std::string{parser.previous.text});
+    return ErrorExpr::create();
+  }
 
   const auto prefix_rule = get_rule(parser.previous.type).prefix;
   if (prefix_rule == nullptr) {
@@ -406,9 +416,9 @@ constexpr auto get_rule(token_type type) -> ParseRule
   return ParseRule{};
 }
 
-auto parse(std::string_view source) -> ParseResult
+auto parse(std::string_view source, GarbageCollector& gc) -> ParseResult
 {
-  Parser parser{source};
+  Parser parser{source, gc};
   auto expr = parse_toplevel(parser);
   parser.consume(token_type::eof, "Expect end of expression");
   if (parser.had_error) {

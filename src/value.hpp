@@ -13,7 +13,8 @@
 #include <type_traits>
 
 #include "common.hpp"
-#include "object.hpp"
+#include "memory.hpp"
+#include "type.hpp"
 
 namespace eml {
 
@@ -118,10 +119,8 @@ struct Value {
 
 constexpr auto operator==(const Value& lhs, const Value& rhs)
 {
-  if (lhs.type != rhs.type) {
-    std::clog << "Runtime error: equality test on different types\n";
-    return false;
-  }
+  EML_ASSERT(lhs.type == rhs.type,
+             "equality test should only happen on the same type");
 
   switch (lhs.type) {
   case Value::type::Boolean:
@@ -142,13 +141,8 @@ constexpr auto operator!=(const Value& lhs, const Value& rhs)
   return !(lhs == rhs);
 }
 
-auto to_string(const Value& v, PrintType print_type = PrintType::yes)
-    -> std::string;
-
-/**
- * @brief Prints value v to the output stream s
- */
-auto operator<<(std::ostream& s, const Value& v) -> std::ostream&;
+auto to_string(const Type& t, const Value& v,
+               PrintType print_type = PrintType::yes) -> std::string;
 
 } // namespace eml
 

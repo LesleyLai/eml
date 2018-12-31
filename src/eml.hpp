@@ -11,6 +11,7 @@
  */
 
 #include "compiler.hpp"
+#include "memory.hpp"
 #include "vm.hpp"
 
 /**

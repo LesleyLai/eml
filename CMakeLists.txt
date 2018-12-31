@@ -56,10 +56,10 @@ add_library(eml
     "src/meta.hpp"
     "src/module.hpp"
     "src/module.cpp"
-    "src/object.hpp"
-    "src/object.cpp"
     "src/parser.hpp"
     "src/parser.cpp"
+    "src/string.hpp"
+    "src/string.cpp"
     "src/token_table.inc"
     "src/type.hpp"
     "src/type.cpp"
@@ -72,6 +72,8 @@ add_library(eml
     "src/vm.cpp")
 target_link_libraries(eml PRIVATE compiler_options)
 target_include_directories(eml PUBLIC "src")
+
+add_library(eml::eml ALIAS eml)
 
 if(${EML_BUILD_TESTS_COVERAGE})
     target_compile_options(eml PRIVATE -fprofile-arcs -ftest-coverage)

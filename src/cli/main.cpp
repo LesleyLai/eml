@@ -3,14 +3,16 @@
 #include <string>
 
 #include "eml.hpp"
-#include "vm.hpp"
 
-[[noreturn]] void repl()
+void repl()
 {
   std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
 
+  std::pmr::unsynchronized_pool_resource mr;
+  eml::GarbageCollector gc{mr};
+
   eml::CompilerConfig config = {eml::SameScopeShadowing::allow};
-  eml::Compiler compiler{config};
+  eml::Compiler compiler{gc, config};
   eml::VM vm;
 
   while (true) {
@@ -33,18 +35,23 @@
       return result;
     }();
 
+    if (source == "exit()") {
+      return;
+    }
+
     if (!source.empty()) {
-      const auto bytecode = compiler.compile(source);
-      if (bytecode) {
-        const auto result = vm.interpret(*bytecode);
-        if (result) {
-          std::cout << *result << '\n';
-        }
-      } else {
-        const auto& errors = bytecode.error();
-        std::for_each(std::begin(errors), std::end(errors),
-                      [](auto e) { std::clog << eml::to_string(e) << '\n'; });
-      }
+      compiler.compile(source)
+          .map([&vm](auto tuple) {
+            const auto [bytecode, type] = tuple;
+            const auto result = vm.interpret(bytecode);
+            if (result) {
+              std::cout << eml::to_string(type, *result) << '\n';
+            }
+          })
+          .map_error([](const auto& errors) {
+            std::for_each(std::begin(errors), std::end(errors),
+                          [](auto e) { std::clog << eml::to_string(e); });
+          });
     }
   }
 }

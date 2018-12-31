@@ -198,12 +198,13 @@ void TypeDispatcher::operator()(const ErrorType& /*t*/)
 
 } // anonymous namespace
 
-auto Compiler::bytecode_from_ast(const AstNode& expr) const -> Bytecode
+auto Compiler::generate_code(const AstNode& expr) const
+    -> std::tuple<Bytecode, Type>
 {
   Bytecode code;
   CodeGenerator code_generator{code, *this};
   expr.accept(code_generator);
-  return code;
+  return std::tuple(code, expr.type());
 }
 
 } // namespace eml

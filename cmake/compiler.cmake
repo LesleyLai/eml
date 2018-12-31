@@ -9,7 +9,7 @@ set(compiler_included true)
 add_library(compiler_options INTERFACE)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  target_compile_options(compiler_options INTERFACE /W4 "/permissive-")
+  target_compile_options(compiler_options INTERFACE "/permissive-")
   if(EML_WARNING_AS_ERROR)
     target_compile_options(compiler_options INTERFACE /WX)
   endif()

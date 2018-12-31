@@ -13,7 +13,7 @@ public:
 
   void operator()(const LiteralExpr& constant) override
   {
-    ss_ << eml::to_string(constant.value(), PrintType::no);
+    ss_ << eml::to_string(constant.type(), constant.value(), PrintType::no);
   }
 
   void operator()(const IdentifierExpr& id) override

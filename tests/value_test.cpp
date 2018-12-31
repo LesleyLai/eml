@@ -92,8 +92,7 @@ TEST_CASE("Value printing")
 
     THEN("Print as is")
     {
-      ss << v;
-      REQUIRE(ss.str() == "0.5: Number");
+      REQUIRE(eml::to_string(eml::NumberType{}, v) == "0.5: Number");
     }
   }
 
@@ -103,8 +102,17 @@ TEST_CASE("Value printing")
 
     THEN("Print (): Unit")
     {
-      eml::operator<<(ss, v);
-      REQUIRE(ss.str() == "(): Unit");
+      REQUIRE(eml::to_string(eml::UnitType{}, v) == "(): Unit");
     }
   }
+
+  //  GIVEN("A string value")
+  //  {
+  //    const eml::Value v{};
+
+  //    THEN("Print (): Unit")
+  //    {
+  //      REQUIRE(eml::to_string(eml::UnitType{}, v) == "(): Unit");
+  //    }
+  //  }
 }
