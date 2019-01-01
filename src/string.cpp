@@ -2,12 +2,12 @@
 
 namespace eml {
 
-auto make_string(std::string_view s, GarbageCollector& gc) -> Obj*
+auto make_string(std::string_view s, GarbageCollector& gc) -> Ref
 {
-  Obj* obj = static_cast<Obj*>(gc.allocate(s.size()));
+  Ref result = gc.allocate(s.size());
   std::uninitialized_copy(s.begin(), s.end(),
-                          reinterpret_cast<unsigned char*>(obj->data()));
-  return obj;
+                          bit_cast<unsigned char*>(result->data()));
+  return result;
 }
 
 } // namespace eml

@@ -244,7 +244,7 @@ struct TypeChecker : AstVisitor {
   }
 
 }; // namespace
-} // namespace
+} // anonymous namespace
 
 Compiler::TypeCheckResult Compiler::type_check(std::unique_ptr<AstNode>& ptr)
 {

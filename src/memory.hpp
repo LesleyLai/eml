@@ -4,6 +4,8 @@
 #include <functional>
 #include <memory_resource>
 
+#include "common.hpp"
+
 namespace eml {
 
 /**
@@ -54,6 +56,36 @@ private:
   friend GarbageCollector;
 };
 
+/**
+ * @brief Reference to a Heap allocated, garbage collector managed object
+ * @note Cannot be null
+ */
+class Ref {
+public:
+  constexpr explicit Ref(Obj* obj) noexcept : obj_{obj}
+  {
+    EML_ASSERT(obj_ != nullptr, "The refered to object cannot be null");
+  }
+
+  [[nodiscard]] constexpr auto operator-> () const noexcept -> Obj*
+  {
+    return obj_;
+  }
+
+  [[nodiscard]] constexpr auto operator*() const noexcept -> Obj&
+  {
+    return *obj_;
+  }
+
+  [[nodiscard]] constexpr auto operator==(const Ref& other) noexcept -> bool
+  {
+    return obj_ == other.obj_;
+  }
+
+private:
+  Obj* obj_;
+};
+
 class GarbageCollector {
 public:
   explicit GarbageCollector(std::pmr::memory_resource& underlying)
@@ -61,29 +93,14 @@ public:
   {
   }
 
-  ~GarbageCollector()
-  {
-    Obj* object = root_;
-    while (object != nullptr) {
-      Obj* next = object->next();
+  ~GarbageCollector();
 
-      const std::size_t allocate_size = sizeof(Obj) - 1 + object->size();
+  GarbageCollector(const GarbageCollector& other) = delete;
+  auto operator=(const GarbageCollector& other) -> GarbageCollector& = delete;
+  GarbageCollector(GarbageCollector&& other) noexcept;
+  auto operator=(GarbageCollector&& other) noexcept -> GarbageCollector&;
 
-      object->~Obj();
-      underlying_.get().deallocate(object, allocate_size);
-
-      object = next;
-    }
-  }
-
-  auto allocate(std::size_t bytes) -> Obj*
-  {
-    const std::size_t allocate_size = sizeof(Obj) - 1 + bytes;
-    void* ptr = underlying_.get().allocate(allocate_size);
-    auto* object = new (ptr) Obj{bytes, root_};
-    root_ = object;
-    return object;
-  }
+  auto allocate(std::size_t bytes) -> Ref;
 
   auto is_equal(const GarbageCollector& other) const noexcept -> bool
   {

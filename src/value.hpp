@@ -36,19 +36,22 @@ struct Value {
     constexpr val() : unit{} {}
     constexpr explicit val(double d) : num{d} {}
     constexpr explicit val(bool b) : boolean{b} {}
-    constexpr explicit val(Obj* o) : ref{o} {}
+    constexpr explicit val(Ref o) : ref{std::move(o)} {}
 
     unit_t unit;
     double num;
     bool boolean;
-    Obj* ref;
+    Ref ref;
   } val;
   type type;
 
   constexpr Value() noexcept : type{type::Unit} {}
   constexpr explicit Value(double v) noexcept : val{v}, type{type::Number} {}
   constexpr explicit Value(bool b) noexcept : val{b}, type{type::Boolean} {}
-  constexpr explicit Value(Obj* o) noexcept : val{o}, type{type::Reference} {}
+  constexpr explicit Value(Ref o) noexcept
+      : val{std::move(o)}, type{type::Reference}
+  {
+  }
 
   constexpr Value(const Value& value) noexcept = default;
   Value& operator=(const Value& value) noexcept = default;
@@ -111,7 +114,7 @@ struct Value {
    * @brief Extracts the underlying reference from the Value
    * @warning The result is undefined if the value is actually not a reference
    */
-  constexpr auto unsafe_as_reference() const noexcept -> Obj*
+  constexpr auto unsafe_as_reference() const noexcept -> Ref
   {
     return val.ref;
   }

@@ -45,8 +45,8 @@ struct TypeValuePrinter {
 
   auto operator()(const StringType&) -> std::string
   {
-    const auto* obj = v.unsafe_as_reference();
-    std::string s{reinterpret_cast<const char*>(obj->data()), obj->size()};
+    const auto ref = v.unsafe_as_reference();
+    std::string s{reinterpret_cast<const char*>(ref->data()), ref->size()};
     s = "\"" + s + "\"";
     if (print_type == PrintType::yes) {
       s += ": String";

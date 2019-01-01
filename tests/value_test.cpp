@@ -1,3 +1,4 @@
+#include "string.hpp"
 #include "value.hpp"
 
 #include <catch2/catch.hpp>
@@ -106,13 +107,14 @@ TEST_CASE("Value printing")
     }
   }
 
-  //  GIVEN("A string value")
-  //  {
-  //    const eml::Value v{};
+  GIVEN("A string value")
+  {
+    eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+    const auto s = eml::Value{eml::make_string("Hello", gc)};
 
-  //    THEN("Print (): Unit")
-  //    {
-  //      REQUIRE(eml::to_string(eml::UnitType{}, v) == "(): Unit");
-  //    }
-  //  }
+    THEN("Print Hello: String")
+    {
+      REQUIRE(eml::to_string(eml::StringType{}, s) == "\"Hello\": String");
+    }
+  }
 }
