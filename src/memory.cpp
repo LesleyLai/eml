@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include "memory.hpp"
 
 namespace eml {

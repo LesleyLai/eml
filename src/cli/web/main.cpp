@@ -6,10 +6,10 @@
 #include <emscripten.h>
 
 #include "eml.hpp"
-#include "vm.hpp"
 
+static eml::GarbageCollector gc;
 static eml::CompilerConfig config{eml::SameScopeShadowing::allow};
-static eml::Compiler compiler(config);
+static eml::Compiler compiler(gc, config);
 static eml::VM vm;
 
 static std::string cache;
