@@ -11,14 +11,14 @@ GarbageCollector::~GarbageCollector()
     const std::size_t allocate_size = sizeof(Obj) - 1 + object->size();
 
     object->~Obj();
-    underlying_.get().deallocate(object, allocate_size);
+    std::free(object);
 
     object = next;
   }
 }
 
 GarbageCollector::GarbageCollector(GarbageCollector&& other) noexcept
-    : underlying_{other.underlying_}, root_{other.root_}
+    : root_{other.root_}
 {
   other.root_ = nullptr;
 }
@@ -26,7 +26,6 @@ GarbageCollector::GarbageCollector(GarbageCollector&& other) noexcept
 auto GarbageCollector::operator=(GarbageCollector&& other) noexcept
     -> GarbageCollector&
 {
-  std::swap(underlying_, other.underlying_);
   std::swap(root_, other.root_);
   return *this;
 }
@@ -34,7 +33,7 @@ auto GarbageCollector::operator=(GarbageCollector&& other) noexcept
 auto GarbageCollector::allocate(std::size_t bytes) -> GcPointer
 {
   const std::size_t allocate_size = sizeof(Obj) - 1 + bytes;
-  void* ptr = underlying_.get().allocate(allocate_size);
+  void* ptr = std::malloc(allocate_size);
   auto* object = new (ptr) Obj{bytes, root_};
   root_ = object;
   return GcPointer{object};

@@ -8,8 +8,7 @@ void repl()
 {
   std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
 
-  std::pmr::unsynchronized_pool_resource mr;
-  eml::GarbageCollector gc{mr};
+  eml::GarbageCollector gc{};
 
   eml::CompilerConfig config = {eml::SameScopeShadowing::allow};
   eml::Compiler compiler{gc, config};

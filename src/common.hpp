@@ -1,7 +1,11 @@
 #ifndef EML_COMMON_HPP
 #define EML_COMMON_HPP
 
+#ifdef EML_DEBUG
 #include <iostream>
+#endif
+
+#include <cstdlib>
 #include <string_view>
 
 #include "meta.hpp"

@@ -1,9 +1,6 @@
 #ifndef EML_MEMORY_HPP
 #define EML_MEMORY_HPP
 
-#include <functional>
-#include <memory_resource>
-
 #include "common.hpp"
 
 namespace eml {
@@ -89,11 +86,7 @@ private:
 
 class GarbageCollector {
 public:
-  explicit GarbageCollector(
-      std::pmr::memory_resource& underlying = *std::pmr::new_delete_resource())
-      : underlying_{underlying}
-  {
-  }
+  explicit GarbageCollector() = default;
 
   ~GarbageCollector();
 
@@ -110,7 +103,6 @@ public:
   }
 
 private:
-  std::reference_wrapper<std::pmr::memory_resource> underlying_;
   Obj* root_ = nullptr; // List of allocated objects
 };
 
