@@ -21,8 +21,8 @@ const char* interpret(const char* line_c)
   std::string line{line_c};
   std::stringstream ss;
   if (!line.empty()) {
-    compiler.compile(source)
-        .map([&vm, &ss](auto tuple) {
+    compiler.compile(line)
+        .map([&ss](auto tuple) {
           const auto [bytecode, type] = tuple;
           const auto result = vm.interpret(bytecode);
           if (result) {
