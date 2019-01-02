@@ -8,7 +8,7 @@ GarbageCollector::~GarbageCollector()
   while (object != nullptr) {
     Obj* next = object->next();
 
-    const std::size_t allocate_size = sizeof(Obj) - 1 + object->size();
+    // const std::size_t allocate_size = sizeof(Obj) - 1 + object->size();
 
     object->~Obj();
     std::free(object);
