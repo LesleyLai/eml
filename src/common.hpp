@@ -5,7 +5,6 @@
 #include <iostream>
 #endif
 
-#include <cstdlib>
 #include <string_view>
 
 #include "meta.hpp"
@@ -20,22 +19,6 @@
  */
 
 namespace eml {
-
-/// bit_cast<Dest,Source> is a template function that implements the
-/// equivalent of "*reinterpret_cast<Dest*>(&source)".
-template <class Dest, class Source> inline Dest bit_cast(Source const& source)
-{
-  static_assert(sizeof(Dest) == sizeof(Source),
-                "size of destination and source objects must be equal");
-  static_assert(std::is_trivially_copyable<Dest>::value,
-                "destination type must be trivially copyable.");
-  static_assert(std::is_trivially_copyable<Source>::value,
-                "source type must be trivially copyable");
-
-  Dest dest;
-  std::memcpy(&dest, &source, sizeof(dest));
-  return dest;
-}
 
 struct BuildOptions {
 #ifdef EML_DEBUG_VM_TRACE_EXECUTION
