@@ -1,6 +1,7 @@
 #ifndef EML_MEMORY_HPP
 #define EML_MEMORY_HPP
 
+#include <cstddef>
 #include <cstring>
 
 #include "common.hpp"
