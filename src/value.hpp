@@ -36,19 +36,19 @@ struct Value {
     constexpr val() : unit{} {}
     constexpr explicit val(double d) : num{d} {}
     constexpr explicit val(bool b) : boolean{b} {}
-    constexpr explicit val(Ref o) : ref{std::move(o)} {}
+    constexpr explicit val(GcPointer o) : ref{std::move(o)} {}
 
     unit_t unit;
     double num;
     bool boolean;
-    Ref ref;
+    GcPointer ref;
   } val;
   type type;
 
   constexpr Value() noexcept : type{type::Unit} {}
   constexpr explicit Value(double v) noexcept : val{v}, type{type::Number} {}
   constexpr explicit Value(bool b) noexcept : val{b}, type{type::Boolean} {}
-  constexpr explicit Value(Ref o) noexcept
+  constexpr explicit Value(GcPointer o) noexcept
       : val{std::move(o)}, type{type::Reference}
   {
   }
@@ -114,7 +114,7 @@ struct Value {
    * @brief Extracts the underlying reference from the Value
    * @warning The result is undefined if the value is actually not a reference
    */
-  constexpr auto unsafe_as_reference() const noexcept -> Ref
+  constexpr auto unsafe_as_reference() const noexcept -> GcPointer
   {
     return val.ref;
   }

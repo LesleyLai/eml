@@ -60,9 +60,9 @@ private:
  * @brief Reference to a Heap allocated, garbage collector managed object
  * @note Cannot be null
  */
-class Ref {
+class GcPointer {
 public:
-  constexpr explicit Ref(Obj* obj) noexcept : obj_{obj}
+  constexpr explicit GcPointer(Obj* obj) noexcept : obj_{obj}
   {
     EML_ASSERT(obj_ != nullptr, "The refered to object cannot be null");
   }
@@ -77,7 +77,8 @@ public:
     return *obj_;
   }
 
-  [[nodiscard]] constexpr auto operator==(const Ref& other) noexcept -> bool
+  [[nodiscard]] constexpr auto operator==(const GcPointer& other) noexcept
+      -> bool
   {
     return obj_ == other.obj_;
   }
@@ -88,7 +89,8 @@ private:
 
 class GarbageCollector {
 public:
-  explicit GarbageCollector(std::pmr::memory_resource& underlying)
+  explicit GarbageCollector(
+      std::pmr::memory_resource& underlying = *std::pmr::new_delete_resource())
       : underlying_{underlying}
   {
   }
@@ -100,7 +102,7 @@ public:
   GarbageCollector(GarbageCollector&& other) noexcept;
   auto operator=(GarbageCollector&& other) noexcept -> GarbageCollector&;
 
-  auto allocate(std::size_t bytes) -> Ref;
+  auto allocate(std::size_t bytes) -> GcPointer;
 
   auto is_equal(const GarbageCollector& other) const noexcept -> bool
   {

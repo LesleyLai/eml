@@ -2,9 +2,9 @@
 
 namespace eml {
 
-auto make_string(std::string_view s, GarbageCollector& gc) -> Ref
+auto make_string(std::string_view s, GarbageCollector& gc) -> GcPointer
 {
-  Ref result = gc.allocate(s.size());
+  GcPointer result = gc.allocate(s.size());
   std::uninitialized_copy(s.begin(), s.end(),
                           bit_cast<unsigned char*>(result->data()));
   return result;

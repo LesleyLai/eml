@@ -42,7 +42,7 @@ TEST_CASE("AST visiting and printing")
 
     WHEN("Compile into Bytecode")
     {
-      eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+      eml::GarbageCollector gc{};
       eml::VM vm{};
       eml::Compiler compiler{gc};
       const auto [c, _] = compiler.generate_code(*expr);

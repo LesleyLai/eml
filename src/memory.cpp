@@ -31,13 +31,13 @@ auto GarbageCollector::operator=(GarbageCollector&& other) noexcept
   return *this;
 }
 
-auto GarbageCollector::allocate(std::size_t bytes) -> Ref
+auto GarbageCollector::allocate(std::size_t bytes) -> GcPointer
 {
   const std::size_t allocate_size = sizeof(Obj) - 1 + bytes;
   void* ptr = underlying_.get().allocate(allocate_size);
   auto* object = new (ptr) Obj{bytes, root_};
   root_ = object;
-  return Ref{object};
+  return GcPointer{object};
 }
 
 } // namespace eml

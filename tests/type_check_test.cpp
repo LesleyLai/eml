@@ -14,7 +14,7 @@ auto parse_and_type_check(eml::Compiler& compiler, std::string_view s,
 
 TEST_CASE("Type check on unary expressions")
 {
-  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+  eml::GarbageCollector gc{};
   eml::Compiler compiler{gc};
 
   GIVEN("- 2")
@@ -50,7 +50,7 @@ TEST_CASE("Type check on unary expressions")
 
 TEST_CASE("Type check on binary arithmatic expressions")
 {
-  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+  eml::GarbageCollector gc{};
   eml::Compiler compiler{gc};
 
   GIVEN("(+ 1 1)")
@@ -116,7 +116,7 @@ TEST_CASE("Type check on binary arithmatic expressions")
 
 TEST_CASE("Type check on binary comparison expressions")
 {
-  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+  eml::GarbageCollector gc{};
   eml::Compiler compiler{gc};
 
   GIVEN("(== 1 1)")
@@ -315,7 +315,7 @@ TEST_CASE("Correctly type infer the let declerations and identifiers")
   constexpr auto s1 = "let x = true";
   GIVEN(s1)
   {
-    eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+    eml::GarbageCollector gc{};
     eml::Compiler compiler{gc};
 
     THEN("Type check should resolve the right hand side to type Bool")
@@ -340,7 +340,7 @@ TEST_CASE("Correctly type infer the let declerations and identifiers")
 
 TEST_CASE("Type check for branches")
 {
-  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+  eml::GarbageCollector gc{};
   eml::Compiler compiler{gc};
 
   GIVEN("An if expression")

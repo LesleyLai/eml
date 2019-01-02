@@ -16,7 +16,7 @@
 
 namespace eml {
 
-auto make_string(std::string_view s, GarbageCollector& gc) -> Ref;
+auto make_string(std::string_view s, GarbageCollector& gc) -> GcPointer;
 
 } // namespace eml
 

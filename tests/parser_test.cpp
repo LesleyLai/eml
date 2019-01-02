@@ -9,7 +9,7 @@
 
 TEST_CASE("Test parsing", "[parser]")
 {
-  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+  eml::GarbageCollector gc{};
 
   GIVEN("(5 * 6)")
   {
@@ -42,7 +42,7 @@ TEST_CASE("Test parsing", "[parser]")
 
 TEST_CASE("Branching", "[parser]")
 {
-  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+  eml::GarbageCollector gc{};
 
   GIVEN("An if-else branch")
   {
@@ -95,7 +95,7 @@ TEST_CASE("Branching", "[parser]")
 
 TEST_CASE("Function definitions")
 {
-  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+  eml::GarbageCollector gc{};
 
   GIVEN("A lambda expression")
   {
@@ -164,7 +164,7 @@ TEST_CASE("Function definitions")
 
 TEST_CASE("Error handling of the parser", "[parser]")
 {
-  eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+  eml::GarbageCollector gc{};
 
   GIVEN("1!!!")
   {

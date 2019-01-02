@@ -109,7 +109,7 @@ TEST_CASE("Value printing")
 
   GIVEN("A string value")
   {
-    eml::GarbageCollector gc{*std::pmr::new_delete_resource()};
+    eml::GarbageCollector gc{};
     const auto s = eml::Value{eml::make_string("Hello", gc)};
 
     THEN("Print Hello: String")
