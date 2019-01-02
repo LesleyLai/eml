@@ -1,12 +1,28 @@
 #ifndef EML_MEMORY_HPP
 #define EML_MEMORY_HPP
 
-#include <functional>
-#include <memory_resource>
+#include <cstddef>
+#include <cstring>
 
 #include "common.hpp"
 
 namespace eml {
+
+/// bit_cast<Dest,Source> is a template function that implements the
+/// equivalent of "*reinterpret_cast<Dest*>(&source)".
+template <class Dest, class Source> inline Dest bit_cast(Source const& source)
+{
+  static_assert(sizeof(Dest) == sizeof(Source),
+                "size of destination and source objects must be equal");
+  static_assert(std::is_trivially_copyable<Dest>::value,
+                "destination type must be trivially copyable.");
+  static_assert(std::is_trivially_copyable<Source>::value,
+                "source type must be trivially copyable");
+
+  Dest dest;
+  std::memcpy(&dest, &source, sizeof(dest));
+  return dest;
+}
 
 /**
  * @brief Print type with the value
@@ -89,11 +105,7 @@ private:
 
 class GarbageCollector {
 public:
-  explicit GarbageCollector(
-      std::pmr::memory_resource& underlying = *std::pmr::new_delete_resource())
-      : underlying_{underlying}
-  {
-  }
+  explicit GarbageCollector() = default;
 
   ~GarbageCollector();
 
@@ -110,7 +122,6 @@ public:
   }
 
 private:
-  std::reference_wrapper<std::pmr::memory_resource> underlying_;
   Obj* root_ = nullptr; // List of allocated objects
 };
 

@@ -54,7 +54,7 @@ enum class BinaryOpType {
   greater_equal,
 };
 
-}; // namespace detail
+} // namespace detail
 
 class Definition;
 
@@ -212,7 +212,7 @@ struct Let {
   std::unique_ptr<Expr> to;
   std::optional<Type> type;
 };
-}; // namespace detail
+} // namespace detail
 
 /**
  * @brief A definition is a top-level construct `let x = e` or `let x: T = e`

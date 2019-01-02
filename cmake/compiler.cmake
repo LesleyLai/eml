@@ -51,5 +51,5 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
                                      -Wlogical-op
                                      -Wuseless-cast)
   endif()
-endif()
 
+endif()

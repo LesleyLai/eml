@@ -77,7 +77,7 @@ add_library(eml::eml ALIAS eml)
 
 if(${EML_BUILD_TESTS_COVERAGE})
     target_compile_options(eml PRIVATE -fprofile-arcs -ftest-coverage)
-    target_link_libraries(eml gcov)
+    target_link_libraries(eml PRIVATE gcov)
 endif()
 
 # The standalone interpreter of the embedded ML
