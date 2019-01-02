@@ -31,7 +31,7 @@ const char* interpret(const char* line_c)
         })
         .map_error([&ss](const auto& errors) {
           std::for_each(std::begin(errors), std::end(errors),
-                        [](auto e) { ss << eml::to_string(e) << '\n'; });
+                        [&ss](auto e) { ss << eml::to_string(e) << '\n'; });
         });
   }
 
