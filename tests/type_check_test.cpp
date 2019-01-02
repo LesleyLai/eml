@@ -1,8 +1,6 @@
 #include "ast.hpp"
 #include "compiler.hpp"
 
-#include <memory_resource>
-
 #include <catch2/catch.hpp>
 
 auto parse_and_type_check(eml::Compiler& compiler, std::string_view s,
