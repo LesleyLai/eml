@@ -38,6 +38,10 @@ if(EML_BUILD_DOCUMENTS)
     include("doxygen")
 endif()
 
+configure_file("src/eml_version.cpp.in" eml_version.cpp @ONLY)
+add_library(eml_version STATIC ${CMAKE_CURRENT_BINARY_DIR}/eml_version.cpp)
+target_link_libraries(eml_version PRIVATE compiler_options)
+
 add_library(eml
     "src/ast.hpp"
     "src/bytecode.hpp"
@@ -70,7 +74,7 @@ add_library(eml
     "src/value.cpp"
     "src/vm.hpp"
     "src/vm.cpp")
-target_link_libraries(eml PRIVATE compiler_options)
+target_link_libraries(eml PRIVATE compiler_options eml_version)
 target_include_directories(eml PUBLIC "src")
 
 add_library(eml::eml ALIAS eml)
@@ -82,12 +86,6 @@ endif()
 
 # The standalone interpreter of the embedded ML
 add_subdirectory("src/cli")
-
-target_compile_definitions(eml PUBLIC
-    EML_VERSION="${PROJECT_VERSION}"
-    EML_MAJOR_VERSION=${PROJECT_VERSION_MAJOR}
-    EML_MINOR_VERSION=${PROJECT_VERSION_MINOR}
-    EML_PATCH_VERSION=${PROJECT_VERSION_PATCH})
 
 target_compile_definitions(eml PRIVATE $<$<CONFIG:Debug>:EML_DEBUG>)
 

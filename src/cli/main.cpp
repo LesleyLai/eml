@@ -6,7 +6,7 @@
 
 void repl()
 {
-  std::cout << "Embedded ML v" << eml::version::to_string() << '\n';
+  std::cout << "Embedded ML v" << eml::version() << '\n';
 
   eml::GarbageCollector gc{};
 

@@ -35,15 +35,10 @@ struct BuildOptions {
 };
 static constexpr BuildOptions build_options;
 
-struct version {
-  static constexpr int major = EML_MAJOR_VERSION;
-  static constexpr int minor = EML_MINOR_VERSION;
-  static constexpr int patch = EML_PATCH_VERSION;
-  static constexpr std::string_view to_string()
-  {
-    return EML_VERSION;
-  }
-};
+[[nodiscard]] auto version() noexcept -> std::string_view;
+[[nodiscard]] auto major_version() noexcept -> int;
+[[nodiscard]] auto minor_version() noexcept -> int;
+[[nodiscard]] auto patch_version() noexcept -> int;
 
 /**
  * @brief A position in the file contains line number and column number

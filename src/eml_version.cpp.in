@@ -1,0 +1,25 @@
+#include <string_view>
+
+namespace eml {
+
+auto version() noexcept -> std::string_view
+{
+  return "@EmbeddedML_VERSION@";
+}
+
+auto major_version() noexcept -> int
+{
+  return @EmbeddedML_VERSION_MAJOR@;
+}
+
+auto minor_version() noexcept -> int
+{
+  return @EmbeddedML_VERSION_MINOR@;
+}
+
+auto patch_version() noexcept -> int
+{
+  return @EmbeddedML_VERSION_PATCH@;
+}
+
+} // namespace eml
