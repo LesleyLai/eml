@@ -122,7 +122,8 @@ struct Scanner {
         return make_token(match('>') ? token_type::minus_right_arrow
                                      : token_type::minus);
       case '+':
-        return make_token(token_type::plus);
+        return make_token(match('+') ? token_type::plus_plus
+                                     : token_type::plus);
       case '/':
         return make_token(token_type::slash);
       case '\\':

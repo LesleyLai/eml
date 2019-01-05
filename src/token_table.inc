@@ -12,6 +12,7 @@
   TOKEN_TABLE_ENTRY(minus, "-", parse_unary, parse_binary, term)      \
   TOKEN_NORULE(minus_right_arrow, "->")    \
   TOKEN_BINARY_OP(plus, "+", term)             \
+  TOKEN_BINARY_OP(plus_plus, "++", term)            \
   TOKEN_NORULE(colon, ":")                 \
   TOKEN_NORULE(semicolon, ";")             \
   TOKEN_BINARY_OP(slash, "/", factor)          \

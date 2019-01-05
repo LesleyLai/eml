@@ -60,7 +60,7 @@ public:
   }
 
 private:
-  std::size_t size_; // Does not care about strings greater than this
+  std::size_t size_;
   Obj* next_ = nullptr;
   std::byte data_[1];
 
@@ -77,6 +77,7 @@ private:
  * @note Cannot be null
  */
 class GcPointer {
+
 public:
   constexpr explicit GcPointer(Obj* obj) noexcept : obj_{obj}
   {

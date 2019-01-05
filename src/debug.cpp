@@ -63,6 +63,11 @@ public:
   {
     binary_common(expr, "/");
   }
+  void operator()(const AppendOpExpr& expr) override
+  {
+    binary_common(expr, "++");
+  }
+
   void operator()(const EqOpExpr& expr) override
   {
     binary_common(expr, "==");

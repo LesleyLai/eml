@@ -35,6 +35,10 @@ enum opcode : std::underlying_type_t<std::byte> {
   op_multiply_f64,
   op_divide_f64,
 
+  /*String op*/
+  op_string_cat, // pop two strings and concatenate them, then push the
+                 // result back
+
   /*Comparisons*/
   op_equal,
   op_not_equal,

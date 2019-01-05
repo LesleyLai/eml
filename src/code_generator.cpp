@@ -85,6 +85,12 @@ struct CodeGenerator : AstConstVisitor {
   {
     binary_common(expr, op_divide_f64);
   }
+
+  void operator()(const AppendOpExpr& expr) override
+  {
+    binary_common(expr, op_string_cat);
+  }
+
   void operator()(const EqOpExpr& expr) override
   {
     binary_common(expr, op_equal);

@@ -16,7 +16,14 @@
 
 namespace eml {
 
-auto make_string(std::string_view s, GarbageCollector& gc) -> GcPointer;
+[[nodiscard]] auto make_string(std::string_view s, GarbageCollector& gc)
+    -> GcPointer;
+
+/**
+ * @brief Concatenates to string object into on string
+ */
+[[nodiscard]] auto string_cat(GcPointer a, GcPointer b, GarbageCollector& gc)
+    -> GcPointer;
 
 } // namespace eml
 

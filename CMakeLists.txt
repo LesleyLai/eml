@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 project(EmbeddedML
-    VERSION 0.0.0
+    VERSION 0.1.0
     LANGUAGES CXX
     )
 
@@ -10,6 +10,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 
 include("CMakeDependentOption")
 

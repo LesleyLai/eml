@@ -144,7 +144,7 @@ struct Parser {
 | 1          | `.` `()` `[]`      | Grouping, Subscript, Function call | Left          |
 | 2          | `!` `-`            | Unary                              | Right         |
 | 3          | `*` `/`            | Multiply, Divide                   | Left          |
-| 4          | `+` `-`            | Add, Subtract                      | Left          |
+| 4          | `+` `-` `++`       | Add, Subtract, Append              | Left          |
 | 5          | `<` `>` `<=` `>=`  | Comparison                         | Left          |
 | 6          | `==` `!=`          | Equality comparison                | Left          |
 | 7          | `and`              | Logical and                        | Left          |
@@ -161,7 +161,7 @@ enum Precedence : std::uint8_t {
   prec_and,        // and
   prec_equality,   // == !=
   prec_comparison, // < > <= >=
-  prec_term,       // + -
+  prec_term,       // + - ++
   prec_factor,     // * /
   prec_unary,      // ! -
   prec_call,       // . () []
@@ -394,6 +394,9 @@ auto parse_binary(Parser& parser, Expr_ptr left_ptr) -> Expr_ptr
 
   case token_type::greater_equal:
     return GeExpr::create(std::move(left_ptr), std::move(rhs_ptr));
+
+  case token_type::plus_plus:
+    return AppendOpExpr::create(std::move(left_ptr), std::move(rhs_ptr));
 
   default:
     EML_UNREACHABLE();

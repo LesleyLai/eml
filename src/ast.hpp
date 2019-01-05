@@ -46,6 +46,7 @@ enum class BinaryOpType {
   minus,
   multiply,
   divide,
+  append,
   equal,
   not_equal,
   less,
@@ -84,6 +85,9 @@ using MultOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::multiply>;
 /// @brief AST Node for the binary divide operation (specializes @ref
 /// BinaryOpExprTemplate
 using DivOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::divide>;
+/// @brief AST Node for the binary append operation (specializes @ref
+/// BinaryOpExprTemplate)
+using AppendOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::append>;
 /// @brief AST Node for the binary equal operation (specializes @ref
 /// BinaryOpExprTemplate
 using EqOpExpr = BinaryOpExprTemplate<detail::BinaryOpType::equal>;
@@ -122,6 +126,7 @@ struct AstConstVisitor {
   virtual void operator()(const MinusOpExpr& expr) = 0;
   virtual void operator()(const MultOpExpr& expr) = 0;
   virtual void operator()(const DivOpExpr& expr) = 0;
+  virtual void operator()(const AppendOpExpr& expr) = 0;
   virtual void operator()(const EqOpExpr& expr) = 0;
   virtual void operator()(const NeqOpExpr& expr) = 0;
   virtual void operator()(const LessOpExpr& expr) = 0;
@@ -153,6 +158,7 @@ struct AstVisitor {
   virtual void operator()(MinusOpExpr& expr) = 0;
   virtual void operator()(MultOpExpr& expr) = 0;
   virtual void operator()(DivOpExpr& expr) = 0;
+  virtual void operator()(AppendOpExpr& expr) = 0;
   virtual void operator()(EqOpExpr& expr) = 0;
   virtual void operator()(NeqOpExpr& expr) = 0;
   virtual void operator()(LessOpExpr& expr) = 0;

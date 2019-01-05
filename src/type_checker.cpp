@@ -157,6 +157,11 @@ struct TypeChecker : AstVisitor {
     binary_common(expr, "/",
                   Func2Type{NumberType{}, NumberType{}, NumberType{}});
   }
+  void operator()(AppendOpExpr& expr) override
+  {
+    binary_common(expr, "++",
+                  Func2Type{StringType{}, StringType{}, StringType{}});
+  }
   void operator()(EqOpExpr& expr) override
   {
     equality_common(expr, "==");
