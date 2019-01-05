@@ -34,7 +34,8 @@ TEST_CASE("Arithmatic instructions", "[eml.vm]")
     write_instruction(code, eml::op_multiply_f64);
     write_instruction(code, eml::op_subtract_f64);
 
-    eml::VM machine{};
+    eml::GarbageCollector gc{};
+    eml::VM machine{gc};
 
     THEN("Evaluate to -8.75")
     {
@@ -74,7 +75,8 @@ TEST_CASE("Jumps", "[eml.vm]")
     push_number(code, v6);                         // 2
     write_instruction(code, eml::op_subtract_f64); // 1
 
-    eml::VM machine{};
+    eml::GarbageCollector gc{};
+    eml::VM machine{gc};
 
     THEN("Evaluate to 5")
     {
@@ -107,7 +109,8 @@ TEST_CASE("Jumps", "[eml.vm]")
     push_number(code, v6);                         // 2
     write_instruction(code, eml::op_subtract_f64); // 1
 
-    eml::VM machine{};
+    eml::GarbageCollector gc{};
+    eml::VM machine{gc};
 
     THEN("Evaluate to -2")
     {

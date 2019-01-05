@@ -129,11 +129,11 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
       binary_operation(stack_, std::divides<double>{});
       break;
     case op_string_cat: {
-      static GarbageCollector gc;
       Value right = pop(stack_);
       Value left = pop(stack_);
-      push(stack_, Value{string_cat(left.unsafe_as_reference(),
-                                    right.unsafe_as_reference(), gc)});
+      push(stack_,
+           Value{string_cat(left.unsafe_as_reference(),
+                            right.unsafe_as_reference(), garbage_collector_)});
     } break;
     case op_equal:
       equality_operation(stack_, std::equal_to<Value>{});

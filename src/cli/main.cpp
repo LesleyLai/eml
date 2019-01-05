@@ -12,7 +12,7 @@ void repl()
 
   eml::CompilerConfig config = {eml::SameScopeShadowing::allow};
   eml::Compiler compiler{gc, config};
-  eml::VM vm;
+  eml::VM vm{gc};
 
   while (true) {
     std::cout << "> ";

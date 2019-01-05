@@ -43,7 +43,7 @@ TEST_CASE("AST visiting and printing")
     WHEN("Compile into Bytecode")
     {
       eml::GarbageCollector gc{};
-      eml::VM vm{};
+      eml::VM vm{gc};
       eml::Compiler compiler{gc};
       const auto [c, _] = compiler.generate_code(*expr);
       THEN("Should produces the expected instruction sets")

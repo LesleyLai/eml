@@ -5,12 +5,13 @@
 
 #include "ast.hpp"
 #include "bytecode.hpp"
+#include "memory.hpp"
 
 namespace eml {
 
 class VM {
 public:
-  VM() noexcept
+  explicit VM(GarbageCollector& gc) noexcept : garbage_collector_{gc}
   {
     constexpr size_t initial_stack_size = 256;
     stack_.reserve(initial_stack_size);
@@ -23,6 +24,7 @@ public:
 
 private:
   std::vector<Value> stack_{}; // Stack of the vm
+  std::reference_wrapper<GarbageCollector> garbage_collector_;
 };
 
 } // namespace eml
