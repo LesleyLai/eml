@@ -6,8 +6,7 @@
 #endif
 
 #include <string_view>
-
-#include "meta.hpp"
+#include <type_traits>
 
 /**
  * @file common.hpp
@@ -67,30 +66,16 @@ struct Token {
  * @brief Statically cast a pointer of IN to a pointer of OUT
  * @tparam IN The input type
  * @tparam OUT The output type
- * @pre IN and OUT must satisfy the trait @ref eml::is_polymorphic_with<IN, OUT>
  * @warning If IN is a base class of OUT, then the input value must have runtime
  * type of OUT, otherwise the result is undefined
  */
-template <class OUT, class IN,
-          typename = std::enable_if_t<is_polymorphic_with_v<IN, OUT>>>
-constexpr auto polymorphic_cast(IN* value) -> OUT*
+template <typename OUT, typename IN>
+constexpr auto polymorphic_cast(IN value) -> OUT
 {
 #ifdef EML_DEBUG
-  return dynamic_cast<OUT*>(value);
+  return dynamic_cast<OUT>(value);
 #else
-  return static_cast<OUT*>(value);
-#endif
-}
-
-/// @overload
-template <class OUT, class IN,
-          typename = std::enable_if_t<is_polymorphic_with_v<IN, OUT>>>
-constexpr auto polymorphic_cast(IN& value) -> OUT&
-{
-#ifdef EML_DEBUG
-  return dynamic_cast<OUT&>(value);
-#else
-  return static_cast<OUT&>(value);
+  return static_cast<OUT>(value);
 #endif
 }
 

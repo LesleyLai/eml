@@ -119,6 +119,9 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   case op_divide_f64:
     disassemble_simple_instruction(ip, "div<f64>");
     break;
+  case op_string_cat:
+    disassemble_simple_instruction(ip, "string_cat");
+    break;
   case op_equal:
     disassemble_simple_instruction(ip, "eq // equal to");
     break;

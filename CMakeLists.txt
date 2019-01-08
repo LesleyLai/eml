@@ -60,7 +60,6 @@ add_library(eml
     "src/error.cpp"
     "src/memory.hpp"
     "src/memory.cpp"
-    "src/meta.hpp"
     "src/module.hpp"
     "src/module.cpp"
     "src/parser.hpp"

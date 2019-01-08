@@ -18,14 +18,6 @@ struct D : C {
   void foo() override {}
 };
 
-TEST_CASE("is_polymorphic_with", "[cast]")
-{
-  REQUIRE(!eml::is_polymorphic_with_v<A, B>);
-  REQUIRE(!eml::is_polymorphic_with_v<B, C>);
-  REQUIRE(eml::is_polymorphic_with_v<C, D>);
-  REQUIRE(eml::is_polymorphic_with_v<D, C>);
-}
-
 TEST_CASE("polymorphic_cast", "[cast]")
 {
   C c;

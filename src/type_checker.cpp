@@ -238,7 +238,7 @@ struct TypeChecker : AstVisitor {
     }
 
     // TODO(Lesley Lai): implement constant folding
-    const auto v = dynamic_cast<const LiteralExpr*>(&def.to());
+    const auto v = eml::polymorphic_cast<const LiteralExpr*>(&def.to());
 
     if (v == nullptr) {
       error("Constant folding is unimplemented yet");
