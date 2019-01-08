@@ -21,8 +21,8 @@ struct D : C {
 TEST_CASE("polymorphic_cast", "[cast]")
 {
   C c;
-  REQUIRE(std::is_same_v<decltype(eml::polymorphic_cast<D>(c)), D&>);
+  REQUIRE(std::is_same_v<decltype(eml::polymorphic_cast<D>(c)), D>);
 
   D d;
-  REQUIRE(std::is_same_v<decltype(eml::polymorphic_cast<C>(d)), C&>);
+  REQUIRE(std::is_same_v<decltype(eml::polymorphic_cast<C>(d)), C>);
 }
