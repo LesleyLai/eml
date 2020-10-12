@@ -11,4 +11,4 @@ See how to build the project [here](docs/build.md).
 
 ## Acknowledgements
 
-Thanks to Simon Brand for his [tl::expected](https://github.com/TartanLlama/expected).
+Thanks to Sy Brand for their [tl::expected](https://github.com/TartanLlama/expected).
