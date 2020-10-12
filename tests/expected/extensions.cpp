@@ -2,12 +2,6 @@
 #include <catch2/catch.hpp>
 #include <memory>
 
-#define TOKENPASTE(x, y) x##y
-#define TOKENPASTE2(x, y) TOKENPASTE(x, y)
-#define STATIC_REQUIRE(e)                                                      \
-  [[maybe_unused]] constexpr bool TOKENPASTE2(rqure, __LINE__) = e;            \
-  REQUIRE(e);
-
 TEST_CASE("Map extensions", "[expected.map]")
 {
   auto mul2 = [](int a) { return a * 2; };

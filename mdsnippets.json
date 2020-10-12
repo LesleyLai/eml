@@ -1,0 +1,11 @@
+{
+  "ReadOnly": false,
+  "TocLevel": 5,
+  "Exclude": [
+    "cmake-build",
+    "build"
+  ],
+  "UrlsAsSnippets": [],
+  "WriteHeader": false,
+  "Convention": "InPlaceOverwrite"
+}

@@ -1,5 +1,6 @@
 #include "vm.hpp"
 
+#include <ApprovalTests.hpp>
 #include <catch2/catch.hpp>
 
 #include "vm_test_util.hpp"
@@ -53,7 +54,7 @@ TEST_CASE("Jumps", "[eml.vm]")
   using eml::line_num;
   using eml::Value;
 
-  GIVEN("(if (> 5 1) (+ 2 3) (- 4 6))")
+  GIVEN("(if (> 5 1) (+ 2 3) (- 4 6)) 2")
   {
     const auto v1 = 5.;
     const auto v2 = 1.;

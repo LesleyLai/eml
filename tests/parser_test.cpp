@@ -3,8 +3,6 @@
 #include "error.hpp"
 #include "parser.hpp"
 
-#include <iostream>
-
 #include <catch2/catch.hpp>
 
 TEST_CASE("Test parsing", "[parser]")

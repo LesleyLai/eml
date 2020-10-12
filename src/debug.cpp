@@ -137,7 +137,7 @@ public:
     ss_ << ')';
   }
 
-  std::string to_string()
+  auto to_string() -> std::string
   {
     return ss_.str();
   }
@@ -149,7 +149,8 @@ private:
 
 } // namespace
 
-std::string to_string(const eml::AstNode& node, AstPrintOption print_option)
+[[nodiscard]] auto to_string(const eml::AstNode& node,
+                             AstPrintOption print_option) -> std::string
 {
   AstPrinter printer{print_option};
   node.accept(printer);

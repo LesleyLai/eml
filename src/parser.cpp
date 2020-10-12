@@ -419,6 +419,7 @@ constexpr auto get_rule(token_type type) -> ParseRule
   return ParseRule{};
 }
 
+[[nodiscard]]
 auto parse(std::string_view source, GarbageCollector& gc) -> ParseResult
 {
   Parser parser{source, gc};
@@ -430,7 +431,7 @@ auto parse(std::string_view source, GarbageCollector& gc) -> ParseResult
   if constexpr (eml::BuildOptions::debug_print_ast) {
     std::cout << eml::to_string(*expr) << '\n';
   }
-  return std::move(expr);
+  return expr;
 }
 
 } // namespace eml

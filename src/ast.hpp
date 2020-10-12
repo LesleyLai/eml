@@ -186,7 +186,7 @@ struct AstNode {
    * @brief Gets the type of the AST node
    * @warning If the expression does not have a type, the result is undefined
    */
-  auto type() const -> const Type&
+  [[nodiscard]] auto type() const -> const Type&
   {
     EML_ASSERT(has_type(), "Must have a type");
     return *type_;
@@ -195,7 +195,7 @@ struct AstNode {
   /**
    * @brief Returns true if the ast node have a type assigned
    */
-  auto has_type() const -> bool
+  [[nodiscard]] auto has_type() const -> bool
   {
     return type_.has_value();
   }
@@ -231,7 +231,7 @@ public:
   {
   }
 
-  auto identifier() const -> std::string_view
+  [[nodiscard]] auto identifier() const -> std::string_view
   {
     return binding_.identifier;
   }
@@ -244,12 +244,12 @@ public:
   /**
    * @brief Gets the type a definition bind to
    */
-  auto binding_type() const -> const std::optional<Type>&
+  [[nodiscard]] auto binding_type() const -> const std::optional<Type>&
   {
     return binding_.type;
   }
 
-  auto to() const -> Expr&
+  [[nodiscard]] auto to() const -> Expr&
   {
     return *binding_.to;
   }
@@ -271,8 +271,7 @@ private:
 /**
  * @brief Base class for all the Expression AST Node
  */
-struct [[nodiscard]] Expr : AstNode
-{
+struct [[nodiscard]] Expr : AstNode {
 public:
   Expr() = default;
   explicit Expr(Type type) : AstNode{type} {}

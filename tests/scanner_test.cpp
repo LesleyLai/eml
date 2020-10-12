@@ -70,7 +70,7 @@ TEST_CASE("scanner", "[scanner]")
 
   GIVEN("A multi-line string")
   {
-    const auto str = R"("
+    const auto* str = R"("
                      Hello
                      world
                      ")";

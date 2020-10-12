@@ -7,8 +7,21 @@ Embedded ML aims to be a static-typed scripting language that gets performance a
 
 
 ## Quick Start
-See how to build the project [here](docs/build.md).
+See how to build the project [here](docs/src/build.md).
 
 ## Acknowledgements
 
-Thanks to Sy Brand for their [tl::expected](https://github.com/TartanLlama/expected).
+- Thanks to [Sy Brand](https://blog.tartanllama.xyz/) for their [tl::expected](https://github.com/TartanLlama/expected).
+- Thanks to [Clare Macrae](https://claremacrae.co.uk/) and [Llewellyn Falco](https://llewellynfalco.blogspot.com/p/infographics.html)
+for [ApprovalTests.cpp](https://github.com/approvals/ApprovalTests.cpp) and the idea of Approval Test in general
+
+## Examples
+
+Here are some snippets of what an EML program looks like and what it evaluate to:
+
+### If-else
+snippet: Else_If.approved.eml
+
+evaluates into:
+
+snippet: Else_If.approved.docs.txt

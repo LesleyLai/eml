@@ -1,0 +1,34 @@
+Input:
+if (1 > 10) {
+  2 + 3
+} else if (1 < 4) {
+  33
+} else {
+  42
+}
+
+
+Parse into:
+(if (> 1 10)
+    (+ 2 3) (if (< 1 4)
+    33 42))
+
+Compile into:
+0000    01 00          push 0 //1
+   |    01 01          push 1 //10
+   |    11             gt<f64> // greater than
+   |    14 07          jump_false 7
+   |    01 02          push 2 //2
+   |    01 03          push 3 //3
+   |    08             add<f64>
+   |    13 0d          jump d
+   |    01 04          push 4 //1
+   |    01 05          push 5 //4
+   |    0f             lt<f64> // less than
+   |    14 04          jump_false 4
+   |    01 06          push 6 //33
+   |    13 02          jump 2
+   |    01 07          push 7 //42
+
+Executes to:
+33: Number

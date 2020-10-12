@@ -151,4 +151,10 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   return ss.str();
 }
 
+std::ostream& operator<<(std::ostream& os, const Bytecode& bytecode)
+{
+  os << bytecode.disassemble();
+  return os;
+}
+
 } // namespace eml

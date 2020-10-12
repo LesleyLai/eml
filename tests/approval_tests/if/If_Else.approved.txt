@@ -1,0 +1,22 @@
+Input:
+if (5 > 1) {2 + 3} else {4 - 6}
+
+Parse into:
+(if (> 5 1)
+    (+ 2 3) (- 4 6))
+
+Compile into:
+0000    01 00          push 0 //5
+   |    01 01          push 1 //1
+   |    11             gt<f64> // greater than
+   |    14 07          jump_false 7
+   |    01 02          push 2 //2
+   |    01 03          push 3 //3
+   |    08             add<f64>
+   |    13 05          jump 5
+   |    01 04          push 4 //4
+   |    01 05          push 5 //6
+   |    09             sub<f64>
+
+Executes to:
+5: Number

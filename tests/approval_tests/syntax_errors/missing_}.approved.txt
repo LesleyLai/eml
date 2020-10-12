@@ -1,0 +1,6 @@
+Input:
+if (5 > 1) {2 + 3 else {4 - 6}
+
+Error message:
+L1:19 Syntax Error at "else": A block must end with '}'
+

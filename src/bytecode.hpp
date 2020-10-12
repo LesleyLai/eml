@@ -2,6 +2,7 @@
 #define EML_BYTECODE_HPP
 
 #include <cstddef>
+#include <ostream>
 #include <type_traits>
 #include <vector>
 
@@ -132,6 +133,8 @@ struct Bytecode {
   }
 
   auto disassemble() const -> std::string;
+
+  friend std::ostream& operator<<(std::ostream& os, const Bytecode& bytecode);
 
 private:
   friend VM;

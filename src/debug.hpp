@@ -22,8 +22,9 @@ enum class AstPrintOption {
 /**
  * @brief Converts AST node into a string with lisp-like prefix notation
  */
-std::string to_string(const AstNode& node,
-                      AstPrintOption = AstPrintOption::pretty);
+[[nodiscard]] auto to_string(const AstNode& node,
+                             AstPrintOption = AstPrintOption::pretty)
+    -> std::string;
 
 } // namespace eml
 
