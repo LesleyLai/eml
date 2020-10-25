@@ -25,7 +25,7 @@ struct ErrorType {};
 using Type =
     std::variant<NumberType, BoolType, UnitType, StringType, ErrorType>;
 
-std::ostream& operator<<(std::ostream& os, const Type& type);
+auto operator<<(std::ostream& os, const Type& type) -> std::ostream&;
 
 /**
  * @brief Return true if the lhs type match the rhs type

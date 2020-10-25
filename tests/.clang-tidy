@@ -1,8 +1,9 @@
 ---
-Checks:          '*,
+Checks: '*,
 -clang-analyzer-deadcode.DeadStores,
 -clang-analyzer-alpha.*,
 -abseil-string-find-startswith,
+-bugprone-branch-clone,
 -readability-static-accessed-through-instance,
 -readability-braces-around-statements,
 -readability-implicit-bool-cast,
@@ -34,6 +35,6 @@ WarningsAsErrors: ''
 HeaderFilterRegex: ''
 FormatStyle: 'file'
 CheckOptions:
-  - key:             misc-non-private-member-variables-in-classes.IgnorePublicMemberVariables
-    value:           '1'
+  - key: misc-non-private-member-variables-in-classes.IgnorePublicMemberVariables
+    value: '1'
 ...

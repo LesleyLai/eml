@@ -114,6 +114,27 @@ TEST_CASE("Test Syntax Errors", "[integration]")
   }
 }
 
+TEST_CASE("Test Type Errors", "[integration]")
+{
+  auto directoryDisposer = ApprovalTests::Approvals::useApprovalsSubdirectory(
+      "approval_tests/type_errors");
+  auto default_namer_disposer =
+      ApprovalTestsPlus::BySectionsNamer::useAsDefaultNamer();
+
+  static constexpr LanguageTest tests[] = {
+      {"Number in branch", "if (1) 2 else 3"},
+      {"Branch type mismatch", "if (true) 3 else false"},
+      {"Boolean in arithmatics", "1 + false"},
+      {"Number in boolean expression", "!1"}};
+
+  for (const auto& [name, src] : tests) {
+    SECTION(name)
+    {
+      verify_eml(src);
+    }
+  }
+}
+
 // TEST_CASE("Test with String")
 //{
 //  const std::string s = R"("Hello, " ++ "world")";

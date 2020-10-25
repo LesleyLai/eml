@@ -1,0 +1,11 @@
+Input:
+1 + false
+
+Parse into:
+(+ 1 false)
+
+Error message:
+Type Error: Unmatched types around binary operator +
+Requires Number  +  Number  
+Has      Number  +  Bool    
+

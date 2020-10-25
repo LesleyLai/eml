@@ -15,12 +15,10 @@ std::string Bytecode::disassemble() const
     result += disassemble_instruction(ip, offset);
     const auto instruction = *ip;
     switch (static_cast<opcode>(instruction)) {
-    case op_push_f64: {
-      ++ip;
-    } break;
-    case op_jmp: {
-      ++ip;
-    } break;
+    case op_push_f64:
+      [[fallthrough]];
+    case op_jmp:
+      [[fallthrough]];
     case op_jmp_false: {
       ++ip;
     } break;
@@ -151,7 +149,7 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   return ss.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const Bytecode& bytecode)
+auto operator<<(std::ostream& os, const Bytecode& bytecode) -> std::ostream&
 {
   os << bytecode.disassemble();
   return os;

@@ -1,0 +1,11 @@
+Input:
+!1
+
+Parse into:
+(! 1)
+
+Error message:
+Type Error: Unmatched types around of unary operator !
+Requires ! Bool    
+Has      ! Number  
+

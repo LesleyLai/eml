@@ -1,0 +1,12 @@
+Input:
+if (true) 3 else false
+
+Parse into:
+(if true
+    3 false)
+
+Error message:
+Type Error: Type mismatch in branching!
+If branch: Number
+Else branch: Bool
+

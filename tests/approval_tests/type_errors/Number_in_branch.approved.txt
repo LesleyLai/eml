@@ -1,0 +1,11 @@
+Input:
+if (1) 2 else 3
+
+Parse into:
+(if 1
+    2 3)
+
+Error message:
+Type Error: I want a Bool in the condition of an if expression
+Got Number
+

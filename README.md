@@ -17,7 +17,7 @@ for [ApprovalTests.cpp](https://github.com/approvals/ApprovalTests.cpp) and the 
 
 ## Examples
 
-Here are some snippets of what an EML program looks like and what it evaluate to:
+Here are some snippets of what an EML program looks like and what it evaluates to:
 
 ### If-else
 <!-- snippet: Else_If.approved.eml -->

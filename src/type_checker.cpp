@@ -200,8 +200,9 @@ struct TypeChecker : AstVisitor {
       expr.set_type(ErrorType{});
       if (!panic_mode) {
         std::stringstream ss;
-        ss << "I want a " << BoolType{} << " in condition of if expression\n";
-        ss << "Got " << expr.cond().type() << '\n';
+        ss << "I want a " << BoolType{}
+           << " in the condition of an if expression\n"
+           << "Got " << expr.cond().type() << '\n';
         error(ss.str());
       }
     } else if (!eml::match(expr.If().type(), expr.Else().type())) {
@@ -238,7 +239,7 @@ struct TypeChecker : AstVisitor {
     }
 
     // TODO(Lesley Lai): implement constant folding
-    const auto v = eml::polymorphic_cast<const LiteralExpr*>(&def.to());
+    const auto* v = eml::polymorphic_cast<const LiteralExpr*>(&def.to());
 
     if (v == nullptr) {
       error("Constant folding is unimplemented yet");
@@ -251,7 +252,8 @@ struct TypeChecker : AstVisitor {
 }; // namespace
 } // anonymous namespace
 
-Compiler::TypeCheckResult Compiler::type_check(std::unique_ptr<AstNode>& ptr)
+auto Compiler::type_check(std::unique_ptr<AstNode>& ptr)
+    -> Compiler::TypeCheckResult
 {
   TypeChecker type_checker{*this};
   ptr->accept(type_checker);

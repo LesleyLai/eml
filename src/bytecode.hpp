@@ -112,7 +112,7 @@ struct Bytecode {
   /**
    * @brief Returns the index of next instruction
    */
-  auto next_instruction_index() noexcept -> std::ptrdiff_t
+  [[nodiscard]] auto next_instruction_index() const noexcept -> std::ptrdiff_t
   {
     return static_cast<std::ptrdiff_t>(instructions.size());
   }
@@ -123,7 +123,7 @@ struct Bytecode {
    * Adds a constant value v to the chunk. Returns the index where it was
    * appended so that we can locate that same constant later.
    */
-  [[nodiscard]] std::optional<opcode_num_type> add_constant(Value v)
+  [[nodiscard]] auto add_constant(Value v) -> std::optional<opcode_num_type>
   {
     if (constants.size() >= std::numeric_limits<opcode_num_type>::max()) {
       return {};
@@ -132,21 +132,24 @@ struct Bytecode {
     return static_cast<opcode_num_type>(constants.size() - 1);
   }
 
-  auto disassemble() const -> std::string;
+  [[nodiscard]] auto disassemble() const -> std::string;
 
-  friend std::ostream& operator<<(std::ostream& os, const Bytecode& bytecode);
+  friend auto operator<<(std::ostream& os, const Bytecode& bytecode)
+      -> std::ostream&;
 
 private:
   friend VM;
   using instruction_iterator = decltype(instructions)::const_iterator;
-  auto read_constant(const instruction_iterator& ip) const -> Value
+  [[nodiscard]] auto read_constant(const instruction_iterator& ip) const
+      -> Value
   {
     const auto index = static_cast<std::underlying_type_t<opcode>>(*ip);
     return constants.at(index);
   }
 
-  auto disassemble_instruction(instruction_iterator ip,
-                               std::size_t offset) const -> std::string;
+  [[nodiscard]] auto disassemble_instruction(instruction_iterator ip,
+                                             std::size_t offset) const
+      -> std::string;
 };
 
 } // namespace eml
