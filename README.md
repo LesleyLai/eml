@@ -20,8 +20,26 @@ for [ApprovalTests.cpp](https://github.com/approvals/ApprovalTests.cpp) and the 
 Here are some snippets of what an EML program looks like and what it evaluate to:
 
 ### If-else
-snippet: Else_If.approved.eml
+<!-- snippet: Else_If.approved.eml -->
+<a id='snippet-Else_If.approved.eml'></a>
+```eml
+if (1 > 10) {
+  2 + 3
+} else if (1 < 4) {
+  33
+} else {
+  42
+}
+```
+<sup><a href='/tests/approval_tests/if/Else_If.approved.eml#L1-L7' title='Snippet source file'>snippet source</a> | <a href='#snippet-Else_If.approved.eml' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 evaluates into:
 
-snippet: Else_If.approved.docs.txt
+<!-- snippet: Else_If.approved.docs.txt -->
+<a id='snippet-Else_If.approved.docs.txt'></a>
+```txt
+33: Number
+```
+<sup><a href='/tests/approval_tests/if/Else_If.approved.docs.txt#L1-L1' title='Snippet source file'>snippet source</a> | <a href='#snippet-Else_If.approved.docs.txt' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
