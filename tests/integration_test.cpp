@@ -3,6 +3,7 @@
 
 #include "debug.hpp"
 #include "eml.hpp"
+#include "eml_disassembler.hpp"
 
 #include "utils/approval_using_sections_namer.hpp"
 
@@ -36,7 +37,7 @@ void verify_eml(const std::string_view source,
           const auto& [bytecode, type] = tuple;
 
           if (for_documentation == ForDocumentation::no) {
-            ss << "Compile into:\n" << bytecode.disassemble() << '\n';
+            ss << "Compile into:\n" << disassemble(bytecode) << '\n';
           }
 
           const auto result = vm.interpret(bytecode);
@@ -66,7 +67,7 @@ void verify_eml(const std::string_view source,
 
 } // anonymous namespace
 
-TEST_CASE("If", "[integration]")
+TEST_CASE("If", "[.][integration]")
 {
   auto directoryDisposer =
       ApprovalTests::Approvals::useApprovalsSubdirectory("approval_tests/if");
@@ -94,7 +95,7 @@ struct LanguageTest {
   const std::string_view src;
 };
 
-TEST_CASE("Test Syntax Errors", "[integration]")
+TEST_CASE("Test Syntax Errors", "[.][integration]")
 {
   auto directoryDisposer = ApprovalTests::Approvals::useApprovalsSubdirectory(
       "approval_tests/syntax_errors");
@@ -114,7 +115,7 @@ TEST_CASE("Test Syntax Errors", "[integration]")
   }
 }
 
-TEST_CASE("Test Type Errors", "[integration]")
+TEST_CASE("Test Type Errors", "[.][integration]")
 {
   auto directoryDisposer = ApprovalTests::Approvals::useApprovalsSubdirectory(
       "approval_tests/type_errors");

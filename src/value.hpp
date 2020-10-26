@@ -26,11 +26,6 @@ struct Value {
   static_assert(std::numeric_limits<double>::is_iec559,
                 "Embedded ML require IEEE 754 floating point number is in use");
 
-  friend std::ostream& operator<<(std::ostream& os, const Value& value)
-  {
-    os << to_string(NumberType{}, value, PrintType::no);
-    return os;
-  }
   enum class type {
     Unit,
     Boolean,

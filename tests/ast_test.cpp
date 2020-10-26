@@ -1,6 +1,7 @@
 #include "ast.hpp"
 #include "compiler.hpp"
 #include "debug.hpp"
+#include "disassembler/eml_disassembler.hpp"
 
 #include "vm_test_util.hpp"
 
@@ -60,7 +61,7 @@ TEST_CASE("AST visiting and printing")
         write_instruction(expected, eml::op_subtract_f64);
         write_instruction(expected, eml::op_divide_f64);
 
-        REQUIRE(c.disassemble() == expected.disassemble());
+        REQUIRE(eml::disassemble(c) == eml::disassemble(expected));
       }
 
       THEN("Evaluate to -6.75")

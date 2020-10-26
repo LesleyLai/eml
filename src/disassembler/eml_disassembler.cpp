@@ -1,39 +1,19 @@
-#include <sstream>
-#include <string_view>
-
+#include "eml_disassembler.hpp"
 #include "bytecode.hpp"
 
-namespace eml {
+#include <sstream>
 
-std::string Bytecode::disassemble() const
+namespace {
+
+using instruction_iterator =
+    decltype(eml::Bytecode::instructions)::const_iterator;
+
+auto disassemble_instruction(const eml::Bytecode& bytecode,
+                             instruction_iterator ip, std::size_t offset)
+    -> std::string
 {
-  size_t offset = 0;
+  using namespace eml;
 
-  std::string result;
-
-  for (auto ip = instructions.begin(); ip != instructions.end(); ++ip) {
-    result += disassemble_instruction(ip, offset);
-    const auto instruction = *ip;
-    switch (static_cast<opcode>(instruction)) {
-    case op_push_f64:
-      [[fallthrough]];
-    case op_jmp:
-      [[fallthrough]];
-    case op_jmp_false: {
-      ++ip;
-    } break;
-    default:; // Nothing special
-    }
-
-    ++offset;
-  }
-
-  return result;
-}
-
-auto Bytecode::disassemble_instruction(instruction_iterator ip,
-                                       std::size_t offset) const -> std::string
-{
   std::stringstream ss;
 
   auto print_hex_dump = [&ss](auto current_ip, std::size_t count) {
@@ -60,7 +40,7 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   auto disassemble_instruction_with_one_const_float_parem =
       [&](auto& current_ip, std::string_view name) {
         print_hex_dump(current_ip, 2);
-        const auto v = read_constant(++current_ip);
+        const auto v = bytecode.read_constant(++current_ip);
         ss << name << ' ' << static_cast<std::uint32_t>(*current_ip) << " //"
            << to_string(eml::NumberType{}, v, PrintType::no) << '\n';
       };
@@ -73,10 +53,12 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
 
   // Dump file in source line
   constexpr std::size_t linum_digits = 4;
-  if (offset != 0 && lines[offset].value == lines[offset - 1].value) {
+  if (offset != 0 &&
+      bytecode.lines[offset].value == bytecode.lines[offset - 1].value) {
     ss << std::setfill(' ') << std::setw(linum_digits) << '|';
   } else {
-    ss << std::setfill('0') << std::setw(linum_digits) << lines[offset].value;
+    ss << std::setfill('0') << std::setw(linum_digits)
+       << bytecode.lines[offset].value;
   }
   ss << "    ";
 
@@ -149,10 +131,35 @@ auto Bytecode::disassemble_instruction(instruction_iterator ip,
   return ss.str();
 }
 
-auto operator<<(std::ostream& os, const Bytecode& bytecode) -> std::ostream&
+} // anonymous namespace
+
+namespace eml {
+
+[[nodiscard]] auto disassemble(const Bytecode& bytecode) -> std::string
 {
-  os << bytecode.disassemble();
-  return os;
+  size_t offset = 0;
+
+  std::string result;
+
+  for (auto ip = bytecode.instructions.begin();
+       ip != bytecode.instructions.end(); ++ip) {
+    result += disassemble_instruction(bytecode, ip, offset);
+    const auto instruction = *ip;
+    switch (static_cast<opcode>(instruction)) {
+    case op_push_f64:
+      [[fallthrough]];
+    case op_jmp:
+      [[fallthrough]];
+    case op_jmp_false: {
+      ++ip;
+    } break;
+    default:; // Nothing special
+    }
+
+    ++offset;
+  }
+
+  return result;
 }
 
 } // namespace eml

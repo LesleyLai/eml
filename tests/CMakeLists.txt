@@ -31,7 +31,7 @@ conan_cmake_run(REQUIRES
         BUILD missing)
 
 target_link_libraries(${EML_TEST_TARGET}
-        PRIVATE eml CONAN_PKG::catch2 CONAN_PKG::approvaltests.cpp)
+        PRIVATE eml::eml eml::disassembler CONAN_PKG::catch2 CONAN_PKG::approvaltests.cpp)
 
 if (${EML_BUILD_TESTS_COVERAGE})
     include(ProcessorCount)

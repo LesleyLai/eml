@@ -2,7 +2,6 @@
 #define EML_BYTECODE_HPP
 
 #include <cstddef>
-#include <ostream>
 #include <type_traits>
 #include <vector>
 
@@ -132,13 +131,6 @@ struct Bytecode {
     return static_cast<opcode_num_type>(constants.size() - 1);
   }
 
-  [[nodiscard]] auto disassemble() const -> std::string;
-
-  friend auto operator<<(std::ostream& os, const Bytecode& bytecode)
-      -> std::ostream&;
-
-private:
-  friend VM;
   using instruction_iterator = decltype(instructions)::const_iterator;
   [[nodiscard]] auto read_constant(const instruction_iterator& ip) const
       -> Value
@@ -146,10 +138,6 @@ private:
     const auto index = static_cast<std::underlying_type_t<opcode>>(*ip);
     return constants.at(index);
   }
-
-  [[nodiscard]] auto disassemble_instruction(instruction_iterator ip,
-                                             std::size_t offset) const
-      -> std::string;
 };
 
 } // namespace eml

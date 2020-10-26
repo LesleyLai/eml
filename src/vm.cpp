@@ -1,11 +1,8 @@
-#include <iomanip>
-#include <iostream>
-#include <sstream>
+#include <cstdio>
 #include <string_view>
 
 #include "common.hpp"
 #include "eml.hpp"
-#include "parser.hpp"
 #include "string.hpp"
 
 #include "vm.hpp"
@@ -70,20 +67,6 @@ auto VM::interpret(const Bytecode& code) -> std::optional<Value>
 
   for (auto ip = code.instructions.begin(); ip != code.instructions.end();
        ++ip) {
-    if constexpr (eml::build_options.debug_vm_trace_execution) {
-      std::cout << "Stack: [";
-
-      for (auto i = stack_.begin(); i < stack_.end(); ++i) {
-        // std::cout << to_string(*i, PrintType::no);
-        if (i != stack_.end() - 1) {
-          std::cout << ", ";
-        }
-      }
-
-      std::cout << "]\n";
-      std::cout << code.disassemble_instruction(ip, offset) << '\n';
-    }
-
     const auto instruction = *ip;
     switch (static_cast<opcode>(instruction)) {
     case op_return:
